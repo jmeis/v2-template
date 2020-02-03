@@ -14,7 +14,7 @@ Any code change to the Git repo will automatically be built, validated and deplo
 ![Icon](./.bluemix/toolchain.png)
 
 ### To get started, click this button:
-[![Create toolchain](https://cloud.ibm.com/devops/graphics/create_toolchain_button.png)](https://cloud.ibm.com/devops/setup/deploy?repository=https://github.ibm.com/otc-compliance/tekton-ci-compliance)
+[![Create toolchain](https://https://dev.console.test.cloud.ibm.com/devops/graphics/create_toolchain_button.png)](https://cloud.ibm.com/devops/setup/deploy?repository=https://github.ibm.com/otc-compliance/tekton-ci-compliance)
 
 It implements the following best practices:
 - sanity check the Dockerfile prior to attempting creating the image
