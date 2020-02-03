@@ -11,6 +11,7 @@ template:
   required:
     - build
     - repo
+    - pipeline-repo
   info:
     git url: >
       "[" + $env.repository + "]" +
