@@ -40,13 +40,14 @@ services:
       has_issues: true
       enable_traceability: false
   pipeline-repo:
-    service_id: githubpublic
+    service_id: github_integrated
     parameters:
-      repo_name: 'imageSigningAutoConvertedTekton'
-      repo_url: https://github.com/padraic-edwards/imageSigningAutoConvertedTekton
+      repo_name: 'tekton-ci-compliance'
+      repo_url: https://github.ibm.com/padraic-edwards/tekton-ci-compliance
       type: link
       has_issues: false
       enable_traceability: false
+      legal: true
   build:
     service_id: pipeline
     parameters:
