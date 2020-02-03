@@ -150,6 +150,18 @@ spec:
     volumeMounts:
     - mountPath: /artifacts
       name: task-volume
+  - name: dependency-analysis
+    image: ibmcom/pipeline-base-image:latest
+    env:
+    - name: REPOSITORY
+      value: $(inputs.params.repository)
+    - name: REVISION
+      value: $(inputs.params.revision)
+    command: ["/bin/sh", "-c"]
+    args:
+    - |
+      #!/bin/bash
+      echo "RUNNING Dependency Analysis"
   volumes:
   - name: task-volume
     persistentVolumeClaim:
@@ -548,6 +560,30 @@ spec:
     volumeMounts:
     - mountPath: /artifacts
       name: task-volume
+  - name: oss-licence-check
+    image: ibmcom/pipeline-base-image:latest
+    env:
+    - name: REPOSITORY
+      value: $(inputs.params.repository)
+    - name: REVISION
+      value: $(inputs.params.revision)
+    command: ["/bin/sh", "-c"]
+    args:
+    - |
+      #!/bin/bash
+      echo "RUNNING oss licence check"
+  - name: cis-benchmarks
+    image: ibmcom/pipeline-base-image:latest
+    env:
+    - name: REPOSITORY
+      value: $(inputs.params.repository)
+    - name: REVISION
+      value: $(inputs.params.revision)
+    command: ["/bin/sh", "-c"]
+    args:
+    - |
+      #!/bin/bash
+      echo "RUNNING CIS bench marks"
   - name: additional-image-checks
     image: ibmcom/pipeline-base-image:latest
     env:

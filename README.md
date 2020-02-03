@@ -1,5 +1,5 @@
 
-# ![Icon](./.bluemix/secure-lock-kubernetes.png) Develop a Kubernetes app
+# ![Icon](./.bluemix/secure-lock-kubernetes.png) Develop a FedRAMP Compliant Kubernetes app
 
 ### Leverages Docker image signing to validate image integrity
 This template expands upon the existing Secure-kube-toolchain template  with the addition of extra validation controls on the Docker image. Digital signatures are applied to the Docker image at specific validation stages. An image security enforcement policy is applied to the Kubernetes cluster requiring the signatures to be present before proceeding with the deployment. This toolchain requires the use of a Key-Protect vault instance that has been pre-populated with signing keys. See key-management-admin-toolchain (https://github.com/open-toolchain/key-management-admin-toolchain)
