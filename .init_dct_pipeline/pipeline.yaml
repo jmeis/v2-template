@@ -1,0 +1,132 @@
+---
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: pipeline
+spec:
+  params:
+  - name: pipeline-pvc
+    description: pipeline pvc name place holder
+  - name: registry-namespace
+    description: The namespace in the container image registry. You can set it up
+      with {bx cr namespace-add]. Learn more at https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started#getting-started.
+  - name: build-cluster-namespace
+    description: Cluster namespace
+  - name: build-cluster-name
+    description: Build Cluster
+  - name: prod-cluster-namespace
+    description: Cluster namespace
+  - name: build-region
+    description: Build region
+  - name: vault_name
+    description: Specify the Key Protect instance name, where the image signing keys
+      have been stored. The build and validation signer fields contain default names
+      for these signers. The values must match the values created in the Key-Management-Admin-Template.
+      See https://github.com/open-toolchain/key-management-admin-toolchain
+  - name: repository
+    description: The git repo
+  - name: prod-region
+    description: Cluster region
+  - name: app-name
+    description: The name of your app
+  - name: revision
+    description: the branch for the git repo
+  - name: prod-cluster-name
+    description: Cluster name
+  - name: registry-region
+    description: The IBM Cloud region for image registry
+  - name: api-key
+    description: The IBM Cloud API key is used to access the IBM Cloud Kubernetes
+      Service API and interact with the cluster. You can obtain your API key with
+      'bx iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
+      by clicking **Create API key** (Each API key only can be viewed once).
+  - name: prod-resource-group
+    description: Resource Group
+  - name: build-resource-group
+    description: Build Resource Group
+  - name: validation_signer
+    description: VALIDATION_SIGNER
+  - name: build_signer
+    description: BUILD_SIGNER
+  tasks:
+  - name: init-docker-content-trust
+    taskRef:
+      name: init-docker-content-trust-task
+    params:
+    - name: task-pvc
+      value: $(params.pipeline-pvc)
+    - name: registry-namespace
+      value: $(params.registry-namespace)
+    - name: build-cluster-namespace
+      value: $(params.build-cluster-namespace)
+    - name: build-cluster-name
+      value: $(params.build-cluster-name)
+    - name: prod-cluster-namespace
+      value: $(params.prod-cluster-namespace)
+    - name: build-region
+      value: $(params.build-region)
+    - name: vault_name
+      value: $(params.vault_name)
+    - name: repository
+      value: $(params.repository)
+    - name: prod-region
+      value: $(params.prod-region)
+    - name: app-name
+      value: $(params.app-name)
+    - name: revision
+      value: $(params.revision)
+    - name: prod-cluster-name
+      value: $(params.prod-cluster-name)
+    - name: registry-region
+      value: $(params.registry-region)
+    - name: api-key
+      value: $(params.api-key)
+    - name: prod-resource-group
+      value: $(params.prod-resource-group)
+    - name: build-resource-group
+      value: $(params.build-resource-group)
+    - name: validation_signer
+      value: $(params.validation_signer)
+    - name: build_signer
+      value: $(params.build_signer)
+  - name: setup-iks-runtime-enforcement-in-deployment-cluster
+    taskRef:
+      name: setup-iks-runtime-enforcement-in-deployment-cluster-task
+    runAfter: [init-docker-content-trust]
+    params:
+    - name: task-pvc
+      value: $(params.pipeline-pvc)
+    - name: registry-namespace
+      value: $(params.registry-namespace)
+    - name: build-cluster-namespace
+      value: $(params.build-cluster-namespace)
+    - name: build-cluster-name
+      value: $(params.build-cluster-name)
+    - name: prod-cluster-namespace
+      value: $(params.prod-cluster-namespace)
+    - name: build-region
+      value: $(params.build-region)
+    - name: vault_name
+      value: $(params.vault_name)
+    - name: repository
+      value: $(params.repository)
+    - name: prod-region
+      value: $(params.prod-region)
+    - name: app-name
+      value: $(params.app-name)
+    - name: revision
+      value: $(params.revision)
+    - name: prod-cluster-name
+      value: $(params.prod-cluster-name)
+    - name: registry-region
+      value: $(params.registry-region)
+    - name: api-key
+      value: $(params.api-key)
+    - name: prod-resource-group
+      value: $(params.prod-resource-group)
+    - name: build-resource-group
+      value: $(params.build-resource-group)
+    - name: validation_signer
+      value: $(params.validation_signer)
+    - name: build_signer
+      value: $(params.build_signer)
