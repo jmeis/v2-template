@@ -10,8 +10,10 @@ template:
   icon: secure-lock-kubernetes.svg
   required:
     - build
-    - repo
+    - app-repo
     - pipeline-repo
+    - evidence-repo
+    - issues-repo
   info:
     git url: >
       "[" + $env.repository + "]" +
@@ -26,7 +28,7 @@ toolchain:
     getting_started:
       $ref: "#/messages/template.gettingStarted"
 services:
-  repo:
+  app-repo:
     service_id: >
       $env.source_provider ? $env.source_provider : 'github_integrated'
     parameters:
@@ -38,7 +40,7 @@ services:
         $env.type === 'fork' || $env.type === 'clone' ? 
           $env.app_repo : 'https://github.com/open-toolchain/hello-containers'
       type: $env.type || 'clone'
-      has_issues: true
+      has_issues: false
       enable_traceability: false
   pipeline-repo:
     service_id: github_integrated
@@ -51,18 +53,22 @@ services:
     parameters:
       repo_name: 'compiance-ci-evidence'
       type: new
+      has_issues: false
+      enable_traceability: false
   issues-repo:
     service_id: github_integrated
     parameters:
       repo_name: 'compliance-ci-issues'
       type: new
+      has_issues: false
+      enable_traceability: false
   build:
     service_id: pipeline
     parameters:
       services:
-        - repo
+        - app-repo
         - pipeline-repo
-      name: '{{services.repo.parameters.repo_name}}'
+      name: '{{services.app-repo.parameters.repo_name}}'
       ui-pipeline: true
       type: tekton
       configuration:
@@ -119,7 +125,7 @@ services:
 form:
   pipeline:
     parameters:
-      app-name: '{{services.repo.parameters.repo_name}}'
+      app-name: '{{services.app-repo.parameters.repo_name}}'
       prod-cluster-namespace: prod
       build-cluster-namespace: build
       vault_name: ''
