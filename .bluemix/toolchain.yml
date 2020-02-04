@@ -21,14 +21,14 @@ template:
         "(" + $env.repository +
           "/tree/" + $env.branch + ")"
 toolchain:
-  name: 'advanced-kube-toolchain-{{timestamp}}'
+  name: 'compliance-ci-toolchain-{{timestamp}}'
   template:
     getting_started:
       $ref: "#/messages/template.gettingStarted"
 services:
   repo:
     service_id: >
-      $env.source_provider ? $env.source_provider : 'hostedgit'
+      $env.source_provider ? $env.source_provider : 'github_integrated'
     parameters:
       repo_name: 'hello-containers-{{timestamp}}'
       repo_url: >
@@ -43,9 +43,19 @@ services:
   pipeline-repo:
     service_id: github_integrated
     parameters:
-      repo_name: 'tekton-ci-compliance'
-      repo_url: https://github.ibm.com/otc-compliance/tekton-ci-compliance
+      repo_name: 'compliance-ci-toolchain'
+      repo_url: https://github.ibm.com/one-pipeline/compliance-ci-toolchain
       type: link
+  evidence-repo:
+    service_id: github_integrated
+    parameters:
+      repo_name: 'compiance-ci-evidence'
+      type: new
+  issues-repo:
+    service_id: github_integrated
+    parameters:
+      repo_name: 'compliance-ci-issues'
+      type: new
   build:
     service_id: pipeline
     parameters:
