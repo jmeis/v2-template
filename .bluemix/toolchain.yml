@@ -11,7 +11,6 @@ template:
   required:
     - build
     - repo
-    - pipeline-repo
   info:
     git url: >
       "[" + $env.repository + "]" +
@@ -41,14 +40,13 @@ services:
       has_issues: true
       enable_traceability: false
   pipeline-repo:
-    service_id: github_integrated
+    service_id: githubpublic
     parameters:
-      repo_name: 'tekton-ci-compliance'
-      repo_url: https://github.ibm.com/otc-compliance/tekton-ci-compliance
+      repo_name: 'imageSigningAutoConvertedTekton'
+      repo_url: https://github.com/padraic-edwards/imageSigningAutoConvertedTekton
       type: link
       has_issues: false
       enable_traceability: false
-      legal: true
   build:
     service_id: pipeline
     parameters:
@@ -81,12 +79,16 @@ services:
         execute: false
   init_dct:
     service_id: pipeline
+    services:
+      - pipeline-repo
     parameters:
       name: 'dct init {{form.pipeline.parameters.registry-namespace}} {{form.pipeline.parameters.app-name}}'
+      type: tekton
       configuration:
         content:
-          $text: init_dct_pipeline.yml
+          $text: init_dct_pipeline_tekton.yml
         env:
+          PIPELINE_REPO: pipeline-repo
           APP_NAME: '{{form.pipeline.parameters.app-name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
           REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
