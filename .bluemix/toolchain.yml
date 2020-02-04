@@ -48,10 +48,12 @@ services:
       repo_name: 'compliance-ci-toolchain'
       repo_url: https://github.ibm.com/padraic-edwards/tekton-ci-compliance
       type: link
+      has_issues: false
+      enable_traceability: false
   evidence-repo:
     service_id: github_integrated
     parameters:
-      repo_name: 'compiance-ci-evidence'
+      repo_name: 'compliance-ci-evidence'
       type: new
       has_issues: false
       enable_traceability: false
@@ -60,7 +62,7 @@ services:
     parameters:
       repo_name: 'compliance-ci-issues'
       type: new
-      has_issues: false
+      has_issues: true
       enable_traceability: false
   build:
     service_id: pipeline
