@@ -2,11 +2,12 @@
 inputs:
 - type: git
   branch: master
-  service: GIT_REPO
+  service: ${PIPELINE_REPO}
   path: .init_dct_pipeline
 triggers:
 - type: git
   name: Git PR Trigger
+  service: ${PIPELINE_REPO}
   branch: master
   events: '{"push":true,"pull_request":true,"pull_request_closed":false}'
   eventListener: EventListener
