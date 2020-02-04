@@ -45,7 +45,7 @@ services:
     parameters:
       repo_name: 'tekton-ci-compliance'
       repo_url: https://github.ibm.com/otc-compliance/tekton-ci-compliance
-      type: 'link'
+      type: link
   build:
     service_id: pipeline
     parameters:
