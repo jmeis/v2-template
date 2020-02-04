@@ -46,7 +46,7 @@ services:
     service_id: github_integrated
     parameters:
       repo_name: 'compliance-ci-toolchain'
-      repo_url: https://github.ibm.com/padraic-edwards/tekton-ci-compliance
+      repo_url: https://github.ibm.com/one-pipeline/compliance-ci-toolchain
       type: link
       has_issues: false
       enable_traceability: false
