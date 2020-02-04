@@ -53,14 +53,14 @@ services:
   evidence-repo:
     service_id: github_integrated
     parameters:
-      repo_name: 'compliance-ci-evidence'
+      repo_name: 'compliance-ci-evidence-{{timestamp}}'
       type: new
       has_issues: false
       enable_traceability: false
   issues-repo:
     service_id: github_integrated
     parameters:
-      repo_name: 'compliance-ci-issues'
+      repo_name: 'compliance-ci-issues-{{timestamp}}'
       type: new
       has_issues: true
       enable_traceability: false
