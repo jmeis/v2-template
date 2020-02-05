@@ -10,8 +10,10 @@ template:
   icon: secure-lock-kubernetes.svg
   required:
     - build
-    - repo
+    - app-repo
     - pipeline-repo
+    - evidence-repo
+    - issues-repo
   info:
     git url: >
       "[" + $env.repository + "]" +
@@ -21,14 +23,14 @@ template:
         "(" + $env.repository +
           "/tree/" + $env.branch + ")"
 toolchain:
-  name: 'advanced-kube-toolchain-{{timestamp}}'
+  name: 'compliance-ci-toolchain-{{timestamp}}'
   template:
     getting_started:
       $ref: "#/messages/template.gettingStarted"
 services:
-  repo:
+  app-repo:
     service_id: >
-      $env.source_provider ? $env.source_provider : 'hostedgit'
+      $env.source_provider ? $env.source_provider : 'github_integrated'
     parameters:
       repo_name: 'hello-containers-{{timestamp}}'
       repo_url: >
@@ -38,21 +40,37 @@ services:
         $env.type === 'fork' || $env.type === 'clone' ? 
           $env.app_repo : 'https://github.com/open-toolchain/hello-containers'
       type: $env.type || 'clone'
-      has_issues: true
+      has_issues: false
       enable_traceability: false
   pipeline-repo:
     service_id: github_integrated
     parameters:
-      repo_name: 'tekton-ci-compliance'
-      repo_url: https://github.ibm.com/otc-compliance/tekton-ci-compliance
+      repo_name: 'compliance-ci-toolchain'
+      repo_url: https://github.ibm.com/one-pipeline/compliance-ci-toolchain
       type: link
+      has_issues: false
+      enable_traceability: false
+  evidence-repo:
+    service_id: github_integrated
+    parameters:
+      repo_name: 'compliance-ci-evidence-{{timestamp}}'
+      type: new
+      has_issues: false
+      enable_traceability: false
+  issues-repo:
+    service_id: github_integrated
+    parameters:
+      repo_name: 'compliance-ci-issues-{{timestamp}}'
+      type: new
+      has_issues: true
+      enable_traceability: false
   build:
     service_id: pipeline
     parameters:
       services:
-        - repo
+        - app-repo
         - pipeline-repo
-      name: '{{services.repo.parameters.repo_name}}'
+      name: '{{services.app-repo.parameters.repo_name}}'
       ui-pipeline: true
       type: tekton
       configuration:
@@ -109,7 +127,7 @@ services:
 form:
   pipeline:
     parameters:
-      app-name: '{{services.repo.parameters.repo_name}}'
+      app-name: '{{services.app-repo.parameters.repo_name}}'
       prod-cluster-namespace: prod
       build-cluster-namespace: build
       vault_name: ''

@@ -10,10 +10,10 @@ triggers:
   service: ${PIPELINE_REPO}
   branch: master
   events: '{"push":true,"pull_request":true,"pull_request_closed":false}'
-  eventListener: EventListener
+  eventListener: listener
 - type: manual
   name: Manual Trigger
-  eventListener: EventListener
+  eventListener: listener
 properties:
 - name: vault_name
   value: ${VAULT_INSTANCE}
