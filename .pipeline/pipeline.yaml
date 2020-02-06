@@ -50,53 +50,26 @@ spec:
     description: VALIDATION_SIGNER
   - name: build_signer
     description: BUILD_SIGNER
+  - name: branch
+    description: the branch for the git repo
+  resources:
+  - name: app-image
+    type: image
   tasks:
-  - name: build
+  - name: pipeline-simple-clone-task
     taskRef:
-      name: build-task
+      name: clone-repo-task
     params:
     - name: task-pvc
       value: $(params.pipeline-pvc)
-    - name: registry-namespace
-      value: $(params.registry-namespace)
-    - name: build-cluster-namespace
-      value: $(params.build-cluster-namespace)
-    - name: build-cluster-name
-      value: $(params.build-cluster-name)
-    - name: repo
-      value: $(params.repo)
-    - name: prod-cluster-namespace
-      value: $(params.prod-cluster-namespace)
-    - name: build-region
-      value: $(params.build-region)
-    - name: vault_name
-      value: $(params.vault_name)
     - name: repository
       value: $(params.repository)
-    - name: prod-region
-      value: $(params.prod-region)
-    - name: app-name
-      value: $(params.app-name)
-    - name: revision
-      value: $(params.revision)
-    - name: prod-cluster-name
-      value: $(params.prod-cluster-name)
-    - name: registry-region
-      value: $(params.registry-region)
-    - name: api-key
-      value: $(params.api-key)
-    - name: prod-resource-group
-      value: $(params.prod-resource-group)
-    - name: build-resource-group
-      value: $(params.build-resource-group)
-    - name: validation_signer
-      value: $(params.validation_signer)
-    - name: build_signer
-      value: $(params.build_signer)
-  - name: containerize
+    - name: branch
+      value: $(params.branch)
+  - name: pre-build-test-task
     taskRef:
-      name: containerize-task
-    runAfter: [build]
+      name: pre-build-task
+    runAfter: [pipeline-simple-clone-task]
     params:
     - name: task-pvc
       value: $(params.pipeline-pvc)
@@ -139,7 +112,7 @@ spec:
   - name: validate
     taskRef:
       name: validate-task
-    runAfter: [containerize]
+    runAfter: [pre-build-test-task]
     params:
     - name: task-pvc
       value: $(params.pipeline-pvc)
@@ -179,89 +152,25 @@ spec:
       value: $(params.validation_signer)
     - name: build_signer
       value: $(params.build_signer)
-  - name: deploy-stage
-    taskRef:
-      name: deploy-stage-task
+  - name: pipeline-2-containerize-task
     runAfter: [validate]
-    params:
-    - name: task-pvc
-      value: $(params.pipeline-pvc)
-    - name: registry-namespace
-      value: $(params.registry-namespace)
-    - name: build-cluster-namespace
-      value: $(params.build-cluster-namespace)
-    - name: build-cluster-name
-      value: $(params.build-cluster-name)
-    - name: repo
-      value: $(params.repo)
-    - name: prod-cluster-namespace
-      value: $(params.prod-cluster-namespace)
-    - name: build-region
-      value: $(params.build-region)
-    - name: vault_name
-      value: $(params.vault_name)
-    - name: repository
-      value: $(params.repository)
-    - name: prod-region
-      value: $(params.prod-region)
-    - name: app-name
-      value: $(params.app-name)
-    - name: revision
-      value: $(params.revision)
-    - name: prod-cluster-name
-      value: $(params.prod-cluster-name)
-    - name: registry-region
-      value: $(params.registry-region)
-    - name: api-key
-      value: $(params.api-key)
-    - name: prod-resource-group
-      value: $(params.prod-resource-group)
-    - name: build-resource-group
-      value: $(params.build-resource-group)
-    - name: validation_signer
-      value: $(params.validation_signer)
-    - name: build_signer
-      value: $(params.build_signer)
-  - name: deploy-production
     taskRef:
-      name: deploy-production-task
-    runAfter: [deploy-stage]
+      name: containerize-task
     params:
     - name: task-pvc
       value: $(params.pipeline-pvc)
-    - name: registry-namespace
-      value: $(params.registry-namespace)
-    - name: build-cluster-namespace
-      value: $(params.build-cluster-namespace)
-    - name: build-cluster-name
-      value: $(params.build-cluster-name)
-    - name: repo
-      value: $(params.repo)
-    - name: prod-cluster-namespace
-      value: $(params.prod-cluster-namespace)
-    - name: build-region
-      value: $(params.build-region)
-    - name: vault_name
-      value: $(params.vault_name)
-    - name: repository
-      value: $(params.repository)
-    - name: prod-region
-      value: $(params.prod-region)
-    - name: app-name
-      value: $(params.app-name)
-    - name: revision
-      value: $(params.revision)
-    - name: prod-cluster-name
-      value: $(params.prod-cluster-name)
-    - name: registry-region
-      value: $(params.registry-region)
-    - name: api-key
-      value: $(params.api-key)
-    - name: prod-resource-group
-      value: $(params.prod-resource-group)
-    - name: build-resource-group
-      value: $(params.build-resource-group)
-    - name: validation_signer
-      value: $(params.validation_signer)
-    - name: build_signer
-      value: $(params.build_signer)
+    - name: additionalTags
+      value: '1.0.0-dev'
+    - name: additionalTagsScript
+      value: |
+        # Include the clone task output variables in the environment
+        source /artifacts/build.properties
+        # The script is providing tag(s) as output
+        # But logs can be written as error stderr
+        echo "Providing an image tag including git branch and commit" >&2
+        # Add a specific tag with branch and commit
+        echo "1.0.0-${GIT_BRANCH}-${GIT_COMMIT}"
+    resources:          
+      outputs:
+        - name: builtImage
+          resource: app-image
