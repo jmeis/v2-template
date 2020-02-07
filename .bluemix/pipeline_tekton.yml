@@ -72,3 +72,6 @@ properties:
 - name: prod-region
   value: ${PROD_REGION_ID}
   type: text
+- name: evidence_repo
+  value: ${EVIDENCE_REPO}
+  type: text

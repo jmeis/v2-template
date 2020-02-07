@@ -7,6 +7,8 @@ spec:
   params:
   - name: pipeline-pvc
     description: pipeline pvc name place holder
+  - name: pipeline-id
+    description: id of the pipeline run
   - name: registry-namespace
     description: The namespace in the container image registry. You can set it up
       with {bx cr namespace-add]. Learn more at https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started#getting-started.
@@ -52,6 +54,8 @@ spec:
     description: BUILD_SIGNER
   - name: branch
     description: the branch for the git repo
+  - name: evidence-locker
+    description: evidence locker for the app
   resources:
   - name: app-image
     type: image
@@ -73,6 +77,8 @@ spec:
     params:
     - name: task-pvc
       value: $(params.pipeline-pvc)
+    - name: pipeline-id
+      value: $(params.pipeline-id)
     - name: registry-namespace
       value: $(params.registry-namespace)
     - name: build-cluster-namespace
@@ -109,6 +115,8 @@ spec:
       value: $(params.validation_signer)
     - name: build_signer
       value: $(params.build_signer)
+    - name: evidence-locker
+      value: $(params.evidence-locker)
   - name: containerize
     runAfter: [pre-build-tests]
     taskRef:
