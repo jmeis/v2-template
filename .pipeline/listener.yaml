@@ -48,12 +48,38 @@ spec:
     description: VALIDATION_SIGNER
   - name: build_signer
     description: BUILD_SIGNER
+  - name: branch
+    description: the branch for the git repo
+  - name: imageUrl
+    description: The image url in your container registry
   resourcetemplates:
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: cd-secret
+    type: Opaque
+    stringData:
+      API_KEY: $(params.api-key)
+  - apiVersion: tekton.dev/v1alpha1
+    kind: PipelineResource
+    metadata:
+      name: image-to-build
+    spec:
+      type: image
+      params:
+      - name: url
+        value: $(params.imageUrl)
   - apiVersion: tekton.dev/v1alpha1
     kind: PipelineRun
     metadata:
       name: pipelinerun-$(uid)
     spec:
+      pipelineRef:
+          name: pipeline
+      resources:
+          - name: app-image
+            resourceRef:
+              name: image-to-build
       params:
       - name: pipeline-pvc
         value: pipelinerun-$(uid)-pvc
@@ -93,8 +119,8 @@ spec:
         value: $(params.validation_signer)
       - name: build_signer
         value: $(params.build_signer)
-      pipelineRef:
-        name: pipeline
+      - name: branch
+        value: $(params.branch)
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
@@ -102,10 +128,10 @@ metadata:
   name: binding
 spec:
   params:
-  - name: repository
-    value: https://github.com/open-toolchain/hello-containers
   - name: revision
     value: master
+  - name: branch
+    value: "master"
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: EventListener
