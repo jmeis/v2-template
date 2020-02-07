@@ -15,6 +15,9 @@ triggers:
   name: Manual Trigger
   eventListener: listener
 properties:
+- name: repository
+  value: ${REPO_URL}
+  type: text
 - name: vault_name
   value: ${VAULT_INSTANCE}
   type: text
