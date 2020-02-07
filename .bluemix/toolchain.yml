@@ -82,6 +82,7 @@ services:
           $text: pipeline_tekton.yml
         env:
           PIPELINE_REPO: pipeline-repo
+          REPO_URL: '{{form.pipeline.parameters.app-name}}'
           APP_NAME: '{{form.pipeline.parameters.app-name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
           REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
@@ -110,7 +111,7 @@ services:
           $text: init_dct_pipeline_tekton.yml
         env:
           PIPELINE_REPO: pipeline-repo
-          APP_NAME: '{{form.pipeline.parameters.app-name}}'
+          APP_NAME: '{{services.app-repo.parameters.repo__url}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
           REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
           API_KEY: '{{form.pipeline.parameters.api-key}}'
