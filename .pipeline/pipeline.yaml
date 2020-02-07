@@ -56,7 +56,7 @@ spec:
   - name: app-image
     type: image
   tasks:
-  - name: pipeline-simple-clone-task
+  - name: fetch-code
     taskRef:
       name: clone-repo-task
     params:
@@ -66,10 +66,10 @@ spec:
       value: $(params.repository)
     - name: branch
       value: $(params.branch)
-  - name: pre-build-test-task
+  - name: pre-build-tests
     taskRef:
       name: pre-build-task
-    runAfter: [pipeline-simple-clone-task]
+    runAfter: [fetch-code]
     params:
     - name: task-pvc
       value: $(params.pipeline-pvc)
@@ -109,51 +109,8 @@ spec:
       value: $(params.validation_signer)
     - name: build_signer
       value: $(params.build_signer)
-  - name: validate
-    taskRef:
-      name: validate-task
-    runAfter: [pre-build-test-task]
-    params:
-    - name: task-pvc
-      value: $(params.pipeline-pvc)
-    - name: registry-namespace
-      value: $(params.registry-namespace)
-    - name: build-cluster-namespace
-      value: $(params.build-cluster-namespace)
-    - name: build-cluster-name
-      value: $(params.build-cluster-name)
-    - name: repo
-      value: $(params.repo)
-    - name: prod-cluster-namespace
-      value: $(params.prod-cluster-namespace)
-    - name: build-region
-      value: $(params.build-region)
-    - name: vault_name
-      value: $(params.vault_name)
-    - name: repository
-      value: $(params.repository)
-    - name: prod-region
-      value: $(params.prod-region)
-    - name: app-name
-      value: $(params.app-name)
-    - name: revision
-      value: $(params.revision)
-    - name: prod-cluster-name
-      value: $(params.prod-cluster-name)
-    - name: registry-region
-      value: $(params.registry-region)
-    - name: api-key
-      value: $(params.api-key)
-    - name: prod-resource-group
-      value: $(params.prod-resource-group)
-    - name: build-resource-group
-      value: $(params.build-resource-group)
-    - name: validation_signer
-      value: $(params.validation_signer)
-    - name: build_signer
-      value: $(params.build_signer)
-  - name: pipeline-2-containerize-task
-    runAfter: [validate]
+  - name: containerize
+    runAfter: [pre-build-tests]
     taskRef:
       name: containerize-task
     params:
@@ -174,3 +131,89 @@ spec:
       outputs:
         - name: builtImage
           resource: app-image
+  - name: validate
+    taskRef:
+      name: validate-task
+    runAfter: [containerize]
+    params:
+    - name: task-pvc
+      value: $(params.pipeline-pvc)
+    - name: registry-namespace
+      value: $(params.registry-namespace)
+    - name: build-cluster-namespace
+      value: $(params.build-cluster-namespace)
+    - name: build-cluster-name
+      value: $(params.build-cluster-name)
+    - name: repo
+      value: $(params.repo)
+    - name: prod-cluster-namespace
+      value: $(params.prod-cluster-namespace)
+    - name: build-region
+      value: $(params.build-region)
+    - name: vault_name
+      value: $(params.vault_name)
+    - name: repository
+      value: $(params.repository)
+    - name: prod-region
+      value: $(params.prod-region)
+    - name: app-name
+      value: $(params.app-name)
+    - name: revision
+      value: $(params.revision)
+    - name: prod-cluster-name
+      value: $(params.prod-cluster-name)
+    - name: registry-region
+      value: $(params.registry-region)
+    - name: api-key
+      value: $(params.api-key)
+    - name: prod-resource-group
+      value: $(params.prod-resource-group)
+    - name: build-resource-group
+      value: $(params.build-resource-group)
+    - name: validation_signer
+      value: $(params.validation_signer)
+    - name: build_signer
+      value: $(params.build_signer)
+  - name: deploy-stage
+    taskRef:
+      name: deploy-stage-task
+    runAfter: [validate]
+    params:
+    - name: task-pvc
+      value: $(params.pipeline-pvc)
+    - name: registry-namespace
+      value: $(params.registry-namespace)
+    - name: build-cluster-namespace
+      value: $(params.build-cluster-namespace)
+    - name: build-cluster-name
+      value: $(params.build-cluster-name)
+    - name: repo
+      value: $(params.repo)
+    - name: prod-cluster-namespace
+      value: $(params.prod-cluster-namespace)
+    - name: build-region
+      value: $(params.build-region)
+    - name: vault_name
+      value: $(params.vault_name)
+    - name: repository
+      value: $(params.repository)
+    - name: prod-region
+      value: $(params.prod-region)
+    - name: app-name
+      value: $(params.app-name)
+    - name: revision
+      value: $(params.revision)
+    - name: prod-cluster-name
+      value: $(params.prod-cluster-name)
+    - name: registry-region
+      value: $(params.registry-region)
+    - name: api-key
+      value: $(params.api-key)
+    - name: prod-resource-group
+      value: $(params.prod-resource-group)
+    - name: build-resource-group
+      value: $(params.build-resource-group)
+    - name: validation_signer
+      value: $(params.validation_signer)
+    - name: build_signer
+      value: $(params.build_signer)
