@@ -82,6 +82,8 @@ services:
           $text: pipeline_tekton.yml
         env:
           PIPELINE_REPO: pipeline-repo
+          REPO_URL: 'https://github.ibm.com/{{form.app-repo.parameters.owner_id}}/{{form.app-repo.parameters.repo_name}}'
+          IMAGE_URL: 'us.icr.io/{{form.pipeline.parameters.prod-cluster-namespace}}/{{form.pipeline.parameters.app-name}}'
           APP_NAME: '{{form.pipeline.parameters.app-name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
           REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
