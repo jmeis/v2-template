@@ -82,7 +82,7 @@ services:
           $text: pipeline_tekton.yml
         env:
           PIPELINE_REPO: pipeline-repo
-          REPO_URL: '{{form.pipeline.parameters.app-name}}'
+          REPO_URL: '{{form.app-repo.parameters.repo_url}}'
           APP_NAME: '{{form.pipeline.parameters.app-name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
           REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
