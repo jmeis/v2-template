@@ -48,6 +48,17 @@ spec:
       - name: builtImage
         type: image
   steps:
+    - name: check-dockerfile
+      image: alpine/git
+      env:
+    - name: REPOSITORY
+      value: $(inputs.params.repository)
+    - name: REVISION
+      value: $(inputs.params.revision)
+      command: ["/bin/sh", "-c"]
+      args:
+      - set -e -o pipefail;
+        echo "Check Dockerfile placeholder";
     - name: check-registry
       image: ibmcom/pipeline-base-image
       workingDir: /steps
