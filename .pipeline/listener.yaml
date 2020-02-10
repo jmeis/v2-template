@@ -52,6 +52,8 @@ spec:
     description: the branch for the git repo
   - name: imageUrl
     description: The image url in your container registry
+  - name: evidence_repo
+    description: evidence locker for the app
   resourcetemplates:
   - apiVersion: v1
     kind: Secret
@@ -83,6 +85,8 @@ spec:
       params:
       - name: pipeline-pvc
         value: pipelinerun-$(uid)-pvc
+      - name: pipeline-id
+        value: $(uid)
       - name: registry-namespace
         value: $(params.registry-namespace)
       - name: build-cluster-namespace
@@ -121,6 +125,8 @@ spec:
         value: $(params.build_signer)
       - name: branch
         value: $(params.branch)
+      - name: evidence-locker
+        value: $(params.evidence_repo)
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding

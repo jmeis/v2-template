@@ -161,6 +161,7 @@ spec:
             echo "GIT_URL=$REPOSITORY" > $PROPERTIES_FILE
             echo "GIT_BRANCH=$BRANCH" >> $PROPERTIES_FILE
             echo "GIT_COMMIT=$GIT_COMMIT" >> $PROPERTIES_FILE
+            echo "GHE_TOKEN=$GIT_TOKEN" >> $PROPERTIES_FILE
             echo "$PROPERTIES_FILE content:"
             cat $PROPERTIES_FILE
           fi
