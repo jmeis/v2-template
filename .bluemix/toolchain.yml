@@ -87,10 +87,10 @@ services:
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
           REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
           API_KEY: '{{form.pipeline.parameters.api-key}}'
-          DEV_REGION_ID: '{{form.pipeline.parameters.prod-region}}'
-          DEV_RESOURCE_GROUP: '{{form.pipeline.parameters.prod-resource-group}}'
-          DEV_CLUSTER_NAME: '{{form.pipeline.parameters.prod-cluster-name}}'
-          DEV_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.prod-cluster-namespace}}'
+          DEV_REGION_ID: '{{form.pipeline.parameters.dev-region}}'
+          DEV_RESOURCE_GROUP: '{{form.pipeline.parameters.dev-resource-group}}'
+          DEV_CLUSTER_NAME: '{{form.pipeline.parameters.dev-cluster-name}}'
+          DEV_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.dev-cluster-namespace}}'
           VAULT_INSTANCE: '{{form.pipeline.parameters.vault_name}}'
           BUILD_SIGNER: '{{form.pipeline.parameters.build_signer}}'
           VALIDATION_SIGNER: '{{form.pipeline.parameters.validation_signer}}'
@@ -102,7 +102,7 @@ form:
   pipeline:
     parameters:
       app-name: '{{services.app-repo.parameters.repo_name}}'
-      prod-cluster-namespace: dev
+      dev-cluster-namespace: dev
       build-cluster-namespace: build
       vault_name: ''
       build_signer: 'devops-build'
