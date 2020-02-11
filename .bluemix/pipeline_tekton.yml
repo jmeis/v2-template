@@ -24,9 +24,6 @@ properties:
 - name: evidence_repo
   value: ${EVIDENCE_REPO}
   type: text
-- name: repository
-  value: ${REPO_URL}
-  type: text
 - name: revision
   value: master
   type: text
