@@ -51,7 +51,7 @@
                 "validate": false
             }
         },
-        "prod-region": {
+        "dev-region": {
             "description": {
                 "$ref": "#/messages/region"
             },
@@ -64,7 +64,7 @@
                 ]
             }
         },
-        "prod-resource-group": {
+        "dev-resource-group": {
             "description": {
                 "$ref": "#/messages/deploy.rg"
             },
@@ -76,7 +76,7 @@
                 ]
             }
         },
-        "prod-cluster-name": {
+        "dev-cluster-name": {
             "description": {
                 "$ref": "#/messages/deploy.cluster"
             },
@@ -85,12 +85,12 @@
             "validator": {
                 "v-type": "k8s-cluster-name",
                 "params": [
-                    "prod-resource-group",
-                    "prod-region"
+                    "dev-resource-group",
+                    "dev-region"
                 ]
             }
         },
-        "prod-cluster-namespace": {
+        "dev-cluster-namespace": {
             "description": {
                 "$ref": "#/messages/deploy.clusterNs"
             },
@@ -110,10 +110,10 @@
         "api-key",
         "registry-region",
         "registry-namespace",
-        "prod-region",
-	"prod-resource-group",
-	"prod-cluster-name",
-	"prod-cluster-namespace",
+        "dev-region",
+	"dev-resource-group",
+	"dev-cluster-name",
+	"dev-cluster-namespace",
         "build_signer",
         "validation_signer"
     ],
@@ -235,7 +235,7 @@
                 },
                 {
                     "type": "select",
-                    "key": "prod-region"
+                    "key": "dev-region"
                 },
                 {
                     "type": "label",
@@ -243,7 +243,7 @@
                 },
                 {
                     "type": "select",
-                    "key": "prod-resource-group",
+                    "key": "dev-resource-group",
                     "readonly": false
                 },
                 {
@@ -252,7 +252,7 @@
                 },
                 {
                     "type": "select",
-                    "key": "prod-cluster-name",
+                    "key": "dev-cluster-name",
                     "readonly": false
                 },
                 {
@@ -261,7 +261,7 @@
                 },
                 {
                     "type": "text",
-                    "key": "prod-cluster-namespace",
+                    "key": "dev-cluster-namespace",
                     "readonly": false
                 }
             ]
