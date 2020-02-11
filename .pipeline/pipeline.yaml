@@ -134,7 +134,7 @@ spec:
         # But logs can be written as error stderr
         echo "Providing an image tag including git branch and commit" >&2
         # Add a specific tag with branch and commit
-        echo "1.0.0-${GIT_BRANCH}-${GIT_COMMIT}"
+        echo "${BUILD_TIMESTAMP}-${GIT_BRANCH}-${GIT_COMMIT}"
     resources:          
       outputs:
         - name: builtImage
