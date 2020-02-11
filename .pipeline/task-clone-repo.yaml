@@ -105,8 +105,6 @@ spec:
     - name: clone-repo
       image: alpine/git
       env:
-        - name: REPOSITORY
-          value: $(inputs.params.repository)
         - name: BRANCH
           value: $(inputs.params.branch)
         - name: REVISION
@@ -124,9 +122,9 @@ spec:
           REVISION=$(echo $REVISION)
           ############################
           source /steps/next-step-env.properties
-          echo "Cloning $REPOSITORY"
+          echo "Cloning $GIT_REPOSITORY"
           # Add the proper creds to the git repository
-          GIT_URL=$(echo "$REPOSITORY" | sed -e "s/:\/\//:\/\/$GIT_AUTH_USER:$GIT_TOKEN@/g")
+          GIT_URL=$(echo "$GIT_REPOSITORY" | sed -e "s/:\/\//:\/\/$GIT_AUTH_USER:$GIT_TOKEN@/g")
           cd /artifacts
           if [ "$REVISION" ]; then
             # check if the branch exists (that may not be the case in case of a pipeline-run re-run)
@@ -137,7 +135,7 @@ spec:
             elif git ls-remote --heads --exit-code $GIT_URL $BRANCH > /dev/null 2>&1; then
               git clone -q -b $BRANCH $GIT_URL $DIRECTORY_NAME
             else
-              echo "branch $BRANCH does not exists in $REPOSITORY"
+              echo "branch $BRANCH does not exists in $GIT_REPOSITORY"
               git clone -q -n $GIT_URL $DIRECTORY_NAME
             fi
           else
@@ -158,7 +156,7 @@ spec:
           cd $current_dir
           echo "git clone of $GIT_REPOSITORY (branch $BRANCH - commit $GIT_COMMIT) done to directory $DIRECTORY_NAME"
           if [ "$PROPERTIES_FILE" ]; then
-            echo "GIT_URL=$REPOSITORY" > $PROPERTIES_FILE
+            echo "GIT_URL=$GIT_REPOSITORY" > $PROPERTIES_FILE
             echo "GIT_BRANCH=$BRANCH" >> $PROPERTIES_FILE
             echo "GIT_COMMIT=$GIT_COMMIT" >> $PROPERTIES_FILE
             echo "GHE_TOKEN=$GIT_TOKEN" >> $PROPERTIES_FILE
