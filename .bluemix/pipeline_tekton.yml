@@ -15,6 +15,9 @@ triggers:
   name: Manual Trigger
   eventListener: listener
 properties:
+- name: api-key
+  value: ${API_KEY}
+  type: SECURE
 - name: imageUrl
   value: ${IMAGE_URL}
   type: text
@@ -24,8 +27,8 @@ properties:
 - name: repository
   value: ${REPO_URL}
   type: text
-- name: vault_name
-  value: ${VAULT_INSTANCE}
+- name: revision
+  value: master
   type: text
 - name: registry-region
   value: ${REGISTRY_REGION_ID}
@@ -36,26 +39,17 @@ properties:
 - name: registry-namespace
   value: ${REGISTRY_NAMESPACE}
   type: text
-- name: revision
-  value: master
-  type: text
 - name: dev-cluster-namespace
   value: ${DEV_CLUSTER_NAMESPACE}
   type: text
 - name: dev-region
   value: ${DEV_REGION_ID}
   type: text
-- name: api-key
-  value: ${API_KEY}
-  type: SECURE
 - name: dev-cluster-name
   value: ${DEV_CLUSTER_NAME}
   type: text
 - name: dev-resource-group
   value: ${DEV_RESOURCE_GROUP}
-  type: text
-- name: dev-cluster-name
-  value: ${BUILD_CLUSTER_NAME}
   type: text
 - name: build_signer
   value: ${BUILD_SIGNER}
