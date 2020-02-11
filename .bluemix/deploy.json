@@ -111,9 +111,9 @@
         "registry-region",
         "registry-namespace",
         "prod-region",
-	    "prod-resource-group",
-	    "prod-cluster-name",
-	    "prod-cluster-namespace",
+	"prod-resource-group",
+	"prod-cluster-name",
+	"prod-cluster-namespace",
         "vault_name",
         "build_signer",
         "validation_signer"
@@ -264,36 +264,6 @@
                     "type": "text",
                     "key": "prod-cluster-namespace",
                     "readonly": false
-                },
-                {
-                    "type": "label",
-                    "title": ""
-                },
-                {
-                    "type": "label",
-                    "title": {
-                        "$ref": "#/messages/deploy.buildrg"
-                    }
-                },
-                {
-                    "type": "label",
-                    "title": ""
-                },
-                {
-                    "type": "label",
-                    "title": {
-                        "$ref": "#/messages/deploy.buildcluster"
-                    }
-                },
-                {
-                    "type": "label",
-                    "title": ""
-                },
-                {
-                    "type": "label",
-                    "title": {
-                        "$ref": "#/messages/deploy.buildclusterNs"
-                    }
                 }
             ]
         },
