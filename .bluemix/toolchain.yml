@@ -47,7 +47,7 @@ services:
     service_id: github_integrated
     parameters:
       repo_name: 'compliance-ci-toolchain-{{timestamp}}'
-      source_repo_url: https://github.ibm.com/one-pipeline/compliance-ci-toolchain
+      source_repo_url: https://github.ibm.com/padraic-edwards/compliance-ci-toolchain
       type: clone
       has_issues: false
       enable_traceability: false
