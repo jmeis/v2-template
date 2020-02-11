@@ -1,4 +1,3 @@
----
 apiVersion: tekton.dev/v1alpha1
 kind: Pipeline
 metadata:
@@ -59,169 +58,212 @@ spec:
   resources:
   - name: app-image
     type: image
+  - name: target-cluster
+    type: cluster
   tasks:
-  - name: fetch-code
-    taskRef:
-      name: clone-repo-task
-    params:
-    - name: task-pvc
-      value: $(params.pipeline-pvc)
-    - name: repository
-      value: $(params.repository)
-    - name: branch
-      value: $(params.branch)
-  - name: pre-build-tests
-    taskRef:
-      name: pre-build-task
-    runAfter: [fetch-code]
-    params:
-    - name: task-pvc
-      value: $(params.pipeline-pvc)
-    - name: pipeline-id
-      value: $(params.pipeline-id)
-    - name: registry-namespace
-      value: $(params.registry-namespace)
-    - name: build-cluster-namespace
-      value: $(params.build-cluster-namespace)
-    - name: build-cluster-name
-      value: $(params.build-cluster-name)
-    - name: repo
-      value: $(params.repo)
-    - name: prod-cluster-namespace
-      value: $(params.prod-cluster-namespace)
-    - name: build-region
-      value: $(params.build-region)
-    - name: vault_name
-      value: $(params.vault_name)
-    - name: repository
-      value: $(params.repository)
-    - name: prod-region
-      value: $(params.prod-region)
-    - name: app-name
-      value: $(params.app-name)
-    - name: revision
-      value: $(params.revision)
-    - name: prod-cluster-name
-      value: $(params.prod-cluster-name)
-    - name: registry-region
-      value: $(params.registry-region)
-    - name: api-key
-      value: $(params.api-key)
-    - name: prod-resource-group
-      value: $(params.prod-resource-group)
-    - name: build-resource-group
-      value: $(params.build-resource-group)
-    - name: validation_signer
-      value: $(params.validation_signer)
-    - name: build_signer
-      value: $(params.build_signer)
-    - name: evidence-locker
-      value: $(params.evidence-locker)
-  - name: containerize
-    runAfter: [pre-build-tests]
-    taskRef:
-      name: containerize-task
-    params:
-    - name: task-pvc
-      value: $(params.pipeline-pvc)
-    - name: additionalTags
-      value: '1.0.0-dev'
-    - name: additionalTagsScript
-      value: |
-        # Include the clone task output variables in the environment
-        source /artifacts/build.properties
-        # The script is providing tag(s) as output
-        # But logs can be written as error stderr
-        echo "Providing an image tag including git branch and commit" >&2
-        # Add a specific tag with branch and commit
-        echo "${BUILD_TIMESTAMP}-${GIT_BRANCH}-${GIT_COMMIT}"
-    resources:          
-      outputs:
-        - name: builtImage
-          resource: app-image
-  - name: validate
-    taskRef:
-      name: validate-task
-    runAfter: [containerize]
-    params:
-    - name: task-pvc
-      value: $(params.pipeline-pvc)
-    - name: registry-namespace
-      value: $(params.registry-namespace)
-    - name: build-cluster-namespace
-      value: $(params.build-cluster-namespace)
-    - name: build-cluster-name
-      value: $(params.build-cluster-name)
-    - name: repo
-      value: $(params.repo)
-    - name: prod-cluster-namespace
-      value: $(params.prod-cluster-namespace)
-    - name: build-region
-      value: $(params.build-region)
-    - name: vault_name
-      value: $(params.vault_name)
-    - name: repository
-      value: $(params.repository)
-    - name: prod-region
-      value: $(params.prod-region)
-    - name: app-name
-      value: $(params.app-name)
-    - name: revision
-      value: $(params.revision)
-    - name: prod-cluster-name
-      value: $(params.prod-cluster-name)
-    - name: registry-region
-      value: $(params.registry-region)
-    - name: api-key
-      value: $(params.api-key)
-    - name: prod-resource-group
-      value: $(params.prod-resource-group)
-    - name: build-resource-group
-      value: $(params.build-resource-group)
-    - name: validation_signer
-      value: $(params.validation_signer)
-    - name: build_signer
-      value: $(params.build_signer)
-  - name: deploy-stage
-    taskRef:
-      name: deploy-stage-task
-    runAfter: [validate]
-    params:
-    - name: task-pvc
-      value: $(params.pipeline-pvc)
-    - name: registry-namespace
-      value: $(params.registry-namespace)
-    - name: build-cluster-namespace
-      value: $(params.build-cluster-namespace)
-    - name: build-cluster-name
-      value: $(params.build-cluster-name)
-    - name: repo
-      value: $(params.repo)
-    - name: prod-cluster-namespace
-      value: $(params.prod-cluster-namespace)
-    - name: build-region
-      value: $(params.build-region)
-    - name: vault_name
-      value: $(params.vault_name)
-    - name: repository
-      value: $(params.repository)
-    - name: prod-region
-      value: $(params.prod-region)
-    - name: app-name
-      value: $(params.app-name)
-    - name: revision
-      value: $(params.revision)
-    - name: prod-cluster-name
-      value: $(params.prod-cluster-name)
-    - name: registry-region
-      value: $(params.registry-region)
-    - name: api-key
-      value: $(params.api-key)
-    - name: prod-resource-group
-      value: $(params.prod-resource-group)
-    - name: build-resource-group
-      value: $(params.build-resource-group)
-    - name: validation_signer
-      value: $(params.validation_signer)
-    - name: build_signer
-      value: $(params.build_signer)
+    - name: fetch-code
+      taskRef:
+        name: clone-repo-task
+      params:
+      - name: task-pvc
+        value: $(params.pipeline-pvc)
+      - name: repository
+        value: $(params.repository)
+      - name: branch
+        value: $(params.branch)
+    - name: pre-build-tests
+      taskRef:
+        name: pre-build-task
+      runAfter: [fetch-code]
+      params:
+      - name: task-pvc
+        value: $(params.pipeline-pvc)
+      - name: pipeline-id
+        value: $(params.pipeline-id)
+      - name: registry-namespace
+        value: $(params.registry-namespace)
+      - name: build-cluster-namespace
+        value: $(params.build-cluster-namespace)
+      - name: build-cluster-name
+        value: $(params.build-cluster-name)
+      - name: repo
+        value: $(params.repo)
+      - name: prod-cluster-namespace
+        value: $(params.prod-cluster-namespace)
+      - name: build-region
+        value: $(params.build-region)
+      - name: vault_name
+        value: $(params.vault_name)
+      - name: repository
+        value: $(params.repository)
+      - name: prod-region
+        value: $(params.prod-region)
+      - name: app-name
+        value: $(params.app-name)
+      - name: revision
+        value: $(params.revision)
+      - name: prod-cluster-name
+        value: $(params.prod-cluster-name)
+      - name: registry-region
+        value: $(params.registry-region)
+      - name: api-key
+        value: $(params.api-key)
+      - name: prod-resource-group
+        value: $(params.prod-resource-group)
+      - name: build-resource-group
+        value: $(params.build-resource-group)
+      - name: validation_signer
+        value: $(params.validation_signer)
+      - name: build_signer
+        value: $(params.build_signer)
+      - name: evidence-locker
+        value: $(params.evidence-locker)
+    - name: containerize
+      runAfter: [pre-build-tests]
+      taskRef:
+        name: containerize-task
+      params:
+      - name: task-pvc
+        value: $(params.pipeline-pvc)
+      - name: additionalTags
+        value: '1.0.0-dev'
+      - name: additionalTagsScript
+        value: |
+          # Include the clone task output variables in the environment
+          source /artifacts/build.properties
+          # The script is providing tag(s) as output
+          # But logs can be written as error stderr
+          echo "Providing an image tag including git branch and commit" >&2
+          # Add a specific tag with branch and commit
+          echo "${BUILD_TIMESTAMP}-${GIT_BRANCH}-${GIT_COMMIT}"
+      resources:          
+        outputs:
+          - name: builtImage
+            resource: app-image
+    - name: validate
+      taskRef:
+        name: validate-task
+      runAfter: [containerize]
+      params:
+      - name: task-pvc
+        value: $(params.pipeline-pvc)
+      - name: registry-namespace
+        value: $(params.registry-namespace)
+      - name: build-cluster-namespace
+        value: $(params.build-cluster-namespace)
+      - name: build-cluster-name
+        value: $(params.build-cluster-name)
+      - name: repo
+        value: $(params.repo)
+      - name: prod-cluster-namespace
+        value: $(params.prod-cluster-namespace)
+      - name: build-region
+        value: $(params.build-region)
+      - name: vault_name
+        value: $(params.vault_name)
+      - name: repository
+        value: $(params.repository)
+      - name: prod-region
+        value: $(params.prod-region)
+      - name: app-name
+        value: $(params.app-name)
+      - name: revision
+        value: $(params.revision)
+      - name: prod-cluster-name
+        value: $(params.prod-cluster-name)
+      - name: registry-region
+        value: $(params.registry-region)
+      - name: api-key
+        value: $(params.api-key)
+      - name: prod-resource-group
+        value: $(params.prod-resource-group)
+      - name: build-resource-group
+        value: $(params.build-resource-group)
+      - name: validation_signer
+        value: $(params.validation_signer)
+      - name: build_signer
+        value: $(params.build_signer)
+    - name: fetch-iks-cluster-config
+      runAfter: [containerize]
+      taskRef:
+        name: fetch-iks-cluster-config
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: clusterPipelineResourcesDirectoryFallback
+          value: .tekton-clusters
+      resources:          
+        inputs:
+          - name: cluster
+            resource: target-cluster
+        outputs:
+          - name: cluster
+            resource: target-cluster
+    - name: pipeline-1-kubectl-task
+      runAfter: [fetch-iks-cluster-config]
+      taskRef:
+        name: kubernetes-contextual-execution
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: task-pvc-mountpath
+          value: /pipelinerun
+        - name: clusterPipelineResourcesDirectory
+          value: /pipelinerun/.tekton-clusters
+        - name: script
+          value: |
+            echo "** Here is the kubectl version:"
+            kubectl version
+            echo "** Here is the kubectl cluster-info:"
+            kubectl cluster-info
+            echo "** Here are the kubectl namespaces:"
+            kubectl get namespaces
+      resources:          
+        inputs:
+          - name: cluster
+            resource: target-cluster
+            from:
+              - fetch-iks-cluster-config
+    - name: deploy-dev
+      taskRef:
+        name: deploy-dev-task
+      runAfter: [pipeline-1-kubectl-task]
+      params:
+      - name: task-pvc
+        value: $(params.pipeline-pvc)
+      - name: registry-namespace
+        value: $(params.registry-namespace)
+      - name: build-cluster-namespace
+        value: $(params.build-cluster-namespace)
+      - name: build-cluster-name
+        value: $(params.build-cluster-name)
+      - name: repo
+        value: $(params.repo)
+      - name: prod-cluster-namespace
+        value: $(params.prod-cluster-namespace)
+      - name: build-region
+        value: $(params.build-region)
+      - name: vault_name
+        value: $(params.vault_name)
+      - name: repository
+        value: $(params.repository)
+      - name: prod-region
+        value: $(params.prod-region)
+      - name: app-name
+        value: $(params.app-name)
+      - name: revision
+        value: $(params.revision)
+      - name: prod-cluster-name
+        value: $(params.prod-cluster-name)
+      - name: registry-region
+        value: $(params.registry-region)
+      - name: api-key
+        value: $(params.api-key)
+      - name: prod-resource-group
+        value: $(params.prod-resource-group)
+      - name: build-resource-group
+        value: $(params.build-resource-group)
+      - name: validation_signer
+        value: $(params.validation_signer)
+      - name: build_signer
+        value: $(params.build_signer)
