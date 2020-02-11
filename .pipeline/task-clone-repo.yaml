@@ -53,7 +53,6 @@ spec:
           TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
           REPOSITORY=$(jq -r '.services[]  | select(.toolchain_binding.name == "app-repo") | .parameters.repo_url' /cd-config/toolchain.json)
 
-          echo "print $APP_REPO_URL"
           ##########################################################################
           # Setting HOME explicitly to have ibmcloud plugins available
           # doing the export rather than env definition is a workaround
