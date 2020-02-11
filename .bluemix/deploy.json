@@ -114,7 +114,6 @@
 	"prod-resource-group",
 	"prod-cluster-name",
 	"prod-cluster-namespace",
-        "vault_name",
         "build_signer",
         "validation_signer"
     ],
