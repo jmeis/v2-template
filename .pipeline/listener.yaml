@@ -64,7 +64,7 @@ spec:
         name: cd-secret
       type: Opaque
       stringData:
-        API_KEY: $(params.apikey)
+        API_KEY: $(params.api-key)
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineResource
       metadata:
