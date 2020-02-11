@@ -45,7 +45,7 @@ properties:
 - name: dev-region
   value: ${DEV_REGION_ID}
   type: text
-- name: dev-cluster-name
+- name: clusterName
   value: ${DEV_CLUSTER_NAME}
   type: text
 - name: dev-resource-group
