@@ -163,9 +163,6 @@ spec:
             echo "$PROPERTIES_FILE content:"
             cat $PROPERTIES_FILE
           fi
-          ls
-          cd cd /artifacts
-          ls
       volumeMounts:
         - mountPath: /artifacts
           name: task-volume
