@@ -135,7 +135,7 @@ form:
   pipeline:
     parameters:
       app-name: '{{services.app-repo.parameters.repo_name}}'
-      prod-cluster-namespace: prod
+      prod-cluster-namespace: dev
       build-cluster-namespace: build
       vault_name: ''
       build_signer: 'devops-build'
