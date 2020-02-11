@@ -45,9 +45,6 @@ spec:
   steps:
     - name: fetch-git-token
       image: ibmcom/pipeline-base-image
-      env:
-        - name: REPOSITORY
-          value: $(inputs.params.repository)
       command: ["/bin/bash", "-c"]
       args:
         - |
