@@ -103,59 +103,6 @@
             },
             "type": "string",
             "pattern": "\\S"
-        },
-        "build-region": {
-            "description": {
-                "$ref": "#/messages/buildregion"
-            },
-            "type": "string",
-            "disabled": false,
-            "validator": {
-                "v-type": "k8s-region",
-                "params": [
-                    "api-key"
-                ]
-            }
-        },
-        "build-resource-group": {
-            "description": {
-                "$ref": "#/messages/deploy.buildrg"
-            },
-            "type": "string",
-            "validator": {
-                "v-type": "resource-group",
-                "params": [
-                    "api-key"
-                ]
-            }
-        },
-        "build-cluster-name": {
-            "description": {
-                "$ref": "#/messages/deploy.buildcluster"
-            },
-            "type": "string",
-            "pattern": "\\S",
-            "validator": {
-                "v-type": "k8s-cluster-name",
-                "params": [
-                    "build-resource-group",
-                    "build-region"
-                ]
-            }
-        },
-        "build-cluster-namespace": {
-            "description": {
-                "$ref": "#/messages/deploy.clusterNs"
-            },
-            "type": "string",
-            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
-        },
-        "vault_name": {
-            "description": {
-                "$ref": "#/messages/deploy.keyDetails"
-            },
-            "type": "string",
-            "pattern": "\\S"
         }
     },
     "required": [
@@ -163,10 +110,10 @@
         "api-key",
         "registry-region",
         "registry-namespace",
-        "build-region",
-        "build-resource-group",
-        "build-cluster-name",
-        "build-cluster-namespace",
+        "prod-region",
+	    "prod-resource-group",
+	    "prod-cluster-name",
+	    "prod-cluster-namespace",
         "vault_name",
         "build_signer",
         "validation_signer"
@@ -353,37 +300,6 @@
                     "title": {
                         "$ref": "#/messages/deploy.buildclusterNs"
                     }
-                },
-                {
-                    "type": "select",
-                    "key": "build-region"
-                },
-                {
-                    "type": "label",
-                    "title": ""
-                },
-                {
-                    "type": "select",
-                    "key": "build-resource-group",
-                    "readonly": false
-                },
-                {
-                    "type": "label",
-                    "title": ""
-                },
-                {
-                    "type": "select",
-                    "key": "build-cluster-name",
-                    "readonly": false
-                },
-                {
-                    "type": "label",
-                    "title": ""
-                },
-                {
-                    "type": "text",
-                    "key": "build-cluster-namespace",
-                    "readonly": false
                 }
             ]
         },
