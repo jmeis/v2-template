@@ -96,34 +96,6 @@ services:
           VALIDATION_SIGNER: '{{form.pipeline.parameters.validation_signer}}'
           EVIDENCE_REPO: '{{form.evidence-repo.parameters.owner_id}}/{{form.evidence-repo.parameters.repo_name}}'
         execute: false
-  init_dct:
-    service_id: pipeline
-    services:
-      - pipeline-repo
-    parameters:
-      name: 'dct init {{form.pipeline.parameters.registry-namespace}} {{form.pipeline.parameters.app-name}}'
-      type: tekton
-      configuration:
-        content:
-          $text: init_dct_pipeline_tekton.yml
-        env:
-          PIPELINE_REPO: pipeline-repo
-          APP_NAME: '{{form.pipeline.parameters.app-name}}'
-          REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
-          REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
-          API_KEY: '{{form.pipeline.parameters.api-key}}'
-          BUILD_REGION_ID: '{{form.pipeline.parameters.prod-region}}'
-          BUILD_RESOURCE_GROUP: '{{form.pipeline.parameters.prod-resource-group}}'
-          BUILD_CLUSTER_NAME: '{{form.pipeline.parameters.prod-cluster-name}}'
-          BUILD_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.build-cluster-namespace}}'
-          VAULT_INSTANCE: '{{form.pipeline.parameters.vault_name}}'
-          BUILD_SIGNER: '{{form.pipeline.parameters.build_signer}}'
-          VALIDATION_SIGNER: '{{form.pipeline.parameters.validation_signer}}'
-          PROD_REGION_ID: '{{form.pipeline.parameters.prod-region}}'
-          PROD_RESOURCE_GROUP: '{{form.pipeline.parameters.prod-resource-group}}'
-          PROD_CLUSTER_NAME: '{{form.pipeline.parameters.prod-cluster-name}}'
-          PROD_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.prod-cluster-namespace}}'
-        execute: false
   webide:
     service_id: orion
 form:
