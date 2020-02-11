@@ -140,10 +140,30 @@ spec:
         outputs:
           - name: builtImage
             resource: app-image
+    - name: vulnerability-advisor
+      taskRef:
+        name: vulnerability-advisor-task
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: scanReportFile
+          value: 'app-image-va-report.json'
+        # - name: maxIteration
+        #   value: '5'
+        # - name: sleepTime
+        #   value: '3'
+        # - name: failOnScannedIssues          
+        #   value: 'false'
+      resources:          
+        inputs:
+          - name: image
+            resource: app-image
+            from:
+              - containerize
     - name: validate
       taskRef:
         name: validate-task
-      runAfter: [containerize]
+      runAfter: [vulnerability-advisor]
       params:
       - name: task-pvc
         value: $(params.pipeline-pvc)
@@ -184,7 +204,7 @@ spec:
       - name: build_signer
         value: $(params.build_signer)
     - name: fetch-iks-cluster-config
-      runAfter: [containerize]
+      runAfter: [validate]
       taskRef:
         name: fetch-iks-cluster-config
       params:
