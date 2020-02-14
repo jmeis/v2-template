@@ -97,7 +97,10 @@ spec:
     args:
     - |
       #!/bin/bash
-
+      # GIT_URL=$(echo "https://github.ibm.com/padraic-edwards/${app-name}.git" | sed -e "s/:\/\//:\/\/padraic-edwards:$GHE_TOKEN@/g")
+      # echo $GIT_URL
+      # git clone $GIT_URL .
+ 
       set -x
       echo "RUNNING"
       TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
@@ -105,14 +108,27 @@ spec:
       TOKEN=$(ibmcloud iam oauth-tokens --output JSON | jq -r '.iam_token')
       source /artifacts/build.properties
       PIPELINE_RUN_ID=$(inputs.params.pipeline-id)
-
+      
+      set -e -o pipefail
+      export HOME=/root && source ~/.nvm/nvm.sh
+      echo "Cloning ${app-name}"
+      echo "Cloning 1 ${REPO}"
+      echo "Cloning ${GIT_URL}"
+      git clone ${GIT_URL}
+      cd ${REPO}
+      npm install --save-dev start-server-and-test
+      npm install
+      npm run ci
+      
+      cat report
       function collect-evidence () {
         set -e
         local evidence_name=$1
         local evidence_status=$2
         local evidence_details=$3
+        jsonContent=$(jq -Rs '.' $evidence_details)
         local evidence_path="raw/ci/${PIPELINE_RUN_ID}/${evidence_name}.json"
-        local content="{ \"commit_sha\": \"$GIT_COMMIT\", \"status\": \"$evidence_status\", \"details\": \"$evidence_details\", \"job_id\": \"$PIPELINE_RUN_ID\" }"
+        local content="{ \"commit_sha\": \"$GIT_COMMIT\", \"status\": \"$evidence_status\", \"details\": \"$jsonContent\", \"job_id\": \"$PIPELINE_RUN_ID\" }"
         echo $content $evidence_path
         local encoded_content=$(echo "$content" | base64 -w 0)
 
@@ -160,12 +176,14 @@ spec:
           -X PUT
       }
 
-      collect-evidence unit-tests passed http://example.com
+      collect-evidence unit-tests passed report
     volumeMounts:
     - mountPath: /artifacts
       name: task-volume
     - mountPath: /cd-config
       name: cd-config-volume
+    - mountPath: /steps
+      name: steps-volume
   - name: dependency-analysis
     image: ibmcom/pipeline-base-image:latest
     env:
@@ -182,6 +200,7 @@ spec:
   - name: task-volume
     persistentVolumeClaim:
       claimName: $(inputs.params.task-pvc)
+  - name: steps-volume
   - name: cd-config-volume
     configMap:
       name: toolchain

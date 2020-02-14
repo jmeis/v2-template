@@ -52,6 +52,7 @@ spec:
           TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /cd-config/toolchain.json)
           TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
           REPOSITORY=$(jq -r '.services[]  | select(.toolchain_binding.name == "app-repo") | .parameters.repo_url' /cd-config/toolchain.json)
+          REPO_NAME=$(jq -r '.services[]  | select(.toolchain_binding.name == "app-repo") | .parameters.repo_name' /cd-config/toolchain.json)
 
           ##########################################################################
           # Setting HOME explicitly to have ibmcloud plugins available
@@ -94,6 +95,8 @@ spec:
           echo "GIT_REPOSITORY=$REPOSITORY" > /steps/next-step-env.properties
           echo "GIT_AUTH_USER=$GIT_AUTH_USER" >> /steps/next-step-env.properties
           echo "GIT_TOKEN=$GIT_TOKEN" >> /steps/next-step-env.properties
+          echo "REPO_NAME=$REPO_NAME" >> /steps/next-step-env.properties
+          
       volumeMounts:
         - mountPath: /cd-config
           name: cd-config-volume
@@ -124,6 +127,8 @@ spec:
           echo "Cloning $GIT_REPOSITORY"
           # Add the proper creds to the git repository
           GIT_URL=$(echo "$GIT_REPOSITORY" | sed -e "s/:\/\//:\/\/$GIT_AUTH_USER:$GIT_TOKEN@/g")
+          echo ${GIT_URL}
+          echo "Real URL"
           cd /artifacts
           if [ "$REVISION" ]; then
             # check if the branch exists (that may not be the case in case of a pipeline-run re-run)
@@ -155,10 +160,11 @@ spec:
           cd $current_dir
           echo "git clone of $GIT_REPOSITORY (branch $BRANCH - commit $GIT_COMMIT) done to directory $DIRECTORY_NAME"
           if [ "$PROPERTIES_FILE" ]; then
-            echo "GIT_URL=$GIT_REPOSITORY" > $PROPERTIES_FILE
+            echo "GIT_URL=$GIT_URL" > $PROPERTIES_FILE
             echo "GIT_BRANCH=$BRANCH" >> $PROPERTIES_FILE
             echo "GIT_COMMIT=$GIT_COMMIT" >> $PROPERTIES_FILE
             echo "GHE_TOKEN=$GIT_TOKEN" >> $PROPERTIES_FILE
+            echo "REPO=$REPO_NAME" >> $PROPERTIES_FILE
             echo "$PROPERTIES_FILE content:"
             cat $PROPERTIES_FILE
           fi
