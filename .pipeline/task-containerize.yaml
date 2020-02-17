@@ -1,3 +1,4 @@
+---
 apiVersion: tekton.dev/v1alpha1
 kind: Task
 metadata:
@@ -49,21 +50,19 @@ spec:
         type: image
   steps:
     - name: check-dockerfile
-      image: alpine/git
+      image: ibmcom/pipeline-base-image
       env:
       - name: DOCKER_FILE
         value: 'Dockerfile'
       - name: DOCKER_ROOT
         value: '/artifacts/'
-      command: ["/bin/sh", "-c"]
+      - name: HOME
+        value: "/root"
+      command: ["/bin/bash", "-c"]
       args:
         - |
-          apk add --update npm
           set -e -o pipefail;
-          npm --version
-          echo "Check Dockerfile placeholder"
-          ls /artifacts
-          ls
+          export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
           # Input env variables (can be received via a pipeline environment properties.file.
           echo "DOCKER_ROOT=${DOCKER_ROOT}"
           echo "DOCKER_FILE=${DOCKER_FILE}"
@@ -273,6 +272,7 @@ spec:
       command: ["/bin/bash", "-c"]
       args:
         - |
+          #!/bin/bash
           set -e -o pipefail
           source /steps/next-step-env.properties
           export $(cut -d= -f1 /steps/next-step-env.properties)
