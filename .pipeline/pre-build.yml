@@ -207,7 +207,7 @@ spec:
       name: cd-config-volume
     - mountPath: /steps
       name: steps-volume
-  - name: dependency-analysis
+  - name: dependency-analysis-placeholder
     image: ibmcom/pipeline-base-image:latest
     env:
     - name: REPOSITORY

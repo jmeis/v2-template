@@ -52,7 +52,7 @@ spec:
     - name: build_signer
       description: BUILD_SIGNER
   steps:
-  - name: signatures-pre-check
+  - name: signatures-pre-check-placeholder
     image: ibmcom/pipeline-base-image:latest
     env:
     - name: VAULT_INSTANCE
@@ -95,7 +95,7 @@ spec:
     volumeMounts:
     - mountPath: /artifacts
       name: task-volume
-  - name: deploy-to-kubernetes
+  - name: deploy-to-kubernetes-placeholder
     image: ibmcom/pipeline-base-image:latest
     env:
     - name: VAULT_INSTANCE
@@ -138,7 +138,7 @@ spec:
     volumeMounts:
     - mountPath: /artifacts
       name: task-volume
-  - name: check-health
+  - name: check-health-placeholder
     image: ibmcom/pipeline-base-image:latest
     env:
     - name: VAULT_INSTANCE
