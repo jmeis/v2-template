@@ -52,49 +52,6 @@ spec:
     - name: build_signer
       description: BUILD_SIGNER
   steps:
-  - name: check-vulnerabilities
-    image: ibmcom/pipeline-base-image:latest
-    env:
-    - name: VAULT_INSTANCE
-      value: $(inputs.params.vault_name)
-    - name: VALIDATION_SIGNER
-      value: $(inputs.params.validation_signer)
-    - name: BUILD_REGION_ID
-      value: $(inputs.params.prod-region)
-    - name: REGISTRY_REGION_ID
-      value: $(inputs.params.registry-region)
-    - name: BUILD_RESOURCE_GROUP
-      value: $(inputs.params.prod-resource-group)
-    - name: BUILD_CLUSTER_NAMESPACE
-      value: $(inputs.params.build-cluster-namespace)
-    - name: APP_NAME
-      value: $(inputs.params.app-name)
-    - name: REGISTRY_NAMESPACE
-      value: $(inputs.params.registry-namespace)
-    - name: GIT_REPO
-      value: $(inputs.params.repo)
-    - name: PROD_CLUSTER_NAMESPACE
-      value: $(inputs.params.prod-cluster-namespace)
-    - name: API_KEY
-      value: $(inputs.params.api-key)
-    - name: PROD_CLUSTER_NAME
-      value: $(inputs.params.prod-cluster-name)
-    - name: PROD_RESOURCE_GROUP
-      value: $(inputs.params.prod-resource-group)
-    - name: BUILD_CLUSTER_NAME
-      value: $(inputs.params.prod-cluster-name)
-    - name: BUILD_SIGNER
-      value: $(inputs.params.build_signer)
-    - name: PROD_REGION_ID
-      value: $(inputs.params.prod-region)
-    command: ["/bin/bash", "-c"]
-    args:
-    - |
-      #!/bin/bash
-      echo "RUNNING"
-    volumeMounts:
-    - mountPath: /artifacts
-      name: task-volume
   - name: secrets-detection
     image: ibmcom/pipeline-base-image:latest
     env:
