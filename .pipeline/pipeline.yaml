@@ -56,6 +56,8 @@ spec:
     description: the branch for the git repo
   - name: evidence-locker
     description: evidence locker for the app
+  - name: clusterName
+    description: the name of the cluster to target
   resources:
   - name: app-image
     type: image
@@ -267,14 +269,8 @@ spec:
         value: $(params.pipeline-pvc)
       - name: registry-namespace
         value: $(params.registry-namespace)
-      - name: build-cluster-namespace
-        value: $(params.build-cluster-namespace)
-      - name: build-cluster-name
-        value: $(params.build-cluster-name)
       - name: repo
         value: $(params.repo)
-      - name: prod-cluster-namespace
-        value: $(params.prod-cluster-namespace)
       - name: build-region
         value: $(params.build-region)
       - name: vault_name
@@ -287,17 +283,9 @@ spec:
         value: $(params.app-name)
       - name: revision
         value: $(params.revision)
-      - name: prod-cluster-name
-        value: $(params.prod-cluster-name)
       - name: registry-region
         value: $(params.registry-region)
       - name: api-key
         value: $(params.api-key)
-      - name: prod-resource-group
-        value: $(params.prod-resource-group)
-      - name: build-resource-group
-        value: $(params.build-resource-group)
-      - name: validation_signer
-        value: $(params.validation_signer)
-      - name: build_signer
-        value: $(params.build_signer)
+      - name: clusterName
+        value: $(params.clusterName)
