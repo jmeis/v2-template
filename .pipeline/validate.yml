@@ -52,7 +52,7 @@ spec:
     - name: build_signer
       description: BUILD_SIGNER
   steps:
-  - name: secrets-detection
+  - name: secrets-detection-placeholder
     image: ibmcom/pipeline-base-image:latest
     env:
     - name: VAULT_INSTANCE
@@ -95,7 +95,7 @@ spec:
     volumeMounts:
     - mountPath: /artifacts
       name: task-volume
-  - name: oss-licence-check
+  - name: oss-licence-check-placeholder
     image: ibmcom/pipeline-base-image:latest
     env:
     - name: REPOSITORY
@@ -107,7 +107,7 @@ spec:
     - |
       #!/bin/bash
       echo "RUNNING oss licence check"
-  - name: cis-benchmarks
+  - name: cis-benchmarks-placeholder
     image: ibmcom/pipeline-base-image:latest
     env:
     - name: REPOSITORY
@@ -119,7 +119,7 @@ spec:
     - |
       #!/bin/bash
       echo "RUNNING CIS bench marks"
-  - name: additional-image-checks
+  - name: additional-image-checks-placeholder
     image: ibmcom/pipeline-base-image:latest
     env:
     - name: VAULT_INSTANCE
@@ -162,7 +162,7 @@ spec:
     volumeMounts:
     - mountPath: /artifacts
       name: task-volume
-  - name: sign-image-for-validation
+  - name: sign-image-for-validation-placeholder
     image: ibmcom/pipeline-base-image:latest
     env:
     - name: VAULT_INSTANCE
