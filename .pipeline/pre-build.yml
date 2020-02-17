@@ -100,27 +100,50 @@ spec:
       # GIT_URL=$(echo "https://github.ibm.com/padraic-edwards/${app-name}.git" | sed -e "s/:\/\//:\/\/padraic-edwards:$GHE_TOKEN@/g")
       # echo $GIT_URL
       # git clone $GIT_URL .
- 
+
+      function set-status() {
+        local repo=$1
+        local state=$2
+        local context=$3
+        local description=$4
+        local body="{\"state\": \"$state\", \"target_url\": \"$JOB_URL\", \"description\": \"$description\", \"context\": \"$context\"}"
+
+        curl "https://github.ibm.com/api/v3/repos/$repo/statuses/$GIT_COMMIT" \
+          -H "Authorization: Bearer $GHE_TOKEN" \
+          -H "Content-Type: application/json" \
+          -d "$body"
+      }
+
       set -x
       echo "RUNNING"
+
       TOOLCHAIN_REGION=$(jq -r '.region_id' /cd-config/toolchain.json | awk -F: '{print $3}')
+      OWNER_ID=$(jq -r '.services[] | select(.parameters.repo_name=="'"$APP_NAME"'") | .parameters.owner_id' /cd-config/toolchain.json)
       ibmcloud login -r $TOOLCHAIN_REGION --apikey $API_KEY
       TOKEN=$(ibmcloud iam oauth-tokens --output JSON | jq -r '.iam_token')
       source /artifacts/build.properties
       PIPELINE_RUN_ID=$(inputs.params.pipeline-id)
-      
+      PIPELINE_ID=$(jq -r '.services[] | select(.service_id=="pipeline") | .instance_id' /cd-config/toolchain.json)
+      PIPELINE_REGION=$(jq -r '.services[] | select(.service_id=="pipeline") | .region_id' /cd-config/toolchain.json)
+      JOB_URL="https://cloud.ibm.com/devops/pipelines/tekton/$PIPELINE_ID/runs/$PIPELINE_RUN_ID?env_id=$PIPELINE_REGION"
+
       set -e -o pipefail
       export HOME=/root && source ~/.nvm/nvm.sh
+
       echo "Cloning ${app-name}"
       echo "Cloning 1 ${REPO}"
       echo "Cloning ${GIT_URL}"
       git clone ${GIT_URL}
       cd ${REPO}
+
+      set-status $OWNER_ID/$APP_NAME pending tekton/ci-unit-tests
       npm install --save-dev start-server-and-test
       npm install
       npm run ci
-      
+
       cat report
+      set-status $OWNER_ID/$APP_NAME success tekton/ci-unit-tests
+
       function collect-evidence () {
         set -e
         local evidence_name=$1
