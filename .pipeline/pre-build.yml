@@ -137,11 +137,9 @@ spec:
       cd ${REPO}
 
       set-status $OWNER_ID/$APP_NAME pending tekton/ci-unit-tests
-      npm install --save-dev start-server-and-test
-      npm install
-      npm run ci
+      npm ci
+      npm test
 
-      cat report
       set-status $OWNER_ID/$APP_NAME success tekton/ci-unit-tests
 
       function collect-evidence () {
