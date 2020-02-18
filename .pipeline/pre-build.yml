@@ -143,63 +143,6 @@ spec:
 
       cat report
       set-status $OWNER_ID/$APP_NAME success tekton/ci-unit-tests
-
-      function collect-evidence () {
-        set -e
-        local evidence_name=$1
-        local evidence_status=$2
-        local evidence_details=$3
-        jsonContent=$(jq -Rs '.' $evidence_details)
-        local evidence_path="raw/ci/${PIPELINE_RUN_ID}/${evidence_name}.json"
-        local content="{ \"commit_sha\": \"$GIT_COMMIT\", \"status\": \"$evidence_status\", \"details\": \"$jsonContent\", \"job_id\": \"$PIPELINE_RUN_ID\" }"
-        echo $content $evidence_path
-        local encoded_content=$(echo "$content" | base64 -w 0)
-
-        if [ -z "$evidence_name" ]; then
-          echo "Evidence name must be provided"
-          return 1
-        fi
-
-        if [ -z "$evidence_status" ]; then
-          echo "Evidence status must be provided"
-          return 1
-        fi
-
-        if [ -z "$evidence_details" ]; then
-          echo "Evidence details must be provided"
-          return 1
-        fi
-
-        if [ -z "$PIPELINE_RUN_ID" ]; then
-          echo "PIPELINE_RUN_ID must be provided"
-          return 1
-        fi
-
-        if [ -z "$GIT_COMMIT" ]; then
-          echo "GIT_COMMIT must be provided"
-          return 1
-        fi
-
-        if [ -z "$EVIDENCE_LOCKER_REPO" ]; then
-          echo "EVIDENCE_LOCKER_REPO must be provided"
-          return 1
-        fi
-
-        if [ -z "$GHE_TOKEN" ]; then
-          echo "GHE_TOKEN must be provided"
-          return 1
-        fi
-
-        echo "Uploading evidence ${evidence_name} for job ${PIPELINE_RUN_ID}"
-
-        curl https://github.ibm.com/api/v3/repos/${EVIDENCE_LOCKER_REPO}/contents/${evidence_path} \
-          -d "{\"content\":\"${encoded_content}\",\"message\":\"Upload ${evidence_name} for ${PIPELINE_RUN_ID}\"}" \
-          -H "Authorization: Bearer ${GHE_TOKEN}" \
-          -H "Content-Type: application/json" \
-          -X PUT
-      }
-
-      collect-evidence unit-tests passed report
     volumeMounts:
     - mountPath: /artifacts
       name: task-volume
@@ -207,6 +150,64 @@ spec:
       name: cd-config-volume
     - mountPath: /steps
       name: steps-volume
+  - name: collect-unit-test-evidence
+    image: ibmcom/pipeline-base-image
+    env:
+      - name: REQUIRED_CHECKS
+        value: |
+          [{
+            "type": "status",
+            "name": "unit-test",
+            "params": {
+              "name": "tekton/ci-unit-tests"
+            }
+          }]
+      - name: PIPELINE_RUN_ID
+        value: $(inputs.params.pipeline-id)
+      - name: EVIDENCE_LOCKER_REPO
+        value: $(inputs.params.evidence-locker)
+      - name: GHE_REPO
+        value: $(inputs.params.app-name)
+    command: ["/bin/bash", "-c"]
+    args:
+    - |
+      #!/bin/bash
+      export HOME=/root && source ~/.nvm/nvm.sh
+      set -x
+      source /artifacts/build.properties
+      PIPELINE_ID=$(jq -r '.services[] | select(.service_id=="pipeline") | .instance_id' /cd-config/toolchain.json)
+      PIPELINE_REGION=$(jq -r '.services[] | select(.service_id=="pipeline") | .region_id' /cd-config/toolchain.json)
+      JOB_URL="https://cloud.ibm.com/devops/pipelines/tekton/$PIPELINE_ID/runs/$PIPELINE_RUN_ID?env_id=$PIPELINE_REGION"
+      export GHE_ORG=$(jq -r '.services[] | select(.parameters.repo_name=="'"$GHE_REPO"'") | .parameters.owner_id' /cd-config/toolchain.json)
+      export GIT_BRANCH=$GIT_BRANCH
+      export GIT_COMMIT=$GIT_COMMIT
+      export GHE_TOKEN=$GHE_TOKEN
+
+      function set-status() {
+        local repo=$1
+        local state=$2
+        local context=$3
+        local description=$4
+        local body="{\"state\": \"$state\", \"target_url\": \"$JOB_URL\", \"description\": \"$description\", \"context\": \"$context\"}"
+
+        curl "https://github.ibm.com/api/v3/repos/$repo/statuses/$GIT_COMMIT" \
+          -H "Authorization: Bearer $GHE_TOKEN" \
+          -H "Content-Type: application/json" \
+          -d "$body"
+      }
+
+      set-status $GHE_ORG/$GHE_REPO pending tekton/ci-compliance
+      git clone https://${GHE_TOKEN}@github.ibm.com/cocoa/scripts.git
+      cd scripts
+      npm ci
+      npx tsc
+      node build/check-pr-status
+      set-status $GHE_ORG/$GHE_REPO success tekton/ci-compliance
+    volumeMounts:
+    - mountPath: /artifacts
+      name: task-volume
+    - mountPath: /cd-config
+      name: cd-config-volume
   - name: dependency-analysis-placeholder
     image: ibmcom/pipeline-base-image:latest
     env:
