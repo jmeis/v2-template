@@ -1,0 +1,85 @@
+---
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: template
+spec:
+  params:
+  - name: app-name
+    description: The name of your app
+  - name: api-key
+    description: The IBM Cloud API key is used to access the IBM Cloud Kubernetes
+      Service API and interact with the cluster. You can obtain your API key with
+      'ic iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
+      by clicking **Create API key** (Each API key only can be viewed once).
+  - name: build_signer
+    description: current signer
+  - name: validation_signer
+    description: current signer
+  - name: registry-namespace
+    description: The registry namespace
+  - name: registry-region
+    description: the registry region
+  - name: vault_name
+    decription: the key protect instance name
+  - name: dev-resource-group
+    description: the resource group
+  - name: clusterName
+    description: the name of the targeted cluster
+  - name: region
+    description: target region
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1alpha1
+    kind: PipelineRun
+    metadata:
+      name: pipelinerun-$(uid)
+    spec:
+      params:
+      - name: pipeline-pvc
+        value: pipelinerun-$(uid)-pvc
+      - name: pipeline-id
+        value: $(uid)
+      - name: registry-namespace
+        value: $(params.registry-namespace)
+      - name: vault_name
+        value: $(params.vault_name)
+      - name: app-name
+        value: $(params.app-name)
+      - name: registry-region
+        value: $(params.registry-region)
+      - name: api-key
+        value: $(params.api-key)
+      - name: dev-region
+        value: $(params.region)
+      - name: dev-resource-group
+        value: $(params.dev-resource-group)
+      - name: validation_signer
+        value: $(params.validation_signer)
+      - name: build_signer
+        value: $(params.build_signer)
+      - name: clusterName
+        value: $(params.clusterName)
+      pipelineRef:
+        name: pipeline
+---
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: binding
+spec:
+  params:
+  - name: repository
+    value: https://github.com/open-toolchain/hello-containers
+  - name: revision
+    value: master
+---
+apiVersion: tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: listener
+spec:
+  triggers:
+  - binding:
+      name: binding
+    template:
+      name: template

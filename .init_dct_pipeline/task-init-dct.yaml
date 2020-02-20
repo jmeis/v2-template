@@ -1,0 +1,90 @@
+---
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: init-docker-content-trust-task
+spec:
+  inputs:
+    params:
+    - name: task-pvc
+      description: pipeline pvc name place holder
+    - name: api-key
+      description: The IBM Cloud API key is used to access the IBM Cloud Kubernetes
+        Service API and interact with the cluster. You can obtain your API key with
+        'ic iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
+        by clicking **Create API key** (Each API key only can be viewed once).
+    - name: app-name
+      description: The name of your app
+    - name: vault_name
+      decription: the key protect instance name
+    - name: mount-path
+      description: mount path directory 
+      default: /artifacts
+    - name: volume
+      description: volume mount name
+      default: task-volume
+    - name: region
+      description: target region
+    - name: clusterName
+      description: the name of the targeted cluster
+    - name: registry-namespace
+      description: The registry namespace
+    - name: registry-region
+      description: the registry region
+    - name: resource-group
+      description: the resource group
+    - name: working_dir
+      default: "/root"
+    - name: api_endpoint
+      description: api endpoint
+      default: https://cloud.ibm.com
+    - name: build_signer
+      description: current signer
+    - name: validation_signer
+      description: current signer
+  steps:
+  - name: create-dct-keys
+    image: ibmcom/pipeline-base-image:latest
+    env:
+    - name: IBM_CLOUD_API_KEY
+      value: $(inputs.params.api-key)
+    - name: IMAGE_NAME
+      value: $(inputs.params.app-name)
+    - name: API
+      value: $(inputs.params.api_endpoint)
+    - name: VAULT_INSTANCE
+      value: $(inputs.params.vault_name)
+    - name: IBMCLOUD_TARGET_REGION
+      value: $(inputs.params.region)
+    - name: BUILD_CLUSTER
+      value: $(inputs.params.clusterName)
+    - name: REGISTRY_NAMESPACE
+      value: $(inputs.params.registry-namespace)
+    - name: REGISTRY_REGION
+      value: $(inputs.params.registry-region)
+    - name: IBMCLOUD_TARGET_RESOURCE_GROUP
+      value: $(inputs.params.resource-group)
+    - name: ARCHIVE_DIR
+      value: $(inputs.params.mount-path)
+    - name: HOME
+      value: $(inputs.params.working_dir)
+    - name: BUILD_SIGNER
+      value: $(inputs.params.build_signer)
+    - name: VALIDATION_SIGNER
+      value: $(inputs.params.validation_signer)
+    command: ["/bin/bash", "-c"]
+    args:
+    - |
+      !/bin/bash
+      echo "REGISTRY_REGION $REGISTRY_REGION"
+      echo "RUNNING"
+      set -e -o pipefail
+      source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/add_docker.sh")
+      source <(curl -sSL "https://raw.githubusercontent.com/huayuenh/tekton-image-signing/master/init_dct.sh")
+    volumeMounts:
+    - mountPath: $(inputs.params.mount-path)
+      name: $(inputs.params.volume)
+  volumes:
+  - name: $(inputs.params.volume)
+    persistentVolumeClaim:
+      claimName: $(inputs.params.task-pvc)

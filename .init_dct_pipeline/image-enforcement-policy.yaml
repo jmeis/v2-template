@@ -1,0 +1,150 @@
+---
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: setup-iks-runtime-enforcement-in-deployment-cluster-task
+spec:
+  inputs:
+    params:
+    - name: task-pvc
+      description: pipeline pvc name place holder
+    - name: registry-namespace
+      description: The namespace in the container image registry. You can set it up
+        with {ic cr namespace-add]. Learn more at https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started#getting-started.
+    - name: build-cluster-namespace
+      description: Cluster namespace
+    - name: build-cluster-name
+      description: Build Cluster
+    - name: prod-cluster-namespace
+      description: Cluster namespace
+    - name: build-region
+      description: Build region
+    - name: vault_name
+      description: Specify the Key Protect instance name, where the image signing
+        keys have been stored. The build and validation signer fields contain default
+        names for these signers. The values must match the values created in the Key-Management-Admin-Template.
+        See https://github.com/open-toolchain/key-management-admin-toolchain
+    - name: repository
+      description: The git repo
+    - name: prod-region
+      description: Cluster region
+    - name: app-name
+      description: The name of your app
+    - name: revision
+      description: the branch for the git repo
+    - name: prod-cluster-name
+      description: Cluster name
+    - name: registry-region
+      description: The IBM Cloud region for image registry
+    - name: api-key
+      description: The IBM Cloud API key is used to access the IBM Cloud Kubernetes
+        Service API and interact with the cluster. You can obtain your API key with
+        'bx iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
+        by clicking **Create API key** (Each API key only can be viewed once).
+    - name: prod-resource-group
+      description: Resource Group
+    - name: build-resource-group
+      description: Build Resource Group
+    - name: validation_signer
+      description: VALIDATION_SIGNER
+    - name: build_signer
+      description: BUILD_SIGNER
+  steps:
+  - name: clone-step
+    image: alpine/git
+    env:
+    - name: REPOSITORY
+      value: $(inputs.params.repository)
+    - name: REVISION
+      value: $(inputs.params.revision)
+    command: ["/bin/sh", "-c"]
+    args:
+    - set -e -o pipefail;
+      echo "Cloning $REPOSITORY";
+      git clone -q -b $REVISION $REPOSITORY .;
+  - name: create-staging-cise-crd-and-secret
+    image: ibmcom/pipeline-base-image:latest
+    env:
+    - name: VAULT_INSTANCE
+      value: $(inputs.params.vault_name)
+    - name: VALIDATION_SIGNER
+      value: $(inputs.params.validation_signer)
+    - name: BUILD_REGION_ID
+      value: $(inputs.params.prod-region)
+    - name: REGISTRY_REGION_ID
+      value: $(inputs.params.registry-region)
+    - name: BUILD_RESOURCE_GROUP
+      value: $(inputs.params.prod-resource-group)
+    - name: BUILD_CLUSTER_NAMESPACE
+      value: $(inputs.params.build-cluster-namespace)
+    - name: APP_NAME
+      value: $(inputs.params.app-name)
+    - name: REGISTRY_NAMESPACE
+      value: $(inputs.params.registry-namespace)
+    - name: PROD_CLUSTER_NAMESPACE
+      value: $(inputs.params.prod-cluster-namespace)
+    - name: API_KEY
+      value: $(inputs.params.api-key)
+    - name: PROD_CLUSTER_NAME
+      value: $(inputs.params.prod-cluster-name)
+    - name: BUILD_CLUSTER_NAME
+      value: $(inputs.params.prod-cluster-name)
+    - name: PROD_RESOURCE_GROUP
+      value: $(inputs.params.prod-resource-group)
+    - name: BUILD_SIGNER
+      value: $(inputs.params.build_signer)
+    - name: PROD_REGION_ID
+      value: $(inputs.params.prod-region)
+    command: ["/bin/bash", "-c"]
+    args:
+    - |
+      #!/bin/bash
+      echo "RUNNING"
+    volumeMounts:
+    - mountPath: /artifacts
+      name: task-volume
+  - name: create-production-cise-crd-and-secret
+    image: ibmcom/pipeline-base-image:latest
+    env:
+    - name: VAULT_INSTANCE
+      value: $(inputs.params.vault_name)
+    - name: VALIDATION_SIGNER
+      value: $(inputs.params.validation_signer)
+    - name: BUILD_REGION_ID
+      value: $(inputs.params.prod-region)
+    - name: REGISTRY_REGION_ID
+      value: $(inputs.params.registry-region)
+    - name: BUILD_RESOURCE_GROUP
+      value: $(inputs.params.prod-resource-group)
+    - name: BUILD_CLUSTER_NAMESPACE
+      value: $(inputs.params.build-cluster-namespace)
+    - name: APP_NAME
+      value: $(inputs.params.app-name)
+    - name: REGISTRY_NAMESPACE
+      value: $(inputs.params.registry-namespace)
+    - name: PROD_CLUSTER_NAMESPACE
+      value: $(inputs.params.prod-cluster-namespace)
+    - name: API_KEY
+      value: $(inputs.params.api-key)
+    - name: PROD_CLUSTER_NAME
+      value: $(inputs.params.prod-cluster-name)
+    - name: BUILD_CLUSTER_NAME
+      value: $(inputs.params.prod-cluster-name)
+    - name: PROD_RESOURCE_GROUP
+      value: $(inputs.params.prod-resource-group)
+    - name: BUILD_SIGNER
+      value: $(inputs.params.build_signer)
+    - name: PROD_REGION_ID
+      value: $(inputs.params.prod-region)
+    command: ["/bin/bash", "-c"]
+    args:
+    - |
+      #!/bin/bash
+      echo "RUNNING"
+    volumeMounts:
+    - mountPath: /artifacts
+      name: task-volume
+  volumes:
+  - name: task-volume
+    persistentVolumeClaim:
+      claimName: $(inputs.params.task-pvc)

@@ -1,0 +1,65 @@
+---
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: pipeline
+spec:
+  params:
+  - name: pipeline-pvc
+    description: pipeline pvc name place holder
+  - name: pipeline-id
+    description: id of the pipeline run
+  - name: api-key
+    description: The IBM Cloud API key is used to access the IBM Cloud Kubernetes
+      Service API and interact with the cluster. You can obtain your API key with
+      'ic iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
+      by clicking **Create API key** (Each API key only can be viewed once).
+  - name: app-name
+    description: The name of your app.
+  - name: vault_name
+    description: Specify the Key Protect instance name, where the image signing keys
+      have been stored. The build and validation signer fields contain default names
+      for these signers. The values must match the values created in the Key-Management-Admin-Template.
+      See https://github.com/open-toolchain/key-management-admin-toolchain
+  - name: dev-region
+    description: the target region
+  - name: clusterName
+    description: the name of the cluster to target
+  - name: registry-region
+    description: The IBM Cloud region for image registry
+  - name: registry-namespace
+    description: The namespace in the container image registry. You can set it up
+      with {ic cr namespace-add]. Learn more at https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started#getting-started.
+  - name: dev-resource-group
+    description: Resource Group
+  - name: build_signer
+    description: BUILD_SIGNER
+  - name: validation_signer
+    description: the validation signer
+  tasks:
+  - name: init-docker-content-trust
+    taskRef:
+      name: init-docker-content-trust-task
+    params:
+    - name: task-pvc
+      value: $(params.pipeline-pvc)
+    - name: app-name
+      value: $(params.app-name)
+    - name: api-key
+      value: $(params.api-key)
+    - name: vault_name
+      value: $(params.vault_name)
+    - name: region
+      value: $(params.dev-region)
+    - name: clusterName
+      value: $(params.clusterName)
+    - name: registry-namespace
+      value: $(params.registry-namespace)
+    - name: registry-region
+      value: $(params.registry-region)
+    - name: resource-group
+      value: $(params.dev-resource-group)
+    - name: build_signer
+      value: $(params.build_signer)
+    - name: validation_signer
+      value: $(params.validation_signer)
