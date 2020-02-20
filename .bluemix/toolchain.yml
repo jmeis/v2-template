@@ -82,6 +82,7 @@ services:
           $text: pipeline_tekton.yml
         env:
           PIPELINE_REPO: pipeline-repo
+          APP_REPO: app-repo
           IMAGE_URL: 'us.icr.io/{{form.pipeline.parameters.registry-namespace}}/{{form.pipeline.parameters.app-name}}'
           APP_NAME: '{{form.pipeline.parameters.app-name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'

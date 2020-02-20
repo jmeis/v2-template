@@ -121,19 +121,6 @@ spec:
         value: $(params.build_signer)
       - name: evidence-locker
         value: $(params.evidence-locker)
-    - name: evidence-collection-unit-tests
-      runAfter: [pre-build-tests]
-      taskRef:
-        name: evidence-collector-task
-      params:
-      - name: task-pvc
-        value: $(params.pipeline-pvc)
-      - name: pipeline-id
-        value: $(params.pipeline-id)
-      - name: evidence-locker
-        value: $(params.evidence-locker)
-      - name: api-key
-        value: $(params.api-key)
     - name: containerize
       runAfter: [pre-build-tests]
       taskRef:

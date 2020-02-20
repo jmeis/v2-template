@@ -168,6 +168,17 @@ spec:
     value: "master"
 ---
 apiVersion: tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: pr-binding
+spec:
+  params:
+  - name: branch
+    value: $(event.pull_request.head.ref)
+  - name: target-branch
+    value: $(event.pull_request.base.ref)
+---
+apiVersion: tekton.dev/v1alpha1
 kind: EventListener
 metadata:
   name: listener
@@ -177,3 +188,53 @@ spec:
       name: binding
     template:
       name: template
+---
+apiVersion: tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: pr-listener
+spec:
+  triggers:
+    - binding:
+        name: pr-binding
+      template:
+        name: pr-template
+---
+apiVersion: tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: pr-template
+spec:
+  params:
+    - name: repository
+      description: The git repo
+    - name: branch
+      description: branch
+    - name: target-branch
+      description: target branch
+  resourcetemplates:
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: cd-secret
+      type: Opaque
+      stringData:
+        API_KEY: $(params.api-key)
+    - apiVersion: tekton.dev/v1alpha1
+      kind: PipelineRun
+      metadata:
+        name: pipelinerun-$(uid)
+      spec:
+        pipelineRef:
+          name: pr-pipeline
+        params:
+          - name: pipeline-pvc
+            value: pipelinerun-$(uid)-pvc
+          - name: repository
+            value: $(params.repository)
+          - name: branch
+            value: $(params.branch)
+          - name: pipelineRunId
+            value: $(uid)
+          - name: target-branch
+            value: $(params.target-branch)
