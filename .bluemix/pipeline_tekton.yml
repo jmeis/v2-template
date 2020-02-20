@@ -8,7 +8,7 @@ triggers:
 - type: git
   name: Git PR Trigger
   service: ${PIPELINE_REPO}
-  branch: master
+  branch: prTrigger
   events: '{"push":true,"pull_request":true,"pull_request_closed":false}'
   eventListener: listener
 - type: manual
