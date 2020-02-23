@@ -15,7 +15,7 @@ spec:
         Service API and interact with the cluster. You can obtain your API key with
         'ic iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
         by clicking **Create API key** (Each API key only can be viewed once).
-    - name: build_signer
+    - name: validation_signer
       description: current signer
     - name: registry-namespace
       description: The registry namespace
@@ -55,7 +55,7 @@ spec:
     - name: VAULT_INSTANCE
       value: $(inputs.params.vault_name)
     - name: DEVOPS_SIGNER
-      value: $(inputs.params.build_signer)
+      value: $(inputs.params.validation_signer)
     - name: IBMCLOUD_TARGET_RESOURCE_GROUP
       value: $(inputs.params.resource-group)
     - name: REGISTRY_REGION
@@ -94,7 +94,6 @@ spec:
       # $IMAGE_NAME
       # $IMAGE_TAG
       # $DEVOPS_SIGNER - current signer
-      
       echo "Vault instance $VAULT_INSTANCE used to retrieve signing keys"
       source <(curl -sSL "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/image_signing/signing_utils.sh")
       # Restore signer pem key

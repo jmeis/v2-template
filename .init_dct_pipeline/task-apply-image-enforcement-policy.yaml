@@ -1,0 +1,114 @@
+---
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: apply-image-enforcement-task
+spec:
+  inputs:
+    params:
+    - name: task-pvc
+      description: pipeline pvc name place holder
+    - name: app-name
+      description: The name of your app
+    - name: api-key
+      description: The IBM Cloud API key is used to access the IBM Cloud Kubernetes
+        Service API and interact with the cluster. You can obtain your API key with
+        'ic iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
+        by clicking **Create API key** (Each API key only can be viewed once).
+    - name: validation_signer
+      description: validation signer
+    - name: registry-namespace
+      description: The registry namespace
+    - name: registry-region
+      description: the registry region
+    - name: vault_name
+      decription: the key protect instance name
+    - name: resource-group
+      description: the resource group
+    - name: clusterName
+      description: the name of the targeted cluster
+    - name: region
+      description: target region
+    - name: api_endpoint
+      description: api endpoint
+      default: https://cloud.ibm.com
+    - name: working_dir
+      default: "/root"
+    - name: mount-path
+      description: mount path directory 
+      default: /artifacts
+    - name: volume
+      description: volume mount name
+      default: task-volume
+    - name: cluster-namespace
+      description: the cluster namespace
+      default: default
+    - name: helm-version
+      description: specific helm version
+      default: 2.13.1
+  steps:
+  - name: apply-image-enforcement-policy
+    image: ibmcom/pipeline-base-image:latest
+    env:
+    - name: IBM_CLOUD_API_KEY
+      value: $(inputs.params.api-key)
+    - name: API
+      value: $(inputs.params.api_endpoint)
+    - name: HOME
+      value: $(inputs.params.working_dir)
+    - name: REGISTRY_NAMESPACE
+      value: $(inputs.params.registry-namespace)
+    - name: VAULT_INSTANCE
+      value: $(inputs.params.vault_name)
+    - name: VALIDATION_SIGNER
+      value: $(inputs.params.validation_signer)
+    - name: IBMCLOUD_TARGET_RESOURCE_GROUP
+      value: $(inputs.params.resource-group)
+    - name: REGISTRY_REGION
+      value: $(inputs.params.registry-region)
+    - name: IBMCLOUD_TARGET_REGION
+      value: $(inputs.params.region)
+    - name: BUILD_CLUSTER
+      value: $(inputs.params.clusterName)
+    - name: ARCHIVE_DIR
+      value: $(inputs.params.mount-path)
+    - name: IMAGE_NAME
+      value: $(inputs.params.app-name)
+    - name: CLUSTER_NAMESPACE
+      value: $(inputs.params.cluster-namespace)
+    - name: DEFAULT_HELM_VERSION
+      value: $(inputs.params.helm-version)
+    command: ["/bin/bash", "-c"]
+    args:
+    - |
+      #!/bin/bash
+      #set -x
+      ibmcloud login --apikey "$IBM_CLOUD_API_KEY" -r "$IBMCLOUD_TARGET_REGION"
+      ibmcloud target -g "$IBMCLOUD_TARGET_RESOURCE_GROUP"
+
+      source <(curl -s -S -L "https://raw.githubusercontent.com/open-toolchain/commons/master/scripts/check_helm_up_and_running.sh")
+
+      # Install CISE
+      if helm list cise | grep '^cise'; then
+        echo "Container Image Security Enforcement is already installed"
+      else
+        helm repo add iks-charts https://icr.io/helm/iks-charts
+        helm install --name cise iks-charts/ibmcloud-image-enforcement
+      fi
+
+      # Ensure deployment namespace is created
+      echo "Checking cluster namespace $CLUSTER_NAMESPACE"
+      if ! kubectl get namespace "$CLUSTER_NAMESPACE"; then
+        kubectl create namespace "$CLUSTER_NAMESPACE"
+      fi
+
+      # Define custom user policies
+      echo "FINISHED"
+
+    volumeMounts:
+    - mountPath: $(inputs.params.mount-path)
+      name: $(inputs.params.volume)
+  volumes:
+  - name: $(inputs.params.volume)
+    persistentVolumeClaim:
+      claimName: $(inputs.params.task-pvc)
