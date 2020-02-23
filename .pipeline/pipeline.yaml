@@ -46,6 +46,8 @@ spec:
       by clicking **Create API key** (Each API key only can be viewed once).
   - name: prod-resource-group
     description: Resource Group
+  - name: dev-resource-group
+    description: Resource Group
   - name: build-resource-group
     description: Build Resource Group
   - name: validation_signer
@@ -58,6 +60,10 @@ spec:
     description: evidence locker for the app
   - name: clusterName
     description: the name of the cluster to target
+  - name: vault_name
+    description: key protect instance name
+  - name: dev-region
+    description: the target region
   resources:
   - name: app-image
     type: image
@@ -75,9 +81,9 @@ spec:
       - name: branch
         value: $(params.branch)
     - name: pre-build-tests
+      runAfter: [fetch-code]
       taskRef:
         name: pre-build-task
-      runAfter: [fetch-code]
       params:
       - name: task-pvc
         value: $(params.pipeline-pvc)
@@ -204,8 +210,33 @@ spec:
         value: $(params.validation_signer)
       - name: build_signer
         value: $(params.build_signer)
-    - name: fetch-iks-cluster-config
+    - name: docker-image-sign
       runAfter: [validate]
+      taskRef:
+        name: docker-signing-task
+      params:
+      - name: task-pvc
+        value: $(params.pipeline-pvc)
+      - name: app-name
+        value: $(params.app-name)
+      - name: api-key
+        value: $(params.api-key)
+      - name: validation_signer
+        value: $(params.validation_signer)
+      - name: registry-namespace
+        value: $(params.registry-namespace)
+      - name: registry-region
+        value: $(params.registry-region)
+      - name: vault_name
+        value: $(params.vault_name)
+      - name: resource-group
+        value: $(params.dev-resource-group)
+      - name: clusterName
+        value: $(params.clusterName)
+      - name: region
+        value: $(params.dev-region)
+    - name: fetch-iks-cluster-config
+      runAfter: [docker-image-sign]
       taskRef:
         name: fetch-iks-cluster-config
       params:
@@ -245,10 +276,35 @@ spec:
             resource: target-cluster
             from:
               - fetch-iks-cluster-config
+    - name: docker-signature-check
+      runAfter: [fetch-iks-cluster-config]
+      taskRef:
+        name: docker-check-signature-task
+      params:
+      - name: task-pvc
+        value: $(params.pipeline-pvc)
+      - name: app-name
+        value: $(params.app-name)
+      - name: api-key
+        value: $(params.api-key)
+      - name: validation_signer
+        value: $(params.validation_signer)
+      - name: registry-namespace
+        value: $(params.registry-namespace)
+      - name: registry-region
+        value: $(params.registry-region)
+      - name: vault_name
+        value: $(params.vault_name)
+      - name: resource-group
+        value: $(params.dev-resource-group)
+      - name: clusterName
+        value: $(params.clusterName)
+      - name: region
+        value: $(params.dev-region)
     - name: deploy-dev
       taskRef:
         name: deploy-dev-task
-      runAfter: [pipeline-1-kubectl-task]
+      runAfter: [docker-signature-check]
       params:
       - name: task-pvc
         value: $(params.pipeline-pvc)
