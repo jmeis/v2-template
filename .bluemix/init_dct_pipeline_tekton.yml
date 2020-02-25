@@ -9,7 +9,7 @@ triggers:
   name: Git PR Trigger
   service: ${DCT_PIPELINE_REPO}
   branch: master
-  events: '{"push":true,"pull_request":true,"pull_request_closed":false}'
+  events: {"push":true,"pull_request":true,"pull_request_closed":false}
   eventListener: listener
 - type: manual
   name: Manual Trigger
