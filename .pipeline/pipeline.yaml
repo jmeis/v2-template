@@ -166,33 +166,8 @@ spec:
         value: $(params.registry-region)
       - name: api-key
         value: $(params.api-key)
-    - name: docker-image-sign
-      runAfter: [validate]
-      taskRef:
-        name: docker-signing-task
-      params:
-      - name: task-pvc
-        value: $(params.pipeline-pvc)
-      - name: app-name
-        value: $(params.app-name)
-      - name: api-key
-        value: $(params.api-key)
-      - name: validation_signer
-        value: $(params.validation_signer)
-      - name: registry-namespace
-        value: $(params.registry-namespace)
-      - name: registry-region
-        value: $(params.registry-region)
-      - name: vault_name
-        value: $(params.vault_name)
-      - name: resource-group
-        value: $(params.dev-resource-group)
-      - name: clusterName
-        value: $(params.clusterName)
-      - name: region
-        value: $(params.dev-region)
     - name: fetch-iks-cluster-config
-      runAfter: [docker-image-sign]
+      runAfter: [validate]
       taskRef:
         name: fetch-iks-cluster-config
       params:
@@ -232,35 +207,10 @@ spec:
             resource: target-cluster
             from:
               - fetch-iks-cluster-config
-    - name: docker-signature-check
-      runAfter: [fetch-iks-cluster-config]
-      taskRef:
-        name: docker-check-signature-task
-      params:
-      - name: task-pvc
-        value: $(params.pipeline-pvc)
-      - name: app-name
-        value: $(params.app-name)
-      - name: api-key
-        value: $(params.api-key)
-      - name: validation_signer
-        value: $(params.validation_signer)
-      - name: registry-namespace
-        value: $(params.registry-namespace)
-      - name: registry-region
-        value: $(params.registry-region)
-      - name: vault_name
-        value: $(params.vault_name)
-      - name: resource-group
-        value: $(params.dev-resource-group)
-      - name: clusterName
-        value: $(params.clusterName)
-      - name: region
-        value: $(params.dev-region)
     - name: deploy-dev
       taskRef:
         name: deploy-dev-task
-      runAfter: [docker-signature-check]
+      runAfter: [pipeline-1-kubectl-task]
       params:
       - name: task-pvc
         value: $(params.pipeline-pvc)
