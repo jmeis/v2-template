@@ -42,7 +42,7 @@ spec:
       - name: registry-namespace
         value: $(params.registry-namespace)
       - name: vault-name
-        value: $(params.vault_name)
+        value: $(params.vault-name)
       - name: app-name
         value: $(params.app-name)
       - name: registry-region
@@ -54,11 +54,11 @@ spec:
       - name: dev-resource-group
         value: $(params.dev-resource-group)
       - name: validation-signer
-        value: $(params.validation_signer)
+        value: $(params.validation-signer)
       - name: build-signer
-        value: $(params.build_signer)
-      - name: clusterName
-        value: $(params.clusterName)
+        value: $(params.build-signer)
+      - name: cluster-name
+        value: $(params.cluster-name)
       pipelineRef:
         name: pipeline
 ---
