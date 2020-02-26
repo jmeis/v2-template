@@ -32,8 +32,6 @@ spec:
       with {ic cr namespace-add]. Learn more at https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started#getting-started.
   - name: dev-resource-group
     description: Resource Group
-  - name: build_signer
-    description: BUILD_SIGNER
   - name: validation_signer
     description: the validation signer
   tasks:
@@ -59,7 +57,5 @@ spec:
       value: $(params.registry-region)
     - name: resource-group
       value: $(params.dev-resource-group)
-    - name: build_signer
-      value: $(params.build_signer)
     - name: validation_signer
       value: $(params.validation_signer)

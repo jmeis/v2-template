@@ -46,6 +46,10 @@ spec:
     description: the name of the cluster to target
   - name: prod-resource-group
     description: Resource Group
+  - name: dev-resource-group
+    description: Resource Group
+  - name: dev-region
+    description: target region
   - name: build-resource-group
     description: Build Resource Group
   - name: validation_signer
@@ -143,6 +147,10 @@ spec:
           value: $(params.api-key)
         - name: prod-resource-group
           value: $(params.prod-resource-group)
+        - name: dev-region
+          value: $(params.dev-region)
+        - name: dev-resource-group
+          value: $(params.dev-resource-group)
         - name: build-resource-group
           value: $(params.build-resource-group)
         - name: validation_signer

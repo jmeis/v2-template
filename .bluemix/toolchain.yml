@@ -10,6 +10,7 @@ template:
   icon: secure-lock-kubernetes.svg
   required:
     - build
+    - init_dct
     - app-repo
     - pipeline-repo
     - evidence-repo
@@ -97,13 +98,39 @@ services:
           VALIDATION_SIGNER: '{{form.pipeline.parameters.validation_signer}}'
           EVIDENCE_REPO: '{{form.evidence-repo.parameters.owner_id}}/{{form.evidence-repo.parameters.repo_name}}'
         execute: false
+  init_dct:
+    service_id: pipeline
+    parameters:
+      services:
+        - pipeline-repo
+      name: 'dct init {{form.pipeline.parameters.registry-namespace}} {{form.pipeline.parameters.app-name}}'
+      ui-pipeline: true
+      type: tekton
+      configuration:
+        content:
+          $text: init_dct_pipeline_tekton.yml
+        env:
+          DCT_PIPELINE_REPO: pipeline-repo
+          APP_REPO: app-repo
+          APP_NAME: '{{form.pipeline.parameters.app-name}}'
+          REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
+          REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
+          API_KEY: '{{form.pipeline.parameters.api-key}}'
+          DEV_REGION_ID: '{{form.pipeline.parameters.dev-region}}'
+          DEV_RESOURCE_GROUP: '{{form.pipeline.parameters.dev-resource-group}}'
+          DEV_CLUSTER_NAME: '{{form.pipeline.parameters.dev-cluster-name}}'
+          DEV_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.dev-cluster-namespace}}'
+          VAULT_INSTANCE: '{{form.pipeline.parameters.vault_name}}'
+          BUILD_SIGNER: '{{form.pipeline.parameters.build_signer}}'
+          VALIDATION_SIGNER: '{{form.pipeline.parameters.validation_signer}}'
+        execute: false
   webide:
     service_id: orion
 form:
   pipeline:
     parameters:
       app-name: '{{services.app-repo.parameters.repo_name}}'
-      dev-cluster-namespace: dev
+      dev-cluster-namespace: default
       build-cluster-namespace: build
       vault_name: ''
       build_signer: 'devops-build'
