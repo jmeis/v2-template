@@ -13,17 +13,8 @@ spec:
         with {bx cr namespace-add]. Learn more at https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started#getting-started.
     - name: repo
       description: GIT_REPO
-    - name: build-region
-      description: Build region
-    - name: vault_name
-      description: Specify the Key Protect instance name, where the image signing
-        keys have been stored. The build and validation signer fields contain default
-        names for these signers. The values must match the values created in the Key-Management-Admin-Template.
-        See https://github.com/open-toolchain/key-management-admin-toolchain
     - name: repository
       description: The git repo
-    - name: prod-region
-      description: Cluster region
     - name: app-name
       description: The name of your app
     - name: revision
