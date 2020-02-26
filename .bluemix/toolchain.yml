@@ -14,6 +14,7 @@ template:
     - init_dct
     - app-repo
     - pipeline-repo
+    - tekton-catalog-repo
     - evidence-repo
     - issues-repo
   info:
@@ -54,6 +55,14 @@ services:
       has_issues: false
       enable_traceability: false
       legal: true
+  tekton-catalog-repo:
+    service_id: github_integrated
+    parameters:
+      repo_url: https://github.ibm.com/one-pipeline/common-tekton-tasks
+      type: link
+      has_issues: false
+      enable_traceability: false
+      legal: true
   evidence-repo:
     service_id: github_integrated
     parameters:
@@ -76,6 +85,7 @@ services:
       services:
         - app-repo
         - pipeline-repo
+        - tekton-catalog-repo
       name: '{{services.app-repo.parameters.repo_name}}'
       ui-pipeline: true
       type: tekton
@@ -98,6 +108,7 @@ services:
           BUILD_SIGNER: '{{form.pipeline.parameters.build_signer}}'
           VALIDATION_SIGNER: '{{form.pipeline.parameters.validation_signer}}'
           EVIDENCE_REPO: '{{form.evidence-repo.parameters.owner_id}}/{{form.evidence-repo.parameters.repo_name}}'
+          TEKTON_CATALOG_REPO: tekton-catalog-repo
         execute: false
   init_dct:
     service_id: pipeline
