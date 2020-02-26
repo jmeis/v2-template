@@ -1,65 +1,66 @@
 ---
 inputs:
-- type: git
-  branch: master
-  service: ${PIPELINE_REPO}
-  path: .pipeline
+  - type: git
+    branch: master
+    service: ${PIPELINE_REPO}
+    path: .pipeline
 triggers:
-- type: git
-  name: Git PR Trigger
-  service: ${APP_REPO}
-  branch: master
-  events: {"push":false,"pull_request":true,"pull_request_closed":false}
-  eventListener: pr-listener
-- type: git
-  name: Git CI Trigger
-  service: ${APP_REPO}
-  branch: master
-  events: {"push":true}
-  eventListener: listener
-- type: manual
-  name: Manual Trigger
-  eventListener: listener
+  - type: git
+    name: Git PR Trigger
+    service: ${APP_REPO}
+    branch: master
+    events: >
+      {"push":false,"pull_request":true,"pull_request_closed":false}
+    eventListener: pr-listener
+  - type: git
+    name: Git CI Trigger
+    service: ${APP_REPO}
+    branch: master
+    events: {"push":true}
+    eventListener: listener
+  - type: manual
+    name: Manual Trigger
+    eventListener: listener
 properties:
-- name: api-key
-  value: ${API_KEY}
-  type: SECURE
-- name: imageUrl
-  value: ${IMAGE_URL}
-  type: text
-- name: evidence_repo
-  value: ${EVIDENCE_REPO}
-  type: text
-- name: revision
-  value: master
-  type: text
-- name: registry-region
-  value: ${REGISTRY_REGION_ID}
-  type: text
-- name: app-name
-  value: ${APP_NAME}
-  type: text
-- name: registry-namespace
-  value: ${REGISTRY_NAMESPACE}
-  type: text
-- name: dev-cluster-namespace
-  value: ${DEV_CLUSTER_NAMESPACE}
-  type: text
-- name: dev-region
-  value: ${DEV_REGION_ID}
-  type: text
-- name: clusterName
-  value: ${DEV_CLUSTER_NAME}
-  type: text
-- name: dev-resource-group
-  value: ${DEV_RESOURCE_GROUP}
-  type: text
-- name: build_signer
-  value: ${BUILD_SIGNER}
-  type: text
-- name: validation_signer
-  value: ${VALIDATION_SIGNER}
-  type: text
-- name: vault_name
-  value: ${VAULT_INSTANCE}
-  type: text
+  - name: api-key
+    value: ${API_KEY}
+    type: SECURE
+  - name: imageUrl
+    value: ${IMAGE_URL}
+    type: text
+  - name: evidence_repo
+    value: ${EVIDENCE_REPO}
+    type: text
+  - name: revision
+    value: master
+    type: text
+  - name: registry-region
+    value: ${REGISTRY_REGION_ID}
+    type: text
+  - name: app-name
+    value: ${APP_NAME}
+    type: text
+  - name: registry-namespace
+    value: ${REGISTRY_NAMESPACE}
+    type: text
+  - name: dev-cluster-namespace
+    value: ${DEV_CLUSTER_NAMESPACE}
+    type: text
+  - name: dev-region
+    value: ${DEV_REGION_ID}
+    type: text
+  - name: clusterName
+    value: ${DEV_CLUSTER_NAME}
+    type: text
+  - name: dev-resource-group
+    value: ${DEV_RESOURCE_GROUP}
+    type: text
+  - name: build_signer
+    value: ${BUILD_SIGNER}
+    type: text
+  - name: validation_signer
+    value: ${VALIDATION_SIGNER}
+    type: text
+  - name: vault_name
+    value: ${VAULT_INSTANCE}
+    type: text
