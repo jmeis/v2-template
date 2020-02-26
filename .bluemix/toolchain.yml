@@ -50,16 +50,27 @@ services:
     service_id: github_integrated
     parameters:
       repo_name: 'compliance-ci-toolchain-{{timestamp}}'
-      source_repo_url: https://github.ibm.com/one-pipeline/compliance-ci-toolchain
-      type: clone
+      repo_url: >
+        $env.type === 'link' ?
+          $env.app_repo : 'https://github.ibm.com/one-pipeline/compliance-ci-toolchain'
+      source_repo_url: >
+        $env.type === 'fork' || $env.type === 'clone' ?
+          $env.app_repo : 'https://github.ibm.com/one-pipeline/compliance-ci-toolchain'
+      type: $env.type || 'link'
       has_issues: false
       enable_traceability: false
       legal: true
   tekton-catalog-repo:
     service_id: github_integrated
     parameters:
-      repo_url: https://github.ibm.com/one-pipeline/common-tekton-tasks
-      type: link
+      repo_name: 'common-tekton-tasks-{{timestamp}}'
+      repo_url: >
+        $env.type === 'link' ?
+          $env.app_repo : 'https://github.ibm.com/one-pipeline/common-tekton-tasks'
+      source_repo_url: >
+        $env.type === 'fork' || $env.type === 'clone' ?
+          $env.app_repo : 'https://github.ibm.com/one-pipeline/common-tekton-tasks'
+      type: $env.type || 'link'
       has_issues: false
       enable_traceability: false
       legal: true
