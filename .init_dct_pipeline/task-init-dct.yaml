@@ -15,7 +15,7 @@ spec:
         by clicking **Create API key** (Each API key only can be viewed once).
     - name: app-name
       description: The name of your app
-    - name: vault_name
+    - name: vault-name
       decription: the key protect instance name
     - name: mount-path
       description: mount path directory 
@@ -25,7 +25,7 @@ spec:
       default: task-volume
     - name: region
       description: target region
-    - name: clusterName
+    - name: cluster-name
       description: the name of the targeted cluster
     - name: registry-namespace
       description: The registry namespace
@@ -33,12 +33,12 @@ spec:
       description: the registry region
     - name: resource-group
       description: the resource group
-    - name: working_dir
+    - name: working-dir
       default: "/root"
-    - name: api_endpoint
+    - name: api-endpoint
       description: api endpoint
       default: https://cloud.ibm.com
-    - name: validation_signer
+    - name: validation-signer
       description: current signer
   steps:
   - name: create-dct-keys
@@ -49,13 +49,13 @@ spec:
     - name: IMAGE_NAME
       value: $(inputs.params.app-name)
     - name: API
-      value: $(inputs.params.api_endpoint)
+      value: $(inputs.params.api-endpoint)
     - name: VAULT_INSTANCE
-      value: $(inputs.params.vault_name)
+      value: $(inputs.params.vault-name)
     - name: IBMCLOUD_TARGET_REGION
       value: $(inputs.params.region)
     - name: BUILD_CLUSTER
-      value: $(inputs.params.clusterName)
+      value: $(inputs.params.cluster-name)
     - name: REGISTRY_NAMESPACE
       value: $(inputs.params.registry-namespace)
     - name: REGISTRY_REGION
@@ -65,9 +65,9 @@ spec:
     - name: ARCHIVE_DIR
       value: $(inputs.params.mount-path)
     - name: HOME
-      value: $(inputs.params.working_dir)
+      value: $(inputs.params.working-dir)
     - name: DEVOPS_VALIDATION_SIGNER
-      value: $(inputs.params.validation_signer)
+      value: $(inputs.params.validation-signer)
     command: ["/bin/bash", "-c"]
     args:
     - |
