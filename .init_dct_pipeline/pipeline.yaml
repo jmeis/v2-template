@@ -16,14 +16,14 @@ spec:
       by clicking **Create API key** (Each API key only can be viewed once).
   - name: app-name
     description: The name of your app.
-  - name: vault_name
+  - name: vault-name
     description: Specify the Key Protect instance name, where the image signing keys
       have been stored. The build and validation signer fields contain default names
       for these signers. The values must match the values created in the Key-Management-Admin-Template.
       See https://github.com/open-toolchain/key-management-admin-toolchain
   - name: dev-region
     description: the target region
-  - name: clusterName
+  - name: cluster-name
     description: the name of the cluster to target
   - name: registry-region
     description: The IBM Cloud region for image registry
@@ -32,7 +32,7 @@ spec:
       with {ic cr namespace-add]. Learn more at https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started#getting-started.
   - name: dev-resource-group
     description: Resource Group
-  - name: validation_signer
+  - name: validation-signer
     description: the validation signer
   tasks:
   - name: init-docker-content-trust
@@ -45,17 +45,17 @@ spec:
       value: $(params.app-name)
     - name: api-key
       value: $(params.api-key)
-    - name: vault_name
-      value: $(params.vault_name)
+    - name: vault-name
+      value: $(params.vault-name)
     - name: region
       value: $(params.dev-region)
-    - name: clusterName
-      value: $(params.clusterName)
+    - name: cluster-name
+      value: $(params.cluster-name)
     - name: registry-namespace
       value: $(params.registry-namespace)
     - name: registry-region
       value: $(params.registry-region)
     - name: resource-group
       value: $(params.dev-resource-group)
-    - name: validation_signer
-      value: $(params.validation_signer)
+    - name: validation-signer
+      value: $(params.validation-signer)
