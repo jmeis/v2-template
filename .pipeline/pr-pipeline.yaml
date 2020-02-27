@@ -25,10 +25,19 @@ spec:
           value: $(params.repository)
         - name: branch
           value: $(params.branch)
-    - name: pipeline-pr-task
+    - name: unit-tests
       runAfter: [fetch-code]
       taskRef:
-        name: pr-task
+        name: unit-tests-task
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: pipelineRunId
+          value: $(params.pipelineRunId)
+    - name: check-github-statuses
+      runAfter: [unit-tests]
+      taskRef:
+        name: check-github-statuses-task
       params:
         - name: task-pvc
           value: $(params.pipeline-pvc)
