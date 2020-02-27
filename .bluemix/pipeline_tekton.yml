@@ -49,18 +49,18 @@ properties:
   - name: dev-region
     value: ${DEV_REGION_ID}
     type: text
-  - name: clusterName
+  - name: cluster-name
     value: ${DEV_CLUSTER_NAME}
     type: text
   - name: dev-resource-group
     value: ${DEV_RESOURCE_GROUP}
     type: text
-  - name: build_signer
+  - name: build-signer
     value: ${BUILD_SIGNER}
     type: text
-  - name: validation_signer
+  - name: validation-signer
     value: ${VALIDATION_SIGNER}
     type: text
-  - name: vault_name
+  - name: vault-name
     value: ${VAULT_INSTANCE}
     type: text

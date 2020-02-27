@@ -22,7 +22,7 @@ spec:
     description: Cluster namespace
   - name: build-region
     description: Build region
-  - name: vault_name
+  - name: vault-name
     description: Specify the Key Protect instance name, where the image signing keys
       have been stored. The build and validation signer fields contain default names
       for these signers. The values must match the values created in the Key-Management-Admin-Template.
@@ -50,17 +50,17 @@ spec:
     description: Resource Group
   - name: build-resource-group
     description: Build Resource Group
-  - name: validation_signer
-    description: VALIDATION_SIGNER
-  - name: build_signer
-    description: BUILD_SIGNER
+  - name: validation-signer
+    description: validation signer
+  - name: build-signer
+    description: build-signer
   - name: branch
     description: the branch for the git repo
   - name: evidence-locker
     description: evidence locker for the app
-  - name: clusterName
+  - name: cluster-name
     description: the name of the cluster to target
-  - name: vault_name
+  - name: vault-name
     description: key protect instance name
   - name: dev-region
     description: the target region
@@ -228,5 +228,5 @@ spec:
         value: $(params.registry-region)
       - name: api-key
         value: $(params.api-key)
-      - name: clusterName
-        value: $(params.clusterName)
+      - name: cluster-name
+        value: $(params.cluster-name)

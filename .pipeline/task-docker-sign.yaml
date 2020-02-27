@@ -15,17 +15,17 @@ spec:
         Service API and interact with the cluster. You can obtain your API key with
         'ic iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
         by clicking **Create API key** (Each API key only can be viewed once).
-    - name: validation_signer
+    - name: validation-signer
       description: current signer
     - name: registry-namespace
       description: The registry namespace
     - name: registry-region
       description: the registry region
-    - name: vault_name
+    - name: vault-name
       decription: the key protect instance name
     - name: resource-group
       description: the resource group
-    - name: clusterName
+    - name: cluster-name
       description: the name of the targeted cluster
     - name: region
       description: target region
@@ -53,9 +53,9 @@ spec:
     - name: REGISTRY_NAMESPACE
       value: $(inputs.params.registry-namespace)
     - name: VAULT_INSTANCE
-      value: $(inputs.params.vault_name)
+      value: $(inputs.params.vault-name)
     - name: DEVOPS_SIGNER
-      value: $(inputs.params.validation_signer)
+      value: $(inputs.params.validation-signer)
     - name: IBMCLOUD_TARGET_RESOURCE_GROUP
       value: $(inputs.params.resource-group)
     - name: REGISTRY_REGION
@@ -63,7 +63,7 @@ spec:
     - name: IBMCLOUD_TARGET_REGION
       value: $(inputs.params.region)
     - name: BUILD_CLUSTER
-      value: $(inputs.params.clusterName)
+      value: $(inputs.params.cluster-name)
     - name: ARCHIVE_DIR
       value: $(inputs.params.mount-path)
     - name: IMAGE_NAME
