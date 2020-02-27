@@ -262,6 +262,48 @@ spec:
           name: task-volume
         - mountPath: /steps
           name: steps-volume
+
+    - name: update-inventory
+      image: ibmcom/pipeline-base-image
+      command: ["/bin/bash", "-c"]
+      args:
+        - |
+          #!/bin/bash
+          set -e
+          source /artifacts/build.properties
+          source /steps/next-step-env.properties
+
+          INVENTORY_REPO=$(jq -r '.services[] | select(.toolchain_binding.name == "inventory-repo") | .parameters.owner_id + "/" + .parameters.repo_name' /cd-config/toolchain.json)
+
+          git clone "https://$GHE_TOKEN@github.ibm.com/$INVENTORY_REPO.git" inventory
+
+          cd inventory
+
+          git config user.name 'Tekton'
+          git config user.email 'tekton@ibm.com'
+
+          # workaround to have a root commit (so you can create a PR against this empty branch)
+          # later on we should probably clone a repo which has already a root commit
+          if [[ $(git branch | wc -l) -eq 0 ]]; then
+            git commit --allow-empty -m 'initial commit'
+            git push origin master
+          fi
+
+          DEPLOYMENT=${REPO}_us-south_prod
+          git checkout -B $DEPLOYMENT
+          echo $(cat /steps/tags.lst) >> $DEPLOYMENT
+          git add $DEPLOYMENT
+          git commit -m "Deployment $DEPLOYMENT"
+          git push -f origin $DEPLOYMENT
+
+      volumeMounts:
+        - mountPath: /artifacts
+          name: task-volume
+        - mountPath: /steps
+          name: steps-volume
+        - mountPath: /cd-config
+          name: cd-config-volume
+
     - name: process-build-log
       # An image including only jq should be sufficient
       image: ibmcom/pipeline-base-image

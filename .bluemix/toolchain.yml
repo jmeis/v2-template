@@ -16,6 +16,7 @@ template:
     - pipeline-repo
     - evidence-repo
     - issues-repo
+    - inventory-repo
   info:
     git url: >
       "[" + $env.repository + "]" +
@@ -68,6 +69,14 @@ services:
       repo_name: 'compliance-ci-issues-{{timestamp}}'
       type: new
       has_issues: true
+      enable_traceability: false
+      legal: true
+  inventory-repo:
+    service_id: github_integrated
+    parameters:
+      repo_name: 'compliance-ci-inventory-{{timestamp}}'
+      type: new
+      has_issues: false
       enable_traceability: false
       legal: true
   build:
