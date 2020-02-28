@@ -9,14 +9,15 @@ triggers:
     name: Git PR Trigger
     service: ${APP_REPO}
     branch: master
-    events: >
-      {"push":false,"pull_request":true,"pull_request_closed":false}
+    events:
+      pull_request: true
     eventListener: pr-listener
   - type: git
     name: Git CI Trigger
     service: ${APP_REPO}
     branch: master
-    events: {"push":true}
+    events:
+      push: true
     eventListener: listener
   - type: manual
     name: Manual Trigger
