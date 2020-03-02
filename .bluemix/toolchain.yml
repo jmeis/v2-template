@@ -14,6 +14,7 @@ template:
     - init_dct
     - app-repo
     - pipeline-repo
+    - tekton-catalog-repo
     - evidence-repo
     - issues-repo
     - inventory-repo
@@ -50,8 +51,27 @@ services:
     service_id: github_integrated
     parameters:
       repo_name: 'compliance-ci-toolchain-{{timestamp}}'
-      source_repo_url: https://github.ibm.com/one-pipeline/compliance-ci-toolchain
-      type: clone
+      repo_url: >
+        $env.type === 'link' ?
+          $env.app_repo : 'https://github.ibm.com/one-pipeline/compliance-ci-toolchain'
+      source_repo_url: >
+        $env.type === 'fork' || $env.type === 'clone' ?
+          $env.app_repo : 'https://github.ibm.com/one-pipeline/compliance-ci-toolchain'
+      type: $env.type || 'link'
+      has_issues: false
+      enable_traceability: false
+      legal: true
+  tekton-catalog-repo:
+    service_id: github_integrated
+    parameters:
+      repo_name: 'common-tekton-tasks-{{timestamp}}'
+      repo_url: >
+        $env.type === 'link' ?
+          $env.app_repo : 'https://github.ibm.com/one-pipeline/common-tekton-tasks'
+      source_repo_url: >
+        $env.type === 'fork' || $env.type === 'clone' ?
+          $env.app_repo : 'https://github.ibm.com/one-pipeline/common-tekton-tasks'
+      type: $env.type || 'link'
       has_issues: false
       enable_traceability: false
       legal: true
@@ -85,6 +105,7 @@ services:
       services:
         - app-repo
         - pipeline-repo
+        - tekton-catalog-repo
       name: '{{services.app-repo.parameters.repo_name}}'
       ui-pipeline: true
       type: tekton
@@ -107,6 +128,7 @@ services:
           BUILD_SIGNER: '{{form.pipeline.parameters.build_signer}}'
           VALIDATION_SIGNER: '{{form.pipeline.parameters.validation_signer}}'
           EVIDENCE_REPO: '{{form.evidence-repo.parameters.owner_id}}/{{form.evidence-repo.parameters.repo_name}}'
+          TEKTON_CATALOG_REPO: tekton-catalog-repo
         execute: false
   init_dct:
     service_id: pipeline
