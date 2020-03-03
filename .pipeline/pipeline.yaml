@@ -129,10 +129,51 @@ spec:
         name: oss-licence-check-task
       runAfter: [vulnerability-advisor]
       params:
+    - name: fetch-iks-cluster-config
+      runAfter: [oss-licence-check]
+      taskRef:
+        name: fetch-iks-cluster-config
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: clusterPipelineResourcesDirectoryFallback
+          value: .tekton-clusters
+      resources:
+        inputs:
+          - name: cluster
+            resource: target-cluster
+        outputs:
+          - name: cluster
+            resource: target-cluster
+    - name: pipeline-1-kubectl-task
+      runAfter: [fetch-iks-cluster-config]
+      taskRef:
+        name: kubernetes-contextual-execution
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: task-pvc-mountpath
+          value: /pipelinerun
+        - name: clusterPipelineResourcesDirectory
+          value: /pipelinerun/.tekton-clusters
+        - name: script
+          value: |
+            echo "** Here is the kubectl version:"
+            kubectl version
+            echo "** Here is the kubectl cluster-info:"
+            kubectl cluster-info
+            echo "** Here are the kubectl namespaces:"
+            kubectl get namespaces
+      resources:
+        inputs:
+          - name: cluster
+            resource: target-cluster
+            from:
+              - fetch-iks-cluster-config
     - name: deploy-dev
       taskRef:
         name: deploy-dev-task
-      runAfter: [vulnerability-advisor]
+      runAfter: [pipeline-1-kubectl-task]
       params:
       - name: task-pvc
         value: $(params.pipeline-pvc)
