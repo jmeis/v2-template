@@ -34,6 +34,8 @@ spec:
           value: $(params.pipeline-pvc)
         - name: pipelineRunId
           value: $(params.pipelineRunId)
+        - name: context
+          value: tekton/pr-unit-tests
     - name: check-github-statuses
       runAfter: [unit-tests]
       taskRef:
@@ -45,3 +47,29 @@ spec:
           value: $(params.pipelineRunId)
         - name: target-branch
           value: $(params.target-branch)
+        - name: requiredChecks
+          value: |
+            [{
+              "type": "check-run",
+              "name": "secret-detection",
+              "params": {
+                "name": "whitewater-detect-secrets"
+              }
+            }, {
+              "type": "branch-protection",
+              "name": "code-review",
+              "params": {
+                "checks": [
+                  "whitewater-detect-secrets",
+                  "tekton/pr-compliance"
+                ]
+              }
+            }, {
+              "type": "status",
+              "name": "unit-tests",
+              "params": {
+                "name": "tekton/pr-unit-tests"
+              }
+            }]
+        - name: context
+          value: tekton/pr-compliance

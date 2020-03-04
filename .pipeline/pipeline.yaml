@@ -7,8 +7,8 @@ spec:
   params:
   - name: pipeline-pvc
     description: pipeline pvc name place holder
-  - name: pipeline-id
-    description: id of the pipeline run
+  - name: pipelineRunId
+    description: pipelineRunId unique ID
   - name: registry-namespace
     description: The namespace in the container image registry. You can set it up
       with {bx cr namespace-add]. Learn more at https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started#getting-started.
@@ -29,8 +29,6 @@ spec:
       by clicking **Create API key** (Each API key only can be viewed once).
   - name: branch
     description: the branch for the git repo
-  - name: evidence-locker
-    description: evidence locker for the app
   - name: cluster-name
     description: the name of the cluster to target
   resources:
@@ -49,33 +47,41 @@ spec:
         value: $(params.repository)
       - name: branch
         value: $(params.branch)
-    - name: pre-build-tests
+    - name: unit-tests
       runAfter: [fetch-code]
       taskRef:
-        name: pre-build-task
+        name: unit-tests-task
       params:
       - name: task-pvc
         value: $(params.pipeline-pvc)
-      - name: pipeline-id
-        value: $(params.pipeline-id)
-      - name: registry-namespace
-        value: $(params.registry-namespace)
-      - name: repo
-        value: $(params.repo)
-      - name: repository
-        value: $(params.repository)
-      - name: app-name
-        value: $(params.app-name)
-      - name: revision
-        value: $(params.revision)
-      - name: registry-region
-        value: $(params.registry-region)
-      - name: api-key
-        value: $(params.api-key)
-      - name: evidence-locker
-        value: $(params.evidence-locker)
+      - name: pipelineRunId
+        value: $(params.pipelineRunId)
+      - name: context
+        value: tekton/ci-unit-tests
+    - name: check-github-statuses
+      runAfter: [unit-tests]
+      taskRef:
+        name: check-github-statuses-task
+      params:
+      - name: task-pvc
+        value: $(params.pipeline-pvc)
+      - name: pipelineRunId
+        value: $(params.pipelineRunId)
+      - name: target-branch
+        value: $(params.branch)
+      - name: requiredChecks
+        value: |
+         [{
+           "type": "status",
+           "name": "unit-test",
+           "params": {
+             "name": "tekton/ci-unit-tests"
+           }
+         }]
+      - name: context
+        value: tekton/ci-compliance
     - name: containerize
-      runAfter: [pre-build-tests]
+      runAfter: [check-github-statuses]
       taskRef:
         name: containerize-task
       params:
