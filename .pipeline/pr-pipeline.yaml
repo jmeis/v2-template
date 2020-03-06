@@ -1,0 +1,75 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: pr-pipeline
+spec:
+  params:
+    - name: repository
+      description: the git repo
+    - name: branch
+      description: branch
+    - name: pipelineRunId
+      description: pipelineRunId unique ID
+    - name: pipeline-pvc
+      description: pipeline pvc name place holder
+    - name: target-branch
+      description: target branch
+  tasks:
+    - name: fetch-code
+      taskRef:
+        name: clone-repo-task
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: repository
+          value: $(params.repository)
+        - name: branch
+          value: $(params.branch)
+    - name: unit-tests
+      runAfter: [fetch-code]
+      taskRef:
+        name: unit-tests-task
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: pipelineRunId
+          value: $(params.pipelineRunId)
+        - name: context
+          value: tekton/pr-unit-tests
+    - name: check-github-statuses
+      runAfter: [unit-tests]
+      taskRef:
+        name: check-github-statuses-task
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: pipelineRunId
+          value: $(params.pipelineRunId)
+        - name: target-branch
+          value: $(params.target-branch)
+        - name: requiredChecks
+          value: |
+            [{
+              "type": "check-run",
+              "name": "secret-detection",
+              "params": {
+                "name": "whitewater-detect-secrets"
+              }
+            }, {
+              "type": "branch-protection",
+              "name": "code-review",
+              "params": {
+                "checks": [
+                  "whitewater-detect-secrets",
+                  "tekton/pr-compliance"
+                ]
+              }
+            }, {
+              "type": "status",
+              "name": "unit-tests",
+              "params": {
+                "name": "tekton/pr-unit-tests"
+              }
+            }]
+        - name: context
+          value: tekton/pr-compliance

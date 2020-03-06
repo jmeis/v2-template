@@ -1,3 +1,4 @@
+---
 version: '2'
 messages:
   $i18n: locales.yml
@@ -10,10 +11,13 @@ template:
   icon: secure-lock-kubernetes.svg
   required:
     - build
+    - init_dct
     - app-repo
     - pipeline-repo
+    - tekton-catalog-repo
     - evidence-repo
     - issues-repo
+    - inventory-repo
   info:
     git url: >
       "[" + $env.repository + "]" +
@@ -32,13 +36,13 @@ services:
     service_id: >
       $env.source_provider ? $env.source_provider : 'github_integrated'
     parameters:
-      repo_name: 'hello-containers-{{timestamp}}'
+      repo_name: 'hello-compliance-{{timestamp}}'
       repo_url: >
-        $env.type === 'link' ? 
-          $env.app_repo : 'https://github.com/padraic-edwards/hello-containers'
+        $env.type === 'link' ?
+          $env.app_repo : 'https://github.ibm.com/one-pipeline/hello-compliance-app'
       source_repo_url: >
-        $env.type === 'fork' || $env.type === 'clone' ? 
-          $env.app_repo : 'https://github.com/padraic-edwards/hello-containers'
+        $env.type === 'fork' || $env.type === 'clone' ?
+          $env.app_repo : 'https://github.ibm.com/one-pipeline/hello-compliance-app'
       type: $env.type || 'clone'
       has_issues: false
       enable_traceability: false
@@ -47,8 +51,27 @@ services:
     service_id: github_integrated
     parameters:
       repo_name: 'compliance-ci-toolchain-{{timestamp}}'
-      source_repo_url: https://github.ibm.com/one-pipeline/compliance-ci-toolchain
-      type: clone
+      repo_url: >
+        $env.type === 'link' ?
+          $env.app_repo : 'https://github.ibm.com/one-pipeline/compliance-ci-toolchain'
+      source_repo_url: >
+        $env.type === 'fork' || $env.type === 'clone' ?
+          $env.app_repo : 'https://github.ibm.com/one-pipeline/compliance-ci-toolchain'
+      type: $env.type || 'link'
+      has_issues: false
+      enable_traceability: false
+      legal: true
+  tekton-catalog-repo:
+    service_id: github_integrated
+    parameters:
+      repo_name: 'common-tekton-tasks-{{timestamp}}'
+      repo_url: >
+        $env.type === 'link' ?
+          $env.app_repo : 'https://github.ibm.com/one-pipeline/common-tekton-tasks'
+      source_repo_url: >
+        $env.type === 'fork' || $env.type === 'clone' ?
+          $env.app_repo : 'https://github.ibm.com/one-pipeline/common-tekton-tasks'
+      type: $env.type || 'link'
       has_issues: false
       enable_traceability: false
       legal: true
@@ -68,12 +91,21 @@ services:
       has_issues: true
       enable_traceability: false
       legal: true
+  inventory-repo:
+    service_id: github_integrated
+    parameters:
+      repo_name: 'compliance-ci-inventory-{{timestamp}}'
+      type: new
+      has_issues: false
+      enable_traceability: false
+      legal: true
   build:
     service_id: pipeline
     parameters:
       services:
         - app-repo
         - pipeline-repo
+        - tekton-catalog-repo
       name: '{{services.app-repo.parameters.repo_name}}'
       ui-pipeline: true
       type: tekton
@@ -82,6 +114,7 @@ services:
           $text: pipeline_tekton.yml
         env:
           PIPELINE_REPO: pipeline-repo
+          APP_REPO: app-repo
           IMAGE_URL: 'us.icr.io/{{form.pipeline.parameters.registry-namespace}}/{{form.pipeline.parameters.app-name}}'
           APP_NAME: '{{form.pipeline.parameters.app-name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
@@ -95,6 +128,33 @@ services:
           BUILD_SIGNER: '{{form.pipeline.parameters.build_signer}}'
           VALIDATION_SIGNER: '{{form.pipeline.parameters.validation_signer}}'
           EVIDENCE_REPO: '{{form.evidence-repo.parameters.owner_id}}/{{form.evidence-repo.parameters.repo_name}}'
+          TEKTON_CATALOG_REPO: tekton-catalog-repo
+        execute: false
+  init_dct:
+    service_id: pipeline
+    parameters:
+      services:
+        - pipeline-repo
+      name: 'dct init {{form.pipeline.parameters.registry-namespace}} {{form.pipeline.parameters.app-name}}'
+      ui-pipeline: true
+      type: tekton
+      configuration:
+        content:
+          $text: init_dct_pipeline_tekton.yml
+        env:
+          DCT_PIPELINE_REPO: pipeline-repo
+          APP_REPO: app-repo
+          APP_NAME: '{{form.pipeline.parameters.app-name}}'
+          REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
+          REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
+          API_KEY: '{{form.pipeline.parameters.api-key}}'
+          DEV_REGION_ID: '{{form.pipeline.parameters.dev-region}}'
+          DEV_RESOURCE_GROUP: '{{form.pipeline.parameters.dev-resource-group}}'
+          DEV_CLUSTER_NAME: '{{form.pipeline.parameters.dev-cluster-name}}'
+          DEV_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.dev-cluster-namespace}}'
+          VAULT_INSTANCE: '{{form.pipeline.parameters.vault_name}}'
+          BUILD_SIGNER: '{{form.pipeline.parameters.build_signer}}'
+          VALIDATION_SIGNER: '{{form.pipeline.parameters.validation_signer}}'
         execute: false
   webide:
     service_id: orion
@@ -102,7 +162,7 @@ form:
   pipeline:
     parameters:
       app-name: '{{services.app-repo.parameters.repo_name}}'
-      dev-cluster-namespace: dev
+      dev-cluster-namespace: default
       build-cluster-namespace: build
       vault_name: ''
       build_signer: 'devops-build'
