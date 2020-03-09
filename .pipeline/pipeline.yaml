@@ -37,9 +37,18 @@ spec:
   - name: target-cluster
     type: cluster
   tasks:
-    - name: fetch-code
+    - name: fetch-credentials
       taskRef:
-        name: clone-repo-task
+        name: get-git-credentials
+      params:
+      - name: credentials-pvc
+        value: $(params.pipeline-pvc)
+      - name: repository
+        value: $(params.repository)
+    - name: fetch-code
+      runAfter: [fetch-credentials]
+      taskRef:
+        name: git-clone
       params:
       - name: task-pvc
         value: $(params.pipeline-pvc)
@@ -47,6 +56,8 @@ spec:
         value: $(params.repository)
       - name: branch
         value: $(params.branch)
+      - name: revision
+        value: $(params.revision)
     - name: unit-tests
       runAfter: [fetch-code]
       taskRef:
