@@ -48,6 +48,17 @@ spec:
     description: namespace dev
   resourcetemplates:
     - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: pipelinerun-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage:  5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+    - apiVersion: v1
       kind: Secret
       metadata:
         name: cd-secret
@@ -185,6 +196,17 @@ spec:
     - name: target-branch
       description: target branch
   resourcetemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: pipelinerun-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage:  5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
     - apiVersion: v1
       kind: Secret
       metadata:
