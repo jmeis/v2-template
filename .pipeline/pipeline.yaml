@@ -176,26 +176,25 @@ spec:
             resource: target-cluster
             from:
               - fetch-iks-cluster-config
+
     - name: deploy-dev
       taskRef:
-        name: deploy-dev-task
+        name: deploy-to-cluster
       runAfter: [pipeline-1-kubectl-task]
       params:
       - name: task-pvc
         value: $(params.pipeline-pvc)
-      - name: registry-namespace
-        value: $(params.registry-namespace)
-      - name: repo
-        value: $(params.repo)
       - name: repository
         value: $(params.repository)
-      - name: app-name
-        value: $(params.app-name)
       - name: revision
         value: $(params.revision)
-      - name: registry-region
-        value: $(params.registry-region)
-      - name: api-key
-        value: $(params.api-key)
       - name: cluster-name
         value: $(params.cluster-name)
+      - name: registry-namespace
+        value: $(params.registry-namespace)
+      - name: registry-region
+        value: $(params.registry-region)
+      - name: ibmcloud-api-key
+        value: $(params.api-key)
+      - name: allow-create-route
+        value: "true"
