@@ -208,7 +208,6 @@ spec:
         - |
           source /steps/next-step-env.properties
           export $(cut -d= -f1 /steps/next-step-env.properties)
-
           # Manage multiple tags for an image
           # Add dynamically computed tags
           printf "#!/bin/sh\n%s\n" '$(inputs.params.additionalTagsScript)' > /steps/additionnalTags.sh
@@ -269,7 +268,7 @@ spec:
       args:
         - |
           #!/bin/bash
-          set -e
+          set -e -o pipefail
           source /artifacts/build.properties
           source /steps/next-step-env.properties
 
@@ -295,6 +294,24 @@ spec:
           git add $DEPLOYMENT
           git commit -m "Deployment $DEPLOYMENT"
           git push -f origin $DEPLOYMENT
+
+          pullrequestsurl="https://github.ibm.com/api/v3/repos/${INVENTORY_REPO}/pulls"
+          export openinventorypullrequesttitle="${REPO}_us-south_prod"
+
+          curl -s --raw -o "pullrequests.json" --max-time 60 -X GET \
+                  -H "Authorization: Bearer ${GHE_TOKEN}" \
+                  -H "Content-Type: application/vnd.github.sailor-v-preview+json" \
+                  $pullrequestsurl
+          echo $openinventorypullrequesttitle
+          if [[ $(cat pullrequests.json | jq --arg openinventorypullrequesttitle "$openinventorypullrequesttitle" '.[] | .title == $openinventorypullrequesttitle') != "true" ]]; then
+            echo "there is no pullrequest yet, opening one with with title: $openinventorypullrequesttitle"
+            curl -s --max-time 60 -X POST \
+                  -H "Authorization: Bearer ${GHE_TOKEN}" \
+                  -H "Content-Type: application/vnd.github.sailor-v-preview+json" \
+                  -d '{ "title": "'$openinventorypullrequesttitle'",
+                        "head": "'$openinventorypullrequesttitle'",
+                        "base": "master" }' $pullrequestsurl
+          fi
 
       volumeMounts:
         - mountPath: /artifacts
