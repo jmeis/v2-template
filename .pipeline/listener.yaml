@@ -77,7 +77,7 @@ spec:
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineResource
       metadata:
-        name: the-cluster
+        name: $(params.cluster-name)
       spec:
         type: cluster
         params:
@@ -104,7 +104,7 @@ spec:
               name: image-to-build
           - name: target-cluster
             resourceRef:
-              name: the-cluster
+              name: $(params.cluster-name)
         params:
         - name: pipeline-pvc
           value: pipelinerun-$(uid)-pvc
