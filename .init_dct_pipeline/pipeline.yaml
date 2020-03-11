@@ -60,6 +60,7 @@ spec:
         - name: validation-signer
           value: $(params.validation-signer)
     - name: apply-image-enforcement-policy
+      runAfter: [init-docker-content-trust]
       taskRef:
         name: apply-image-enforcement-task
       params:
