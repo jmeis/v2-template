@@ -12,6 +12,10 @@ inputs:
     branch: master
     service: ${TEKTON_CATALOG_REPO}
     path: preview/compliance-checks
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: preview/iks
 triggers:
   - type: git
     name: Git PR Trigger
