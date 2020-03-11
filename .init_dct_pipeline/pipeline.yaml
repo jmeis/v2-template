@@ -59,3 +59,28 @@ spec:
           value: $(params.dev-resource-group)
         - name: validation-signer
           value: $(params.validation-signer)
+    - name: apply-image-enforcement-policy
+      runAfter: [init-docker-content-trust]
+      taskRef:
+        name: apply-image-enforcement-task
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: app-name
+          value: $(params.app-name)
+        - name: api-key
+          value: $(params.api-key)
+        - name: vault-name
+          value: $(params.vault-name)
+        - name: region
+          value: $(params.dev-region)
+        - name: cluster-name
+          value: $(params.cluster-name)
+        - name: registry-namespace
+          value: $(params.registry-namespace)
+        - name: registry-region
+          value: $(params.registry-region)
+        - name: resource-group
+          value: $(params.dev-resource-group)
+        - name: validation-signer
+          value: $(params.validation-signer)

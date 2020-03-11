@@ -9,12 +9,6 @@ inputs:
     service: ${TEKTON_CATALOG_REPO}
     path: preview/dct
 triggers:
-  - type: git
-    name: Git PR Trigger
-    service: ${DCT_PIPELINE_REPO}
-    branch: master
-    events: {"push":true, "pull_request":true, "pull_request_closed":false}
-    eventListener: listener
   - type: manual
     name: Manual Trigger
     eventListener: listener
