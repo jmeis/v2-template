@@ -55,25 +55,31 @@ spec:
       - name: DOCKER_FILE
         value: 'Dockerfile'
       - name: DOCKER_ROOT
-        value: '/artifacts/'
+        value: '/artifacts'
       - name: HOME
         value: "/root"
+      - name: PROPERTIES_FILE
+        value: $(inputs.params.propertiesFile)
       command: ["/bin/bash", "-c"]
       args:
         - |
           set -e -o pipefail;
           export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+          # View build properties
+          if [ -f /artifacts/$PROPERTIES_FILE ]; then
+            echo "${PROPERTIES_FILE}:"
+            cat /artifacts/$PROPERTIES_FILE | grep -v -i password
+            source /artifacts/$PROPERTIES_FILE
+          else
+            echo "${PROPERTIES_FILE} : not found"
+          fi
+
           # Input env variables (can be received via a pipeline environment properties.file.
+          DOCKER_ROOT=${DOCKER_ROOT}/${APP_DIRECTORY}
           echo "DOCKER_ROOT=${DOCKER_ROOT}"
           echo "DOCKER_FILE=${DOCKER_FILE}"
 
-          # View build properties
-          if [ -f /artifacts/build.properties ]; then 
-            echo "build.properties:"
-            cat /artifacts/build.properties | grep -v -i password
-          else 
-            echo "build.properties : not found"
-          fi 
           # also run 'env' command to find all available env variables
           # or learn more about the available environment variables at:
           # https://cloud.ibm.com/docs/services/ContinuousDelivery/pipeline_deploy_var.html#deliverypipeline_environment
@@ -82,7 +88,7 @@ spec:
           echo "Checking for Dockerfile at the repository root"
           if [ -z "${DOCKER_ROOT}" ]; then DOCKER_ROOT=. ; fi
           if [ -z "${DOCKER_FILE}" ]; then DOCKER_FILE=Dockerfile ; fi
-          if [ -f ${DOCKER_ROOT}/${DOCKER_FILE} ]; then 
+          if [ -f ${DOCKER_ROOT}/${DOCKER_FILE} ]; then
               echo -e "Dockerfile found at: ${DOCKER_FILE}"
           else
               echo "Dockerfile not found at: ${DOCKER_FILE}"
@@ -201,11 +207,14 @@ spec:
       env:
         - name: DOCKER_CONFIG
           value: /steps
+        - name: PROPERTIES_FILE
+          value: $(inputs.params.propertiesFile)
       securityContext:
         privileged: true
       command: ["/bin/sh", "-c"]
       args:
         - |
+          source /artifacts/$PROPERTIES_FILE
           source /steps/next-step-env.properties
           export $(cut -d= -f1 /steps/next-step-env.properties)
           # Manage multiple tags for an image
@@ -242,7 +251,7 @@ spec:
             --progress=plain \
             --frontend=dockerfile.v0 \
             --opt filename=$(inputs.params.dockerfile) \
-            --local context=/artifacts/$(inputs.params.pathToContext) --local dockerfile=/artifacts/$(inputs.params.pathToDockerfile) \
+            --local context=/artifacts/$(inputs.params.pathToContext)/$APP_DIRECTORY --local dockerfile=/artifacts/$(inputs.params.pathToDockerfile)/$APP_DIRECTORY \
             --exporter=image --exporter-opt "name=$BUILDKIT_IMAGE_NAMES" --exporter-opt "push=true" \
             --export-cache type=inline \
             --import-cache type=registry,ref=$(outputs.resources.builtImage.url) 2>&1 | tee /steps/build.log
@@ -264,17 +273,20 @@ spec:
 
     - name: update-inventory
       image: ibmcom/pipeline-base-image
+      env:
+        - name: PROPERTIES_FILE
+          value: $(inputs.params.propertiesFile)
       command: ["/bin/bash", "-c"]
       args:
         - |
           #!/bin/bash
           set -e -o pipefail
-          source /artifacts/build.properties
+          source /artifacts/$PROPERTIES_FILE
           source /steps/next-step-env.properties
 
           INVENTORY_REPO=$(jq -r '.services[] | select(.toolchain_binding.name == "inventory-repo") | .parameters.owner_id + "/" + .parameters.repo_name' /cd-config/toolchain.json)
 
-          git clone "https://$GHE_TOKEN@github.ibm.com/$INVENTORY_REPO.git" inventory
+          git clone "https://$GIT_TOKEN@github.ibm.com/$INVENTORY_REPO.git" inventory
 
           cd inventory
 
