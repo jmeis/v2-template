@@ -135,6 +135,7 @@ services:
     parameters:
       services:
         - pipeline-repo
+        - tekton-catalog-repo
       name: 'dct init {{form.pipeline.parameters.registry-namespace}} {{form.pipeline.parameters.app-name}}'
       ui-pipeline: true
       type: tekton
@@ -143,6 +144,7 @@ services:
           $text: init_dct_pipeline_tekton.yml
         env:
           DCT_PIPELINE_REPO: pipeline-repo
+          TEKTON_CATALOG_REPO: tekton-catalog-repo
           APP_REPO: app-repo
           APP_NAME: '{{form.pipeline.parameters.app-name}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
