@@ -204,9 +204,9 @@ spec:
           value: $(params.revision)
         - name: cluster-name
           value: $(params.cluster-name)
-        - name: registry-namespace
+        - name: cluster-namespace
           value: $(params.registry-namespace)
-        - name: registry-region
+        - name: cluster-region
           value: $(params.registry-region)
         - name: ibmcloud-api-key
           value: $(params.api-key)
