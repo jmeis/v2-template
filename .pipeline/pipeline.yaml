@@ -94,6 +94,8 @@ spec:
            }]
         - name: context
           value: tekton/ci-compliance
+        - name: collect-evidence
+          value: "1"
     - name: containerize
       runAfter: [check-github-statuses]
       taskRef:
