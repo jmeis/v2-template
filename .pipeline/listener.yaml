@@ -232,3 +232,5 @@ spec:
             value: $(uid)
           - name: target-branch
             value: $(params.target-branch)
+          - name: api-key
+            value: $(params.api-key)
