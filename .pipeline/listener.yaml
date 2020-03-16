@@ -138,6 +138,8 @@ spec:
           value: $(params.branch)
         - name: cluster-name
           value: $(params.cluster-name)
+        - name: dev-cluster-namespace
+          value: $(params.dev-cluster-namespace)
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding

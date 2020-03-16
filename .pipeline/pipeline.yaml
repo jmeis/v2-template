@@ -32,6 +32,8 @@ spec:
       description: the branch for the git repo
     - name: cluster-name
       description: the name of the cluster to target
+    - name: dev-cluster-namespace
+      description: the namespace
   resources:
     - name: app-image
       type: image
@@ -213,7 +215,7 @@ spec:
         - name: cluster-name
           value: $(params.cluster-name)
         - name: cluster-namespace
-          value: $(params.registry-namespace)
+          value: $(params.dev-cluster-namespace)
         - name: cluster-region
           value: $(params.registry-region)
         - name: ibmcloud-api-key
