@@ -44,6 +44,8 @@ spec:
       params:
         - name: credentials-pvc
           value: $(params.pipeline-pvc)
+        - name: ibmcloud-api-key
+          value: $(params.api-key)
         - name: repository
           value: $(params.repository)
     - name: fetch-code
@@ -120,6 +122,8 @@ spec:
           value: $(params.pipeline-pvc)
         - name: scanReportFile
           value: 'app-image-va-report.json'
+        - name: ibmcloud-api-key
+          value: $(params.api-key)
         # - name: maxIteration
         #   value: '5'
         # - name: sleepTime
@@ -154,6 +158,8 @@ spec:
       params:
         - name: task-pvc
           value: $(params.pipeline-pvc)
+        - name: ibmcloud-api-key
+          value: $(params.api-key)
         - name: cluster-name
           value: $(params.cluster-name)
         - name: cluster-pipeline-resources-directory-fallback
