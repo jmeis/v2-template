@@ -34,6 +34,8 @@ spec:
       description: the name of the cluster to target
     - name: dev-cluster-namespace
       description: the namespace
+    - name: repository-integration
+      description: the repo integration name
   resources:
     - name: app-image
       type: image
@@ -50,6 +52,8 @@ spec:
           value: $(params.api-key)
         - name: repository
           value: $(params.repository)
+        - name: repository-integration
+          value: $(params.repository-integration)
     - name: fetch-code
       runAfter: [fetch-credentials]
       taskRef:

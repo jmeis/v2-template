@@ -19,6 +19,8 @@ spec:
         Service API and interact with the cluster. You can obtain your API key with
         'bx iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
         by clicking **Create API key** (Each API key only can be viewed once).
+    - name: repository-integration
+      description: the repo integration name
   tasks:
     - name: fetch-credentials
       taskRef:
@@ -30,6 +32,8 @@ spec:
           value: $(params.repository)
         - name: ibmcloud-api-key
           value: $(params.api-key)
+        - name: repository-integration
+          value: $(params.repository-integration)
     - name: fetch-code
       runAfter: [fetch-credentials]
       taskRef:
