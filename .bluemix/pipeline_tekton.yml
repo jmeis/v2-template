@@ -16,6 +16,10 @@ inputs:
     branch: master
     service: ${TEKTON_CATALOG_REPO}
     path: preview/iks
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: preview/containerize
 triggers:
   - type: git
     name: Git PR Trigger
