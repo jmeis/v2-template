@@ -46,6 +46,8 @@ spec:
     description: The image url in your container registry
   - name: dev-cluster-namespace
     description: namespace dev
+  - name: repository-integration
+    description: the repo integration name
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -140,6 +142,8 @@ spec:
           value: $(params.cluster-name)
         - name: dev-cluster-namespace
           value: $(params.dev-cluster-namespace)
+        - name: repository-integration
+          value: $(params.repository-integration)
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
@@ -197,6 +201,8 @@ spec:
       description: branch
     - name: target-branch
       description: target branch
+    - name: repository-integration
+      description: the repo integration name
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -236,3 +242,5 @@ spec:
             value: $(params.target-branch)
           - name: api-key
             value: $(params.api-key)
+          - name: repository-integration
+            value: $(params.repository-integration)

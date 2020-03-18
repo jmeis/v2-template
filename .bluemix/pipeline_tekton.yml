@@ -81,3 +81,6 @@ properties:
   - name: vault-name
     value: ${VAULT_INSTANCE}
     type: text
+  - name: repository-integration
+    value: app-repo
+    type: text
