@@ -89,6 +89,8 @@ spec:
           value: $(params.pipelineRunId)
         - name: target-branch
           value: $(params.branch)
+        - name: repository-integration
+          value: $(params.repository-integration)
         - name: requiredChecks
           value: |
            [{
