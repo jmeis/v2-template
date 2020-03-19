@@ -32,6 +32,8 @@ toolchain:
     getting_started:
       $ref: "#/messages/template.gettingStarted"
 services:
+  artifactoryComp:
+    service_id: artifactory
   app-repo:
     service_id: >
       $env.source_provider ? $env.source_provider : 'github_integrated'
@@ -129,6 +131,7 @@ services:
           VALIDATION_SIGNER: '{{form.pipeline.parameters.validation_signer}}'
           EVIDENCE_REPO: '{{form.evidence-repo.parameters.owner_id}}/{{form.evidence-repo.parameters.repo_name}}'
           TEKTON_CATALOG_REPO: tekton-catalog-repo
+          ARTIFACTORY_TOKEN: '{{form.artifactoryComp.parameters.docker_config_json}}'
         execute: false
   init_dct:
     service_id: pipeline
