@@ -48,6 +48,8 @@ spec:
     description: namespace dev
   - name: repository-integration
     description: the repo integration name
+  - name: dockerconfigjson
+    description: registry secret
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -222,6 +224,26 @@ spec:
       type: Opaque
       stringData:
         API_KEY: $(params.api-key)
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: gitsecure-registry-secret
+      type: kubernetes.io/dockerconfigjson
+      data:
+        .dockerconfigjson: $(params.dockerconfigjson)
+    - apiVersion: v1
+      data:
+        config.json: $(params.registrypushconfig)
+      kind: Secret
+      metadata:
+         name: registry-push-secret
+      type: Opaque
+    - apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: gitsecure-svc-account
+      imagePullSecrets:
+        - name: gitsecure-registry-secret
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineRun
       metadata:
