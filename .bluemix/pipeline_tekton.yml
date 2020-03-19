@@ -12,6 +12,14 @@ inputs:
     branch: master
     service: ${TEKTON_CATALOG_REPO}
     path: preview/compliance-checks
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: preview/iks
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: preview/containerize
 triggers:
   - type: git
     name: Git PR Trigger
@@ -72,4 +80,7 @@ properties:
     type: text
   - name: vault-name
     value: ${VAULT_INSTANCE}
+    type: text
+  - name: repository-integration
+    value: app-repo
     type: text

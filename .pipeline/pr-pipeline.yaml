@@ -14,10 +14,30 @@ spec:
       description: pipeline pvc name place holder
     - name: target-branch
       description: target branch
+    - name: api-key
+      description: The IBM Cloud API key is used to access the IBM Cloud Kubernetes
+        Service API and interact with the cluster. You can obtain your API key with
+        'bx iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
+        by clicking **Create API key** (Each API key only can be viewed once).
+    - name: repository-integration
+      description: the repo integration name
   tasks:
-    - name: fetch-code
+    - name: fetch-credentials
       taskRef:
-        name: clone-repo-task
+        name: get-git-credentials
+      params:
+        - name: credentials-pvc
+          value: $(params.pipeline-pvc)
+        - name: repository
+          value: $(params.repository)
+        - name: ibmcloud-api-key
+          value: $(params.api-key)
+        - name: repository-integration
+          value: $(params.repository-integration)
+    - name: fetch-code
+      runAfter: [fetch-credentials]
+      taskRef:
+        name: git-clone
       params:
         - name: task-pvc
           value: $(params.pipeline-pvc)
@@ -92,3 +112,5 @@ spec:
             }]
         - name: context
           value: tekton/pr-compliance
+        - name: collect-evidence
+          value: "0"

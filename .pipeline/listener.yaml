@@ -46,7 +46,20 @@ spec:
     description: The image url in your container registry
   - name: dev-cluster-namespace
     description: namespace dev
+  - name: repository-integration
+    description: the repo integration name
   resourcetemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: pipelinerun-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage:  5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
     - apiVersion: v1
       kind: Secret
       metadata:
@@ -66,7 +79,7 @@ spec:
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineResource
       metadata:
-        name: the-cluster
+        name: $(params.cluster-name)
       spec:
         type: cluster
         params:
@@ -93,7 +106,7 @@ spec:
               name: image-to-build
           - name: target-cluster
             resourceRef:
-              name: the-cluster
+              name: $(params.cluster-name)
         params:
         - name: pipeline-pvc
           value: pipelinerun-$(uid)-pvc
@@ -127,6 +140,10 @@ spec:
           value: $(params.branch)
         - name: cluster-name
           value: $(params.cluster-name)
+        - name: dev-cluster-namespace
+          value: $(params.dev-cluster-namespace)
+        - name: repository-integration
+          value: $(params.repository-integration)
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
@@ -184,7 +201,20 @@ spec:
       description: branch
     - name: target-branch
       description: target branch
+    - name: repository-integration
+      description: the repo integration name
   resourcetemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: pipelinerun-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage:  5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
     - apiVersion: v1
       kind: Secret
       metadata:
@@ -210,3 +240,7 @@ spec:
             value: $(uid)
           - name: target-branch
             value: $(params.target-branch)
+          - name: api-key
+            value: $(params.api-key)
+          - name: repository-integration
+            value: $(params.repository-integration)
