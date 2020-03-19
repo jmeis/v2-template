@@ -18,6 +18,7 @@ template:
     - evidence-repo
     - issues-repo
     - inventory-repo
+    - artifactoryComp
   info:
     git url: >
       "[" + $env.repository + "]" +
