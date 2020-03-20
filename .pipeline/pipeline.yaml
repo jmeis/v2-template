@@ -36,6 +36,17 @@ spec:
       description: the namespace
     - name: repository-integration
       description: the repo integration name
+    - name: validation-signer
+      description: validation signer
+    - name: vault-name
+      description: Specify the Key Protect instance name, where the image signing keys
+        have been stored. The build and validation signer fields contain default names
+        for these signers. The values must match the values created in the Key-Management-Admin-Template.
+        See https://github.com/open-toolchain/key-management-admin-toolchain
+    - name: dev-resource-group
+      description: Resource Group
+    - name: dev-region
+      description: target region
   resources:
     - name: app-image
       type: image
@@ -161,8 +172,33 @@ spec:
         name: oss-licence-check-task
       runAfter: [vulnerability-advisor]
       params:
-    - name: fetch-iks-cluster-config
+    - name: docker-image-sign
       runAfter: [oss-licence-check]
+      taskRef:
+        name: docker-signing-task
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: app-name
+          value: $(params.app-name)
+        - name: api-key
+          value: $(params.api-key)
+        - name: validation-signer
+          value: $(params.validation-signer)
+        - name: registry-namespace
+          value: $(params.registry-namespace)
+        - name: registry-region
+          value: $(params.registry-region)
+        - name: vault-name
+          value: $(params.vault-name)
+        - name: resource-group
+          value: $(params.dev-resource-group)
+        - name: cluster-name
+          value: $(params.cluster-name)
+        - name: region
+          value: $(params.dev-region)
+    - name: fetch-iks-cluster-config
+      runAfter: [docker-image-sign]
       taskRef:
         name: fetch-iks-cluster-config
       params:
