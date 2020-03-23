@@ -104,13 +104,28 @@ spec:
           value: $(params.repository-integration)
         - name: requiredChecks
           value: |
-           [{
-             "type": "status",
-             "name": "unit-test",
-             "params": {
-               "name": "tekton/ci-unit-tests"
-             }
-           }]
+            [{
+              "type": "check-run",
+              "name": "secret-detection",
+              "params": {
+                "name": "whitewater-detect-secrets"
+              }
+            }, {
+              "type": "branch-protection",
+              "name": "code-review",
+              "params": {
+                "checks": [
+                  "whitewater-detect-secrets",
+                  "tekton/pr-compliance"
+                ]
+              }
+            }, {
+              "type": "status",
+              "name": "unit-tests",
+              "params": {
+                "name": "tekton/ci-unit-tests"
+              }
+            }]
         - name: context
           value: tekton/ci-compliance
         - name: collect-evidence
