@@ -88,3 +88,6 @@ properties:
   - name: repository-integration
     value: app-repo
     type: text
+  - name: dockerconfigjson
+    value: ${DOCKER_CONFIG_JSON}
+    type: text
