@@ -94,4 +94,4 @@ spec:
         - name: context
           value: tekton/pr-compliance
         - name: collect-evidence
-          value: "0"
+          value: "false"
