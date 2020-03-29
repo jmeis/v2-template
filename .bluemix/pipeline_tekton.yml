@@ -83,7 +83,4 @@ properties:
     type: text
   - name: repository-integration
     value: app-repo
-    type: text
-  - name: repository
-    value: ${APP_REPO_FULL}
-    type: text  
+    type: text 
