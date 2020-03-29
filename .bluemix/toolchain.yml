@@ -61,10 +61,10 @@ services:
       repo_name: 'compliance-ci-toolchain-{{timestamp}}'
       repo_url: >
         $env.type === 'link' ?
-          $env.app_repo : 'https://github.ibm.com/one-pipeline/compliance-ci-toolchain'
+          $env.app_repo : 'https://github.ibm.com/padraic-edwards/compliance-ci-toolchain'
       source_repo_url: >
         $env.type === 'fork' || $env.type === 'clone' ?
-          $env.app_repo : 'https://github.ibm.com/one-pipeline/compliance-ci-toolchain'
+          $env.app_repo : 'https://github.ibm.com/padraic-edwards/compliance-ci-toolchain'
       type: $env.type || 'link'
       has_issues: false
       enable_traceability: false
