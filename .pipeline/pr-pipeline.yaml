@@ -21,6 +21,10 @@ spec:
         by clicking **Create API key** (Each API key only can be viewed once).
     - name: repository-integration
       description: the repo integration name
+    - name: evidence-repo
+      description: evidence repo
+    - name: commitid
+      description: commitid
   tasks:
     - name: fetch-credentials
       taskRef:
@@ -45,7 +49,7 @@ spec:
           value: $(params.repository)
         - name: branch
           value: $(params.branch)
-    - name: gitsecure
+    - name: gitsecure-vuln
       runAfter: [fetch-code]
       taskRef:
         name: gitsecure-discovery-task
@@ -61,11 +65,11 @@ spec:
         - name: pipelinerunid
           value: $(params.pipelineRunId)
         - name: evidencerepo
-          value: $(params.evidence_repo)
+          value: $(params.evidence-repo)
         - name: commitid
-          value: '5f3037457e78ea802f150c7342708a385012d66c'
+          value: $(params.commitid)
     - name: unit-tests
-      runAfter: [fetch-code]
+      runAfter: [gitsecure-vuln]
       taskRef:
         name: unit-tests-task
       params:
