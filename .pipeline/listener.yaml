@@ -50,8 +50,10 @@ spec:
     description: dockerconfigjson
   - name: repository-integration
     description: the repo integration name
-  - name: dockerconfigjson
-    description: registry secret
+  - name: evidence_repo
+    description: evidence repo
+  - name: commitid
+    description: commitid
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -184,6 +186,8 @@ spec:
     value: $(event.pull_request.head.ref)
   - name: target-branch
     value: $(event.pull_request.base.ref)
+  - name: commitid
+    value: $(event.pull_request.head.sha)
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: EventListener
@@ -221,6 +225,14 @@ spec:
       description: target branch
     - name: repository-integration
       description: the repo integration name
+    - name: dockerconfigjson
+      description: registry secret
+    - name: api-key
+      description: the ibmcloud api key
+    - name: evidence_repo
+      description: evidence repo
+    - name: commitid
+      description: commitid
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -253,26 +265,6 @@ spec:
       type: Opaque
       stringData:
         API_KEY: $(params.api-key)
-    - apiVersion: v1
-      kind: Secret
-      metadata:
-        name: gitsecure-registry-secret
-      type: kubernetes.io/dockerconfigjson
-      data:
-        .dockerconfigjson: $(params.dockerconfigjson)
-    - apiVersion: v1
-      data:
-        config.json: $(params.registrypushconfig)
-      kind: Secret
-      metadata:
-         name: registry-push-secret
-      type: Opaque
-    - apiVersion: v1
-      kind: ServiceAccount
-      metadata:
-        name: gitsecure-svc-account
-      imagePullSecrets:
-        - name: gitsecure-registry-secret
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineRun
       metadata:
@@ -296,3 +288,7 @@ spec:
             value: $(params.api-key)
           - name: repository-integration
             value: $(params.repository-integration)
+          - name: commitid
+            value: $(params.commitid)       
+          - name: evidence-repo
+            value: $(params.evidence_repo)
