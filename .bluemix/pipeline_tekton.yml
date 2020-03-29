@@ -20,6 +20,10 @@ inputs:
     branch: master
     service: ${TEKTON_CATALOG_REPO}
     path: preview/containerize
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: preview/dct
 triggers:
   - type: git
     name: Git PR Trigger
@@ -83,4 +87,7 @@ properties:
     type: text
   - name: repository-integration
     value: app-repo
-    type: text 
+    type: text
+  - name: dockerconfigjson
+    value: ${DOCKER_CONFIG_JSON}
+    type: text
