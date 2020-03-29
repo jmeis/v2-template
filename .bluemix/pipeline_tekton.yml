@@ -91,3 +91,6 @@ properties:
   - name: dockerconfigjson
     value: ${DOCKER_CONFIG_JSON}
     type: text
+  - name: repository
+    value: ${APP_REPO_FULL}
+    type: text
