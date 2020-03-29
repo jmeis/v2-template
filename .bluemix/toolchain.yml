@@ -18,6 +18,7 @@ template:
     - evidence-repo
     - issues-repo
     - inventory-repo
+    - artifactoryComp
   info:
     git url: >
       "[" + $env.repository + "]" +
@@ -32,6 +33,13 @@ toolchain:
     getting_started:
       $ref: "#/messages/template.gettingStarted"
 services:
+  artifactoryComp:
+    service_id: artifactory
+    parameters:
+      name: 'artifactory-{{timestamp}}'
+      dashboard_url: 'https://wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com'
+      release_url: 'wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com'
+      type: docker
   app-repo:
     service_id: >
       $env.source_provider ? $env.source_provider : 'github_integrated'
@@ -130,6 +138,7 @@ services:
           EVIDENCE_REPO: 'http://github.ibm.com/{{form.evidence-repo.parameters.owner_id}}/{{form.evidence-repo.parameters.repo_name}}'
           APP_REPO_FULL: 'http://github.ibm.com/{{form.app-repo.parameters.owner_id}}/{{form.app-repo.parameters.repo_name}}'
           TEKTON_CATALOG_REPO: tekton-catalog-repo
+          DOCKER_CONFIG_JSON: '{{form.artifactoryComp.parameters.docker_config_json}}'
         execute: false
   init_dct:
     service_id: pipeline

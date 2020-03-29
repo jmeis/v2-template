@@ -46,6 +46,8 @@ spec:
     description: The image url in your container registry
   - name: dev-cluster-namespace
     description: namespace dev
+  - name: dockerconfigjson
+    description: dockerconfigjson
   - name: repository-integration
     description: the repo integration name
   - name: dockerconfigjson
@@ -69,6 +71,19 @@ spec:
       type: Opaque
       stringData:
         API_KEY: $(params.api-key)
+    - apiVersion: v1
+      kind: Secret
+      data:
+        .dockerconfigjson: $(params.dockerconfigjson)
+      metadata:
+        name: artifactory-pull-secret
+      type: kubernetes.io/dockerconfigjson
+    - apiVersion: v1
+      kind: ServiceAccount
+      imagePullSecrets:
+        - name: artifactory-pull-secret
+      metadata:
+        name: sa-pullsecret
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineResource
       metadata:
@@ -146,6 +161,7 @@ spec:
           value: $(params.dev-cluster-namespace)
         - name: repository-integration
           value: $(params.repository-integration)
+        serviceAccountName: sa-pullsecret
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
@@ -219,6 +235,19 @@ spec:
           - ReadWriteOnce
     - apiVersion: v1
       kind: Secret
+      data:
+        .dockerconfigjson: $(params.dockerconfigjson)
+      metadata:
+        name: artifactory-pull-secret
+      type: kubernetes.io/dockerconfigjson
+    - apiVersion: v1
+      kind: ServiceAccount
+      imagePullSecrets:
+        - name: artifactory-pull-secret
+      metadata:
+        name: sa-pullsecret
+    - apiVersion: v1
+      kind: Secret
       metadata:
         name: cd-secret
       type: Opaque
@@ -251,6 +280,7 @@ spec:
       spec:
         pipelineRef:
           name: pr-pipeline
+        serviceAccountName: sa-pullsecret
         params:
           - name: pipeline-pvc
             value: pipelinerun-$(uid)-pvc
