@@ -84,9 +84,6 @@ properties:
   - name: repository-integration
     value: app-repo
     type: text
-  - name: dockerconfigjson
-    value: ${ARTIFACTORY_TOKEN}
-    type: text
   - name: repository
     value: ${APP_REPO_FULL}
     type: text  
