@@ -52,8 +52,8 @@ spec:
     description: the repo integration name
   - name: evidence_repo
     description: evidence repo
-  - name: commitid
-    description: commitid
+  - name: commit-id
+    description: commit id
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -186,7 +186,7 @@ spec:
     value: $(event.pull_request.head.ref)
   - name: target-branch
     value: $(event.pull_request.base.ref)
-  - name: commitid
+  - name: commit-id
     value: $(event.pull_request.head.sha)
 ---
 apiVersion: tekton.dev/v1alpha1
@@ -231,8 +231,8 @@ spec:
       description: the ibmcloud api key
     - name: evidence_repo
       description: evidence repo
-    - name: commitid
-      description: commitid
+    - name: commit-id
+      description: commit id
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -288,7 +288,7 @@ spec:
             value: $(params.api-key)
           - name: repository-integration
             value: $(params.repository-integration)
-          - name: commitid
-            value: $(params.commitid)       
+          - name: commit-id
+            value: $(params.commit-id)       
           - name: evidence-repo
             value: $(params.evidence_repo)
