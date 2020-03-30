@@ -86,7 +86,7 @@ spec:
         - name: commit-id
           value: $(params.commit-id) 
     - name: unit-tests
-      runAfter: [gitsecure-vuln]
+      runAfter: [gitsecure-ossc]
       taskRef:
         name: unit-tests-task
       params:
