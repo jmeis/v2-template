@@ -8,8 +8,8 @@ spec:
       description: the git repo
     - name: branch
       description: branch
-    - name: pipelineRunId
-      description: pipelineRunId unique ID
+    - name: pipeline-run-id
+      description: pipeline run id unique ID
     - name: pipeline-pvc
       description: pipeline pvc name place holder
     - name: target-branch
@@ -62,9 +62,9 @@ spec:
           value: $(params.branch)
         - name: apikey
           value: $(params.api-key)
-        - name: pipelinerunid
-          value: $(params.pipelineRunId)
-        - name: evidencerepo
+        - name: pipeline-run-id
+          value: $(params.pipeline-run-id)
+        - name: evidence-repo
           value: $(params.evidence-repo)
         - name: commit-id
           value: $(params.commit-id) 
@@ -75,8 +75,8 @@ spec:
       params:
         - name: task-pvc
           value: $(params.pipeline-pvc)
-        - name: pipelineRunId
-          value: $(params.pipelineRunId)
+        - name: pipeline-run-id
+          value: $(params.pipeline-run-id)
         - name: context
           value: tekton/pr-unit-tests
     - name: check-github-statuses
@@ -86,8 +86,8 @@ spec:
       params:
         - name: task-pvc
           value: $(params.pipeline-pvc)
-        - name: pipelineRunId
-          value: $(params.pipelineRunId)
+        - name: pipeline-run-id
+          value: $(params.pipeline-run-id)
         - name: target-branch
           value: $(params.target-branch)
         - name: requiredChecks
