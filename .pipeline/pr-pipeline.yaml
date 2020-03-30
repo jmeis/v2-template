@@ -23,8 +23,8 @@ spec:
       description: the repo integration name
     - name: evidence-repo
       description: evidence repo
-    - name: commitid
-      description: commitid
+    - name: commit-id
+      description: commit id
   tasks:
     - name: fetch-credentials
       taskRef:
@@ -66,8 +66,8 @@ spec:
           value: $(params.pipelineRunId)
         - name: evidencerepo
           value: $(params.evidence-repo)
-        - name: commitid
-          value: $(params.commitid)
+        - name: commit-id
+          value: $(params.commit-id)
     - name: gitsecure-ossc
       runAfter: [gitsecure-vuln]
       taskRef:
@@ -83,8 +83,8 @@ spec:
           value: $(params.pipelineRunId)
         - name: evidencerepo
           value: $(params.evidence-repo)
-        - name: commitid
-          value: $(params.commitid)   
+        - name: commit-id
+          value: $(params.commit-id)   
     - name: unit-tests
       runAfter: [gitsecure-vuln]
       taskRef:
