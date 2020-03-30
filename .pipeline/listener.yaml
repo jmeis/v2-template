@@ -50,6 +50,10 @@ spec:
     description: dockerconfigjson
   - name: repository-integration
     description: the repo integration name
+  - name: evidence-repo
+    description: evidence repo
+  - name: commit-id
+    description: commit id
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -182,6 +186,8 @@ spec:
     value: $(event.pull_request.head.ref)
   - name: target-branch
     value: $(event.pull_request.base.ref)
+  - name: commit-id
+    value: $(event.pull_request.head.sha)
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: EventListener
@@ -219,6 +225,14 @@ spec:
       description: target branch
     - name: repository-integration
       description: the repo integration name
+    - name: dockerconfigjson
+      description: registry secret
+    - name: api-key
+      description: the ibmcloud api key
+    - name: evidence-repo
+      description: evidence repo
+    - name: commit-id
+      description: commit id
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -274,3 +288,7 @@ spec:
             value: $(params.api-key)
           - name: repository-integration
             value: $(params.repository-integration)
+          - name: commit-id
+            value: $(params.commit-id)       
+          - name: evidence-repo
+            value: $(params.evidence-repo)

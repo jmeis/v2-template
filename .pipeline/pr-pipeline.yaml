@@ -9,7 +9,7 @@ spec:
     - name: branch
       description: branch
     - name: pipelineRunId
-      description: pipelineRunId unique ID
+      description: pipeline run id unique ID
     - name: pipeline-pvc
       description: pipeline pvc name place holder
     - name: target-branch
@@ -21,6 +21,10 @@ spec:
         by clicking **Create API key** (Each API key only can be viewed once).
     - name: repository-integration
       description: the repo integration name
+    - name: evidence-repo
+      description: evidence repo
+    - name: commit-id
+      description: commit id
   tasks:
     - name: fetch-credentials
       taskRef:
@@ -45,8 +49,27 @@ spec:
           value: $(params.repository)
         - name: branch
           value: $(params.branch)
-    - name: unit-tests
+    - name: gitsecure-vuln
       runAfter: [fetch-code]
+      taskRef:
+        name: gitsecure-discovery-task
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.branch)
+        - name: apikey
+          value: $(params.api-key)
+        - name: pipelineRunId
+          value: $(params.pipelineRunId)
+        - name: evidence-repo
+          value: $(params.evidence-repo)
+        - name: commit-id
+          value: $(params.commit-id) 
+    - name: unit-tests
+      runAfter: [gitsecure-vuln]
       taskRef:
         name: unit-tests-task
       params:
