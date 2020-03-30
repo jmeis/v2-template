@@ -129,7 +129,7 @@ spec:
         params:
         - name: pipeline-pvc
           value: pipelinerun-$(uid)-pvc
-        - name: pipeline-run-id
+        - name: pipelineRunId
           value: $(uid)
         - name: registry-namespace
           value: $(params.registry-namespace)
@@ -280,7 +280,7 @@ spec:
             value: $(params.repository)
           - name: branch
             value: $(params.branch)
-          - name: pipeline-run-id
+          - name: pipelineRunId
             value: $(uid)
           - name: target-branch
             value: $(params.target-branch)
