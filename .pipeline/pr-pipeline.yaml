@@ -67,26 +67,9 @@ spec:
         - name: evidence-repo
           value: $(params.evidence-repo)
         - name: commit-id
-          value: $(params.commit-id)
-    - name: gitsecure-ossc
-      runAfter: [gitsecure-vuln]
-      taskRef:
-        name: gitsecure-ossc-task
-      params:
-        - name: repository
-          value: $(params.repository)
-        - name: revision
-          value: $(params.branch)
-        - name: api-key
-          value: $(params.api-key)
-        - name: pipeline-run-id
-          value: $(params.pipelineRunId)
-        - name: evidence-repo
-          value: $(params.evidence-repo)
-        - name: commit-id
           value: $(params.commit-id) 
     - name: unit-tests
-      runAfter: [gitsecure-ossc]
+      runAfter: [gitsecure-vuln
       taskRef:
         name: unit-tests-task
       params:
