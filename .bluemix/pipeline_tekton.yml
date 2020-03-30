@@ -49,7 +49,7 @@ properties:
   - name: imageUrl
     value: ${IMAGE_URL}
     type: text
-  - name: evidence_repo
+  - name: evidence-repo
     value: ${EVIDENCE_REPO}
     type: text
   - name: revision
