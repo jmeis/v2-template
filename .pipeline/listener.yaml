@@ -50,7 +50,7 @@ spec:
     description: dockerconfigjson
   - name: repository-integration
     description: the repo integration name
-  - name: evidence_repo
+  - name: evidence-repo
     description: evidence repo
   - name: commit-id
     description: commit id
@@ -229,7 +229,7 @@ spec:
       description: registry secret
     - name: api-key
       description: the ibmcloud api key
-    - name: evidence_repo
+    - name: evidence-repo
       description: evidence repo
     - name: commit-id
       description: commit id
@@ -291,4 +291,4 @@ spec:
           - name: commit-id
             value: $(params.commit-id)       
           - name: evidence-repo
-            value: $(params.evidence_repo)
+            value: $(params.evidence-repo)
