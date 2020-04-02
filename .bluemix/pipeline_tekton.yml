@@ -94,3 +94,6 @@ properties:
   - name: repository
     value: ${APP_REPO_FULL}
     type: text
+  - name: pipeline-debug
+    value: "0"
+    type: text

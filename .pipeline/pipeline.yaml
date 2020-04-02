@@ -47,6 +47,8 @@ spec:
       description: Resource Group
     - name: dev-region
       description: target region
+    - name: pipeline-debug
+      description: toggles debug mode for the pipeline
   resources:
     - name: app-image
       type: image
@@ -65,6 +67,8 @@ spec:
           value: $(params.repository)
         - name: repository-integration
           value: $(params.repository-integration)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
     - name: fetch-code
       runAfter: [fetch-credentials]
       taskRef:
@@ -78,6 +82,8 @@ spec:
           value: $(params.branch)
         - name: revision
           value: $(params.revision)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
     - name: unit-tests
       runAfter: [fetch-code]
       taskRef:
@@ -89,6 +95,8 @@ spec:
           value: $(params.pipelineRunId)
         - name: context
           value: tekton/ci-unit-tests
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
     - name: check-github-statuses
       runAfter: [unit-tests]
       taskRef:
@@ -130,6 +138,8 @@ spec:
           value: tekton/ci-compliance
         - name: collect-evidence
           value: "true"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
     - name: containerize
       runAfter: [check-github-statuses]
       taskRef:
@@ -146,6 +156,8 @@ spec:
             echo "Providing an image tag including git branch and commit" >&2
             # Add a specific tag with branch and commit
             echo "${BUILD_TIMESTAMP}-${GIT_BRANCH}-${GIT_COMMIT}"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
       resources:
         outputs:
           - name: built-image
@@ -166,6 +178,8 @@ spec:
         #   value: '3'
         # - name: failOnScannedIssues
         #   value: 'false'
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
       resources:
         inputs:
           - name: image
@@ -177,16 +191,22 @@ spec:
         name: additional-image-checks-task
       runAfter: [vulnerability-advisor]
       params:
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
     - name: cis-benchmarks
       taskRef:
         name: cis-benchmarks-task
       runAfter: [vulnerability-advisor]
       params:
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
     - name: oss-licence-check
       taskRef:
         name: oss-licence-check-task
       runAfter: [vulnerability-advisor]
       params:
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
     - name: docker-image-sign
       runAfter: [oss-licence-check]
       taskRef:
@@ -212,6 +232,8 @@ spec:
           value: $(params.cluster-name)
         - name: region
           value: $(params.dev-region)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
     - name: fetch-iks-cluster-config
       runAfter: [docker-image-sign]
       taskRef:
@@ -225,6 +247,8 @@ spec:
           value: $(params.cluster-name)
         - name: cluster-pipeline-resources-directory-fallback
           value: .tekton-clusters
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
       resources:
         inputs:
           - name: cluster
@@ -251,6 +275,8 @@ spec:
             kubectl cluster-info
             echo "** Here are the kubectl namespaces:"
             kubectl get namespaces
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
       resources:
         inputs:
           - name: cluster
@@ -279,3 +305,5 @@ spec:
           value: $(params.api-key)
         - name: allow-create-route
           value: "true"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
