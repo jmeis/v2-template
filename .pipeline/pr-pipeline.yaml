@@ -25,6 +25,8 @@ spec:
       description: evidence repo
     - name: commit-id
       description: commit id
+    - name: pipeline-debug
+      description: toggles debug mode for the pipeline
   tasks:
     - name: fetch-credentials
       taskRef:
@@ -38,6 +40,8 @@ spec:
           value: $(params.api-key)
         - name: repository-integration
           value: $(params.repository-integration)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
     - name: fetch-code
       runAfter: [fetch-credentials]
       taskRef:
@@ -49,6 +53,8 @@ spec:
           value: $(params.repository)
         - name: branch
           value: $(params.branch)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
     - name: gitsecure-vuln
       runAfter: [fetch-code]
       taskRef:
@@ -79,6 +85,8 @@ spec:
           value: $(params.pipelineRunId)
         - name: context
           value: tekton/pr-unit-tests
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
     - name: check-github-statuses
       runAfter: [unit-tests]
       taskRef:
@@ -117,4 +125,6 @@ spec:
         - name: context
           value: tekton/pr-compliance
         - name: collect-evidence
-          value: "0"
+          value: "false"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
