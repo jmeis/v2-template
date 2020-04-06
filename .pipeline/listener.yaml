@@ -183,6 +183,8 @@ spec:
     value: master
   - name: branch
     value: "master"
+  - name: commit-id
+    value: $(event.head_commit.id)
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
