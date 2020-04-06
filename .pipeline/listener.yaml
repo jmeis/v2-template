@@ -167,6 +167,10 @@ spec:
           value: $(params.repository-integration)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: commit-id
+          value: $(params.commit-id)
+        - name: evidence-repo
+          value: $(params.evidence-repo)
         serviceAccountName: sa-pullsecret
 ---
 apiVersion: tekton.dev/v1alpha1
