@@ -231,8 +231,6 @@ spec:
           value: $(params.api-key)
         - name: pipeline-run-id
           value: $(params.pipelineRunId)
-        - name: evidence-repo
-          value: $(params.evidence-repo)
         - name: commit-id
           value: $(params.commit-id)
         - name: pr-url
