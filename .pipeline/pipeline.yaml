@@ -232,9 +232,9 @@ spec:
           value: $(params.repository)
         - name: revision
           value: $(params.branch)
-        - name: apikey
+        - name: api-key
           value: $(params.api-key)
-        - name: pipelineRunId
+        - name: pipeline-run-id
           value: $(params.pipelineRunId)
         - name: evidence-repo
           value: $(params.evidence-repo)
