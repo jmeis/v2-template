@@ -240,8 +240,6 @@ spec:
           value: $(params.evidence-repo)
         - name: commit-id
           value: $(params.commit-id)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
     - name: docker-image-sign
       runAfter: [gitsecure-ossc]
       taskRef:
