@@ -29,10 +29,11 @@ It implements the following best practices:
 - checks for the presence of the two signatures before proceeding with the deployment
 
 ---
-### Learn more 
+### Learn more
 
 * Blog [Continuously deliver your app to Kubernetes with Bluemix](https://www.ibm.com/blogs/bluemix/2017/07/continuously-deliver-your-app-to-kubernetes-with-bluemix/)
 * Step by step [tutorial](https://www.ibm.com/devops/method/tutorials/tc_secure_kube)
 * [Getting started with clusters](https://cloud.ibm.com/docs/containers?topic=containers-getting-started)
 * [Getting started with toolchains](https://cloud.ibm.com/devops/getting-started)
 * [Documentation](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-getting-started&pos=2)
+* [Whitewater Detect Secrets](https://github.ibm.com/github-apps/whitewater-detect-secrets)
