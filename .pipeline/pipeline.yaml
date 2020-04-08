@@ -166,7 +166,7 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
     - name: containerize
-      runAfter: [gitsecure-vuln]
+      runAfter: [check-github-statuses]
       taskRef:
         name: containerize-task
       params:
@@ -219,7 +219,7 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
     - name: docker-image-sign
-      runAfter: [gitsecure-ossc]
+      runAfter: [additional-image-checks]
       taskRef:
         name: docker-signing-task
       params:
