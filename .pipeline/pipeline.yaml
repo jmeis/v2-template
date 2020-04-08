@@ -122,6 +122,59 @@ spec:
           value: $(params.evidence-repo)
         - name: commit-id
           value: $(params.commit-id)
+    - name: gitsecure-vuln-remediation
+      runAfter: [gitsecure-vuln]
+      taskRef:
+        name: gitsecure-vulnerability-remediation-task
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.branch)
+        - name: api-key
+          value: $(params.api-key)
+        - name: pipeline-run-id
+          value: $(params.pipelineRunId)
+        - name: pr-url
+          value: $(params.pr-url)
+    - name: gitsecure-cis
+      taskRef:
+        name: gitsecure-cis-task
+      runAfter: [gitsecure-vuln]
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.branch)
+        - name: api-key
+          value: $(params.api-key)
+        - name: pipeline-run-id
+          value: $(params.pipelineRunId)
+        - name: pr-url
+          value: $(params.pr-url)
+        - name: commit-id
+          value: $(params.commit-id)
+    - name: gitsecure-ossc
+      runAfter: [gitsecure-vuln]
+      taskRef:
+        name: gitsecure-ossc-task
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.branch)
+        - name: api-key
+          value: $(params.api-key)
+        - name: pipeline-run-id
+          value: $(params.pipelineRunId)
+        - name: evidence-repo
+          value: $(params.evidence-repo)
+        - name: commit-id
+          value: $(params.commit-id)
     - name: check-github-statuses
       runAfter: [gitsecure-vuln]
       taskRef:
