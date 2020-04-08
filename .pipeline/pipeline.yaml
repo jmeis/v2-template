@@ -178,7 +178,7 @@ spec:
         - name: commit-id
           value: $(params.commit-id)
     - name: gitsecure-evidence-emitter
-      runAfter: [gitsecure-cis]
+      runAfter: [gitsecure-ossc]
       taskRef:
         name: gitsecure-evidence-emitter-task
       params:
