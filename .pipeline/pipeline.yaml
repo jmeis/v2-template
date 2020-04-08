@@ -154,8 +154,6 @@ spec:
           value: $(params.api-key)
         - name: pipeline-run-id
           value: $(params.pipelineRunId)
-        - name: commit-id
-          value: $(params.commit-id)
         - name: pr-url
           value: $(params.pr-url)
     - name: gitsecure-ossc
