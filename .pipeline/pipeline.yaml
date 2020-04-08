@@ -53,6 +53,8 @@ spec:
       description: evidence repo
     - name: commit-id
       description: commit id
+    - name: pr-url
+      description: pr url
   resources:
     - name: app-image
       type: image
@@ -181,7 +183,7 @@ spec:
         - name: commit-id
           value: $(params.commit-id)
         - name: pr-url
-          value: "foo"
+          value: $(params.pr-url)
     - name: gitsecure-ossc
       runAfter: [gitsecure-cis]
       taskRef:
