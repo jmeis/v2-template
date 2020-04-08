@@ -127,11 +127,13 @@ spec:
       taskRef:
         name: gitsecure-vulnerability-remediation-task
       params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
         - name: repository
           value: $(params.repository)
         - name: revision
           value: $(params.branch)
-        - name: apikey
+        - name: api-key
           value: $(params.api-key)
         - name: pipeline-run-id
           value: $(params.pipelineRunId)
