@@ -187,8 +187,6 @@ spec:
     value: "master"
   - name: commit-id
     value: $(event.head_commit.id)
-  - name: pr-url
-    value: $(event.pull_request.url)
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: TriggerBinding
@@ -202,6 +200,8 @@ spec:
     value: $(event.pull_request.base.ref)
   - name: commit-id
     value: $(event.pull_request.head.sha)
+  - name: pr-url
+    value: $(event.pull_request.url)
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: EventListener
@@ -310,3 +310,5 @@ spec:
             value: $(params.evidence-repo)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
+          - name: pr-url
+            value: $(params.pr-url)
