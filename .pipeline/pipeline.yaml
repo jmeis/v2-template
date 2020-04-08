@@ -156,6 +156,8 @@ spec:
           value: $(params.pipelineRunId)
         - name: pr-url
           value: $(params.pr-url)
+        - name: commit-id
+          value: $(params.commit-id)
     - name: gitsecure-ossc
       runAfter: [gitsecure-vuln]
       taskRef:
