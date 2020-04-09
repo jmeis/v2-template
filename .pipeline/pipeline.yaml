@@ -49,6 +49,12 @@ spec:
       description: target region
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
+    - name: evidence-repo
+      description: evidence repo
+    - name: commit-id
+      description: commit id
+    - name: pr-url
+      description: pr url
   resources:
     - name: app-image
       type: image
@@ -97,8 +103,101 @@ spec:
           value: tekton/ci-unit-tests
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-    - name: check-github-statuses
+    - name: gitsecure-vuln
       runAfter: [unit-tests]
+      taskRef:
+        name: gitsecure-discovery-task
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.branch)
+        - name: apikey
+          value: $(params.api-key)
+        - name: pipelineRunId
+          value: $(params.pipelineRunId)
+        - name: evidence-repo
+          value: $(params.evidence-repo)
+        - name: commit-id
+          value: $(params.commit-id)
+    - name: gitsecure-vuln-remediation
+      runAfter: [gitsecure-vuln]
+      taskRef:
+        name: gitsecure-vulnerability-remediation-task
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.branch)
+        - name: api-key
+          value: $(params.api-key)
+        - name: pipeline-run-id
+          value: $(params.pipelineRunId)
+        - name: pr-url
+          value: $(params.pr-url)
+        - name: commit-id
+          value: $(params.commit-id)
+    - name: gitsecure-cis
+      taskRef:
+        name: gitsecure-cis-task
+      runAfter: [gitsecure-vuln]
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.branch)
+        - name: api-key
+          value: $(params.api-key)
+        - name: pipeline-run-id
+          value: $(params.pipelineRunId)
+        - name: pr-url
+          value: $(params.pr-url)
+        - name: commit-id
+          value: $(params.commit-id)
+    - name: gitsecure-ossc
+      runAfter: [gitsecure-vuln]
+      taskRef:
+        name: gitsecure-ossc-task
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.branch)
+        - name: api-key
+          value: $(params.api-key)
+        - name: pipeline-run-id
+          value: $(params.pipelineRunId)
+        - name: evidence-repo
+          value: $(params.evidence-repo)
+        - name: commit-id
+          value: $(params.commit-id)
+    - name: gitsecure-evidence-emitter
+      runAfter: [gitsecure-ossc]
+      taskRef:
+        name: gitsecure-evidence-emitter-task
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.branch)
+        - name: apikey
+          value: $(params.api-key)
+        - name: pipelineRunId
+          value: $(params.pipelineRunId)
+        - name: evidence-repo
+          value: $(params.evidence-repo)
+        - name: commit-id
+          value: $(params.commit-id)
+    - name: check-github-statuses
+      runAfter: [gitsecure-vuln]
       taskRef:
         name: check-github-statuses-task
       params:
@@ -193,22 +292,8 @@ spec:
       params:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-    - name: cis-benchmarks
-      taskRef:
-        name: cis-benchmarks-task
-      runAfter: [vulnerability-advisor]
-      params:
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-    - name: oss-licence-check
-      taskRef:
-        name: oss-licence-check-task
-      runAfter: [vulnerability-advisor]
-      params:
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
     - name: docker-image-sign
-      runAfter: [oss-licence-check]
+      runAfter: [additional-image-checks]
       taskRef:
         name: docker-signing-task
       params:
