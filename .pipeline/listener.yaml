@@ -56,6 +56,8 @@ spec:
     description: commit id
   - name: pipeline-debug
     description: toggles debug mode for the pipeline
+  - name: inventory-repo
+    description: inventory repository owner and name
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -173,6 +175,8 @@ spec:
           value: $(params.pr-url)
         - name: evidence-repo
           value: $(params.evidence-repo)
+        - name: inventory-repo
+          value: $(params.inventory-repo)
         serviceAccountName: sa-pullsecret
 ---
 apiVersion: tekton.dev/v1alpha1

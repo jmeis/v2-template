@@ -55,6 +55,8 @@ spec:
       description: commit id
     - name: pr-url
       description: pr url
+    - name: inventory-repo
+      description: inventory repository owner and name
   resources:
     - name: app-image
       type: image
@@ -269,6 +271,8 @@ spec:
           value: $(params.pipeline-pvc)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: inventory-repo
+          value: $(params.inventory-repo)
     - name: vulnerability-advisor
       taskRef:
         name: vulnerability-advisor-task
