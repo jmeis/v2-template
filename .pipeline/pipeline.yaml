@@ -259,6 +259,16 @@ spec:
         outputs:
           - name: built-image
             resource: app-image
+    - name: update-inventory
+      taskRef:
+        name: update-inventory-task
+      runAfter:
+        - containerize
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
     - name: vulnerability-advisor
       taskRef:
         name: vulnerability-advisor-task
