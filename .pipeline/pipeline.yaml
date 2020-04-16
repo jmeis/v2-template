@@ -55,6 +55,10 @@ spec:
       description: commit id
     - name: pr-url
       description: pr url
+    - name: inventory-repo
+      description: inventory repository owner and name
+    - name: version
+      description: cr branch name
   resources:
     - name: app-image
       type: image
@@ -259,6 +263,20 @@ spec:
         outputs:
           - name: built-image
             resource: app-image
+    - name: update-inventory
+      taskRef:
+        name: update-inventory-task
+      runAfter:
+        - containerize
+      params:
+        - name: task-pvc
+          value: $(params.pipeline-pvc)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: inventory-repo
+          value: $(params.inventory-repo)
+        - name: version
+          value: $(params.version)
     - name: vulnerability-advisor
       taskRef:
         name: vulnerability-advisor-task
