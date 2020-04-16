@@ -57,6 +57,8 @@ spec:
       description: pr url
     - name: inventory-repo
       description: inventory repository owner and name
+    - name: version
+      description: cr branch name
   resources:
     - name: app-image
       type: image
@@ -273,6 +275,8 @@ spec:
           value: $(params.pipeline-debug)
         - name: inventory-repo
           value: $(params.inventory-repo)
+        - name: version
+          value: $(params.version)
     - name: vulnerability-advisor
       taskRef:
         name: vulnerability-advisor-task
