@@ -24,6 +24,10 @@ inputs:
     branch: master
     service: ${TEKTON_CATALOG_REPO}
     path: preview/dct
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: preview/inventory
 triggers:
   - type: git
     name: Git PR Trigger
