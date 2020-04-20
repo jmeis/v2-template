@@ -60,6 +60,8 @@ spec:
     description: inventory repository owner and name
   - name: version
     description: cr branch name
+  - name: pr-url
+    description: PR url
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -257,6 +259,8 @@ spec:
       description: commit id
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
+    - name: pr-url
+      description: PR url
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
