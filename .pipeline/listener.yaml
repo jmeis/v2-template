@@ -173,8 +173,6 @@ spec:
           value: $(params.pipeline-debug)
         - name: commit-id
           value: $(params.commit-id)
-        - name: pr-url
-          value: $(params.pr-url)
         - name: evidence-repo
           value: $(params.evidence-repo)
         - name: inventory-repo
@@ -257,6 +255,8 @@ spec:
       description: commit id
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
+    - name: pr-url
+      description: PR url
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
