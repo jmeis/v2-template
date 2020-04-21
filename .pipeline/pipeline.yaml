@@ -55,6 +55,7 @@ spec:
       description: commit id
     - name: pr-url
       description: pr url
+      default: ""
     - name: inventory-repo
       description: inventory repository owner and name
     - name: version
