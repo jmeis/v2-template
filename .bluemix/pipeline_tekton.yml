@@ -101,3 +101,6 @@ properties:
   - name: pipeline-debug
     value: "0"
     type: text
+  - name: version
+    value: v1
+    type: text
