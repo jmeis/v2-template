@@ -60,3 +60,4 @@ Read our [step by step guide](./docs/github-repository-configuration.md) to conf
 * [Getting started with toolchains](https://cloud.ibm.com/devops/getting-started)
 * [Documentation](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-getting-started&pos=2)
 * [Whitewater Detect Secrets](https://github.ibm.com/github-apps/whitewater-detect-secrets)
+* [Getting started IBM Cloud CLI](https://cloud.ibm.com/docs/cli?topic=cloud-cli-getting-started)
