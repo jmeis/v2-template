@@ -17,6 +17,8 @@ For more information about the setup process, check out this guide:
 
 [Setup Guide](./docs/compliance-ci-toolchain-setup.md)
 
+If you get stuck or experience a problem during setup, or running your pipelines, check out our [troubleshooting guide](https://github.ibm.com/one-pipeline/docs/blob/master/faq.md) before raising an issue.
+
 It implements the following best practices:
 - sanity check the Dockerfile prior to attempting creating the image
 - apply Docker signature after Docker unit tests, sanity checks and successful build
