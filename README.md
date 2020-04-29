@@ -1,15 +1,10 @@
 
-# ![Icon](./.bluemix/secure-lock-kubernetes.png) Develop a FedRAMP Compliant Kubernetes app
+# ![Icon](./.bluemix/secure-lock-kubernetes.png) Tekton CI Pipeline with Compliance automation for Kubernetes
 
-[![Create toolchain](https://cloud.ibm.com/devops/graphics/create_toolchain_button.png)](https://cloud.ibm.com/devops/setup/deploy?repository=https://github.ibm.com/one-pipeline/compliance-ci-toolchain&env_id=ibm:yp:us-south)
-
-### Leverages Docker image signing to validate image integrity
-This template expands upon the existing Secure-kube-toolchain template  with the addition of extra validation controls on the Docker image. Digital signatures are applied to the Docker image at specific validation stages. An image security enforcement policy is applied to the Kubernetes cluster requiring the signatures to be present before proceeding with the deployment. This toolchain requires the use of a Key-Protect vault instance that has been pre-populated with signing keys. See key-management-admin-toolchain (https://github.com/open-toolchain/key-management-admin-toolchain)
+This is a CI toolchain template for continuous integration with Vulnerability Advisor, Docker image signing checking, source control, issue tracking, status checking, and deployment to the IBM Kubernetes Service.
 
 ### Continuously deliver a secure container app to a Kubernetes Cluster
-This Hello World application uses Docker with Node.js and includes a DevOps toolchain that is preconfigured for continuous delivery with Vulnerability Advisor, Docker image signing checking, source control, issue tracking, and online editing, and deployment to the IBM Kubernetes Service.
 
-Application code is stored in source control, along with its Dockerfile and its Kubernetes deployment script.
 The target cluster is configured during toolchain setup (using an IBM Cloud API key and cluster name). You can later change these by altering the Delivery Pipeline configuration.
 Any code change to the Git repo will automatically be built, validated and deployed into the Kubernetes cluster.
 
@@ -17,6 +12,10 @@ Any code change to the Git repo will automatically be built, validated and deplo
 
 ### To get started, click this button:
 [![Create toolchain](https://cloud.ibm.com/devops/graphics/create_toolchain_button.png)](https://cloud.ibm.com/devops/setup/deploy?repository=https://github.ibm.com/one-pipeline/compliance-ci-toolchain&env_id=ibm:yp:us-south)
+
+For more information about the setup process, check out this guide:
+
+[Setup Guide](./docs/compliance-ci-toolchain-setup.md)
 
 It implements the following best practices:
 - sanity check the Dockerfile prior to attempting creating the image
@@ -59,4 +58,9 @@ Read our [step by step guide](./docs/github-repository-configuration.md) to conf
 * [Getting started with clusters](https://cloud.ibm.com/docs/containers?topic=containers-getting-started)
 * [Getting started with toolchains](https://cloud.ibm.com/devops/getting-started)
 * [Documentation](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-getting-started&pos=2)
+* [Private workers](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-install-private-workers)
+* [Artifactory](https://taas.w3ibm.mybluemix.net/guides#artifactory)
+* [Working with Tekton pipelines](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines)
+* [Getting started IBM Cloud CLI](https://cloud.ibm.com/docs/cli?topic=cloud-cli-getting-started)
 * [Whitewater Detect Secrets](https://github.ibm.com/github-apps/whitewater-detect-secrets)
+* [Getting started IBM Cloud CLI](https://cloud.ibm.com/docs/cli?topic=cloud-cli-getting-started)
