@@ -72,14 +72,17 @@ Note: toolchain region can differ from cluster and registry region.
 
     All fields are required.
 
-    - **Incident issues repository:** Issues about incidents that happen during the build and deployment process are stored here.    
-        - Default repository type: `New`
+    - **Incident issues repository:** Issues about incidents that happen during the build and deployment process are stored here.
+        - Default repository type: `Clone`
+        - This will clone the template repository [one-pipeline/compliance-incident-issues](https://github.ibm.com/one-pipeline/compliance-incident-issues) to your org
 
-    - **Evidence locker repository:** All raw compliance evidence that belongs to the application is collected here.  
-        - Default repository type: `New` 
-  
+    - **Evidence locker repository:** All raw compliance evidence that belongs to the application is collected here.
+        - Default repository type: `Clone`
+        - This will clone the template repository [one-pipeline/compliance-evidence-locker](https://github.ibm.com/one-pipeline/compliance-evidence-locker) to your org
+
     - **Inventory repository:** Change management is tracked in this repository. CD pipeline creates a new branch named as the created CR number, and merges it to master after deplyment is concluded.
-        - Default repository type: `New` 
+        - Default repository type: `Clone`
+        - This will clone the template repository [one-pipeline/compliance-inventory](https://github.ibm.com/one-pipeline/compliance-inventory) to your org
 
 #### Delivery Pipeline
 The Tekton CI Toolchain with Compliance comes with an integrated Tekton pipeline to automate continuous build, test and deploy of the Docker application.
