@@ -4,6 +4,9 @@
 * **K8S Cluster**
 * **Artifactory access**
 * **IBM Cloud CLI**
+* **Docker Content Trust signing keys**
+
+If you've never set up image signing in your k8s cluster, you have to create the signing keys that will be used for the signing itself. Set up and run the key-management-admin-toolchain (https://github.ibm.com/one-pipeline/compliance-ci-key-management)
 
 ### 1. Create toolchain:
 
@@ -72,17 +75,14 @@ Note: toolchain region can differ from cluster and registry region.
 
     All fields are required.
 
-    - **Incident issues repository:** Issues about incidents that happen during the build and deployment process are stored here.
-        - Default repository type: `Clone`
-        - This will clone the template repository [one-pipeline/compliance-incident-issues](https://github.ibm.com/one-pipeline/compliance-incident-issues) to your org
+    - **Incident issues repository:** Issues about incidents that happen during the build and deployment process are stored here.    
+        - Default repository type: `New`
 
-    - **Evidence locker repository:** All raw compliance evidence that belongs to the application is collected here.
-        - Default repository type: `Clone`
-        - This will clone the template repository [one-pipeline/compliance-evidence-locker](https://github.ibm.com/one-pipeline/compliance-evidence-locker) to your org
-
-    - **Inventory repository:** Change management is tracked in this repository. CD pipeline creates a new branch named as the created CR number, and merges it to master after deplyment is concluded.
-        - Default repository type: `Clone`
-        - This will clone the template repository [one-pipeline/compliance-inventory](https://github.ibm.com/one-pipeline/compliance-inventory) to your org
+    - **Evidence locker repository:** All raw compliance evidence that belongs to the application is collected here.  
+        - Default repository type: `New` 
+  
+    - **Inventory repository:** Change management is tracked in this repository. CD pipeline creates a new branch named as the created CR number, and merges it to master after deployment is concluded.
+        - Default repository type: `New` 
 
 #### Delivery Pipeline
 The Tekton CI Toolchain with Compliance comes with an integrated Tekton pipeline to automate continuous build, test and deploy of the Docker application.
@@ -178,16 +178,19 @@ You should add a private worker tool to the CI toolchain for a successful PR/CI 
 - Click the `Create Integration` button.
 
 | ![Private Worker Delivery Pipeline](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/delivery-pw.png) |
-| :--: | 
+| :--: |
 
-- Now, your toolchain has got a Delivery Pipeline Private Worker. Click there and follow the instructions.
-- Note: You must use IBM Cloud CLI for setup and configure. 
-  
+- Now, your toolchain has got a Delivery Pipeline Private Worker. Click there and follow the installation instructions.
+- Note: You must use IBM Cloud CLI for setup and configure.
+- In the CI pipeline configuration, set the private workers you've created as Workers for the pipeline
+
 **dct init Pipeline**
 
-The dct init pipeline is used during the image signing. It signs the current image in the CI/CD pipeline, what we want to install to the cluster. You need to run this pipeline only once:
+The DCT init pipeline is used for setting up DCT image signing and signature verification for your cluster. You need to run this pipeline only once:
 
-- You only have to run the pipeline, because it is already configured.
+- In the DCT init pipeline configuration, set the private workers you've created as Workers for the pipeline
+- Run the pipeline, it will set up DCT image signing
+- You don't need to run it again, unless you've reset your signing key pair
 
 ### 5. Run PR/CI Pipeline
 
