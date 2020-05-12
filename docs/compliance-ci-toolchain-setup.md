@@ -140,13 +140,19 @@ Note: You can access the Artifactory [here](https://eu.artifactory.swg-devops.co
 
 - **Integration name:**  Tool integration name in the toolchain  
     Default: `artifactory-{timestamp}`
-- **Integration URL:**  The url of the artifactory repository  
+- **Integration URL:**  The url of the artifactory service   
+    Default: `https://na.artifactory.swg-devops.com`  
+    This is where the cocoa base image is stored.
+- **Repository URL:**  The full url of the artifactory repository where images used in the compliance template are stored  
     Default: `https://wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com`  
+    This is where the cocoa base image is stored.
+- **Repository name:**  The name of the artifactory repository
+    Default: `wcp-compliance-automation-team-docker-local`  
     This is where the cocoa base image is stored.
 - **Repository type:**  The artifactory repository type  
     Default: `Docker registry`  
     Note: This should not be changed, otherwise the pipeline will break.
-- **User ID:** The artifactory user
+- **User ID:** The artifactory user id - usually your w3 id
 - **Authentication token:** The artifactory API key  
     An artifactory token can be created [here](https://eu.artifactory.swg-devops.com/artifactory/webapp/#/profile) and stored in Key Protect  
     When an artifactory API key already exists in Key Protect, it can be imported here.
