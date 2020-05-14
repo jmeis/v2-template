@@ -8,8 +8,6 @@ spec:
       description: the git repo
     - name: branch
       description: branch
-    - name: pipeline-run-id
-      description: pipeline run id unique ID
     - name: target-branch
       description: target branch
     - name: api-key
@@ -93,8 +91,6 @@ spec:
           value: $(params.branch)
         - name: api-key
           value: $(params.api-key)
-        - name: pipeline-run-id
-          value: $(params.pipeline-run-id)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
@@ -115,8 +111,6 @@ spec:
           value: $(params.branch)
         - name: api-key
           value: $(params.api-key)
-        - name: pipeline-run-id
-          value: $(params.pipeline-run-id)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
@@ -237,8 +231,6 @@ spec:
         - name: artifacts
           workspace: artifacts
       params:
-        - name: pipeline-run-id
-          value: $(params.pipeline-run-id)
         - name: target-branch
           value: $(params.target-branch)
         - name: required-checks

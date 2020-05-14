@@ -131,8 +131,6 @@ spec:
             resourceRef:
               name: $(params.cluster-name)
         params:
-          - name: pipeline-run-id
-            value: $(uid)
           - name: registry-namespace
             value: $(params.registry-namespace)
           - name: vault-name
