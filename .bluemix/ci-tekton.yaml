@@ -3,7 +3,7 @@ inputs:
   - type: git
     branch: master
     service: ${PIPELINE_REPO}
-    path: .pipeline
+    path: .ci-pipeline
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
@@ -45,13 +45,6 @@ inputs:
     service: ${TEKTON_CATALOG_REPO}
     path: preview/util
 triggers:
-  - type: git
-    name: Git PR Trigger
-    service: ${APP_REPO}
-    branch: master
-    events:
-      pull_request: true
-    eventListener: pr-listener
   - type: git
     name: Git CI Trigger
     service: ${APP_REPO}
