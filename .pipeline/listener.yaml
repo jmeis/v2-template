@@ -1,5 +1,5 @@
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
   name: template
@@ -8,8 +8,6 @@ spec:
   - name: registry-namespace
     description: The namespace in the container image registry. You can set it up
       with {bx cr namespace-add]. Learn more at https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started#getting-started.
-  - name: repo
-    description: GIT_REPO
   - name: vault-name
     description: Specify the Key Protect instance name, where the image signing keys
       have been stored. The build and validation signer fields contain default names
@@ -28,8 +26,6 @@ spec:
       Service API and interact with the cluster. You can obtain your API key with
       'ic iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
       by clicking **Create API key** (Each API key only can be viewed once).
-  - name: apikey
-    description: the ibmcloud api key
   - name: cluster-name
     description: the name of the cluster to target
   - name: dev-resource-group
@@ -38,16 +34,12 @@ spec:
     description: target region
   - name: validation-signer
     description: VALIDATION_SIGNER
-  - name: build-signer
-    description: BUILD_SIGNER
   - name: branch
     description: the branch for the git repo
   - name: imageUrl
     description: The image url in your container registry
   - name: dev-cluster-namespace
     description: namespace dev
-  - name: dockerconfigjson
-    description: dockerconfigjson
   - name: repository-integration
     description: the repo integration name
   - name: evidence-repo
@@ -92,7 +84,7 @@ spec:
         - name: artifactory-pull-secret
       metadata:
         name: sa-pullsecret
-    - apiVersion: tekton.dev/v1alpha1
+    - apiVersion: tekton.dev/v1beta1
       kind: PipelineResource
       metadata:
         name: image-to-build
@@ -101,7 +93,7 @@ spec:
         params:
         - name: url
           value: $(params.imageUrl)
-    - apiVersion: tekton.dev/v1alpha1
+    - apiVersion: tekton.dev/v1beta1
       kind: PipelineResource
       metadata:
         name: $(params.cluster-name)
@@ -118,13 +110,17 @@ spec:
             value: norealvalueneeded
           - name: cadata
             value: norealvalueneeded
-    - apiVersion: tekton.dev/v1alpha1
+    - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
         name: pipelinerun-$(uid)
       spec:
         pipelineRef:
           name: pipeline
+        workspaces:
+          - name: artifacts
+            persistentVolumeClaim:
+              claimName: pipelinerun-$(uid)-pvc
         resources:
           - name: app-image
             resourceRef:
@@ -133,14 +129,10 @@ spec:
             resourceRef:
               name: $(params.cluster-name)
         params:
-        - name: pipeline-pvc
-          value: pipelinerun-$(uid)-pvc
-        - name: pipelineRunId
+        - name: pipeline-run-id
           value: $(uid)
         - name: registry-namespace
           value: $(params.registry-namespace)
-        - name: repo
-          value: $(params.repo)
         - name: vault-name
           value: $(params.vault-name)
         - name: repository
@@ -159,8 +151,6 @@ spec:
           value: $(params.dev-resource-group)
         - name: validation-signer
           value: $(params.validation-signer)
-        - name: build-signer
-          value: $(params.build-signer)
         - name: branch
           value: $(params.branch)
         - name: cluster-name
@@ -181,7 +171,7 @@ spec:
           value: $(params.version)
         serviceAccountName: sa-pullsecret
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
   name: binding
@@ -194,7 +184,7 @@ spec:
   - name: commit-id
     value: $(event.head_commit.id)
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
   name: pr-binding
@@ -209,7 +199,7 @@ spec:
   - name: pr-url
     value: $(event.pull_request.url)
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: listener
@@ -220,7 +210,7 @@ spec:
     template:
       name: template
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: pr-listener
@@ -231,7 +221,7 @@ spec:
       template:
         name: pr-template
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
   name: pr-template
@@ -245,12 +235,8 @@ spec:
       description: target branch
     - name: repository-integration
       description: the repo integration name
-    - name: dockerconfigjson
-      description: registry secret
     - name: api-key
       description: the ibmcloud api key
-    - name: evidence-repo
-      description: evidence repo
     - name: commit-id
       description: commit id
     - name: pipeline-debug
@@ -289,22 +275,24 @@ spec:
       type: Opaque
       stringData:
         API_KEY: $(params.api-key)
-    - apiVersion: tekton.dev/v1alpha1
+    - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
         name: pipelinerun-$(uid)
       spec:
         pipelineRef:
           name: pr-pipeline
+        workspaces:
+          - name: artifacts
+            persistentVolumeClaim:
+              claimName: pipelinerun-$(uid)-pvc
         serviceAccountName: sa-pullsecret
         params:
-          - name: pipeline-pvc
-            value: pipelinerun-$(uid)-pvc
           - name: repository
             value: $(params.repository)
           - name: branch
             value: $(params.branch)
-          - name: pipelineRunId
+          - name: pipeline-run-id
             value: $(uid)
           - name: target-branch
             value: $(params.target-branch)
@@ -314,8 +302,6 @@ spec:
             value: $(params.repository-integration)
           - name: commit-id
             value: $(params.commit-id)
-          - name: evidence-repo
-            value: $(params.evidence-repo)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
           - name: pr-url

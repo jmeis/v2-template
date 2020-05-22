@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: pr-pipeline
@@ -8,10 +8,8 @@ spec:
       description: the git repo
     - name: branch
       description: branch
-    - name: pipelineRunId
+    - name: pipeline-run-id
       description: pipeline run id unique ID
-    - name: pipeline-pvc
-      description: pipeline pvc name place holder
     - name: target-branch
       description: target branch
     - name: api-key
@@ -21,21 +19,24 @@ spec:
         by clicking **Create API key** (Each API key only can be viewed once).
     - name: repository-integration
       description: the repo integration name
-    - name: evidence-repo
-      description: evidence repo
     - name: commit-id
       description: commit id
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
     - name: pr-url
       description: pr url
+
+  workspaces:
+    - name: artifacts
+
   tasks:
     - name: fetch-credentials
       taskRef:
-        name: get-git-credentials
+        name: git-get-credentials
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
       params:
-        - name: credentials-pvc
-          value: $(params.pipeline-pvc)
         - name: repository
           value: $(params.repository)
         - name: ibmcloud-api-key
@@ -44,45 +45,48 @@ spec:
           value: $(params.repository-integration)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+
     - name: fetch-code
-      runAfter: [fetch-credentials]
+      runAfter:
+        - fetch-credentials
       taskRef:
         name: git-clone
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: repository
           value: $(params.repository)
         - name: branch
           value: $(params.branch)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-    - name: gitsecure-vuln
-      runAfter: [fetch-code]
+
+    - name: gitsecure-vulnerability-scan
+      runAfter:
+        - fetch-code
       taskRef:
-        name: gitsecure-discovery-task
+        name: gitsecure-discovery
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: repository
           value: $(params.repository)
         - name: revision
           value: $(params.branch)
-        - name: apikey
-          value: $(params.api-key)
-        - name: pipelineRunId
-          value: $(params.pipelineRunId)
-        - name: evidence-repo
-          value: $(params.evidence-repo)
         - name: commit-id
           value: $(params.commit-id)
-    - name: gitsecure-vuln-remediation
-      runAfter: [gitsecure-vuln]
+
+    - name: gitsecure-vulnerability-remediation
+      runAfter:
+        - gitsecure-vulnerability-scan
       taskRef:
-        name: gitsecure-vulnerability-remediation-task
+        name: gitsecure-vulnerability-remediation
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: repository
           value: $(params.repository)
         - name: revision
@@ -90,18 +94,21 @@ spec:
         - name: api-key
           value: $(params.api-key)
         - name: pipeline-run-id
-          value: $(params.pipelineRunId)
+          value: $(params.pipeline-run-id)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
           value: $(params.commit-id)
+
     - name: gitsecure-cis
       taskRef:
-        name: gitsecure-cis-task
-      runAfter: [gitsecure-vuln]
+        name: gitsecure-cis-check
+      runAfter:
+        - gitsecure-vulnerability-scan
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: repository
           value: $(params.repository)
         - name: revision
@@ -109,15 +116,17 @@ spec:
         - name: api-key
           value: $(params.api-key)
         - name: pipeline-run-id
-          value: $(params.pipelineRunId)
+          value: $(params.pipeline-run-id)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
           value: $(params.commit-id)
+
     - name: gitsecure-ossc
-      runAfter: [gitsecure-vuln]
+      runAfter:
+        - gitsecure-vulnerability-scan
       taskRef:
-        name: gitsecure-ossc-task
+        name: gitsecure-ossc-check
       params:
         - name: repository
           value: $(params.repository)
@@ -125,37 +134,114 @@ spec:
           value: $(params.branch)
         - name: api-key
           value: $(params.api-key)
-        - name: pipeline-run-id
-          value: $(params.pipelineRunId)
-        - name: evidence-repo
-          value: $(params.evidence-repo)
         - name: commit-id
           value: $(params.commit-id)
-    - name: unit-tests
-      runAfter: [gitsecure-vuln]
+
+    - name: setup-unit-test-run
+      runAfter:
+        - gitsecure-vulnerability-scan
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      taskSpec:
+        steps:
+          - name: save-git-token-to-file
+            image: ibmcom/pipeline-base-image:2.6
+            workingDir: "/artifacts"
+            command: ["/bin/bash", "-c"]
+            args:
+              - |
+                #!/bin/bash
+                set -e -o pipefail
+                pwd
+                env
+                trap env EXIT
+                set -x
+                source ./build.properties
+                echo -n $GIT_TOKEN > ./github-token
+
+        workspaces:
+          - name: artifacts
+            mountPath: /artifacts
+
+    - name: unit-tests-status-pending
+      runAfter:
+        - setup-unit-test-run
       taskRef:
-        name: unit-tests-task
+        name: github-set-status
+      workspaces:
+        - name: secrets
+          workspace: artifacts
       params:
-         - name: task-pvc
-           value: $(params.pipeline-pvc)
-         - name: pipelineRunId
-           value: $(params.pipelineRunId)
-         - name: context
-           value: tekton/pr-unit-tests
-         - name: pipeline-debug
-           value: $(params.pipeline-debug)
+        - name: secret-name
+          value: github-token
+        - name: repo-url
+          value: $(params.repository)
+        - name: commit-sha
+          value: $(params.commit-id)
+        - name: state
+          value: pending
+        - name: context
+          value: tekton/pr-unit-tests
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: run-unit-tests
+      runAfter:
+        - unit-tests-status-pending
+      taskRef:
+        name: util-run
+      workspaces:
+        - name: scripts
+          workspace: artifacts
+      params:
+        - name: script
+          value: |
+            #!/bin/bash
+            . /root/.nvm/nvm.sh
+            APP_DIR=$(echo "$(params.repository)" | sed -E "s/(.*)(\/)//")
+            cd /scripts/${APP_DIR}
+            npm ci -q
+            npm test
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: set-unit-test-status
+      runAfter:
+        - run-unit-tests
+      taskRef:
+        name: github-set-status
+      workspaces:
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: secret-name
+          value: github-token
+        - name: repo-url
+          value: $(params.repository)
+        - name: commit-sha
+          value: $(params.commit-id)
+        - name: state
+          value: $(tasks.run-unit-tests.results.status)
+        - name: context
+          value: tekton/pr-unit-tests
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
     - name: check-github-statuses
-      runAfter: [unit-tests]
+      runAfter:
+        - set-unit-test-status
       taskRef:
-        name: check-github-statuses-task
+        name: compliance-check-github-statuses
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
-        - name: pipelineRunId
-          value: $(params.pipelineRunId)
+        - name: pipeline-run-id
+          value: $(params.pipeline-run-id)
         - name: target-branch
           value: $(params.target-branch)
-        - name: requiredChecks
+        - name: required-checks
           value: |
             [{
               "type": "check-run",

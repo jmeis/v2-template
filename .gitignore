@@ -3,3 +3,4 @@ launchConfigurations/
 .history
 node_modules
 .idea/
+.vscode/ 
