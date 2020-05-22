@@ -38,8 +38,7 @@ Status checks let you know if your commits meet the conditions set for the repos
 
 The `PR` Pipeline contains the following required Status Checks:
 1. `tekton/pr-unit-tests` - Represents the result of the unit tests.
-2. `whitewater-detect-secrets` - Represents the result of Secret Detection on the feature branch.
-3. `tekton/pr-compliance` - Checks if the Branch Protection Settings, Code Review criterias are met.
+2. `tekton/pr-compliance` - Checks if the Branch Protection Settings, Code Review criterias are met.
 
 
 #### `CI` Pipeline Status Checks
@@ -47,8 +46,7 @@ The `PR` Pipeline contains the following required Status Checks:
 
 The `PR` Pipeline contains the following required Status Checks:
 1. `tekton/ci-unit-tests` - Represents the result of the unit tests on the master branch.
-2. `whitewater-detect-secrets` - Represents the result of Secret Detection.
-3. `tekton/ci-compliance` - Checks if the Branch Protection Settings, Code Review criterias are met.
+2. `tekton/ci-compliance` - Checks if the Branch Protection Settings, Code Review criterias are met.
 
 Read our [step by step guide](./docs/github-repository-configuration.md) to configure your Github Repository.
 
@@ -64,5 +62,4 @@ Read our [step by step guide](./docs/github-repository-configuration.md) to conf
 * [Artifactory](https://taas.w3ibm.mybluemix.net/guides#artifactory)
 * [Working with Tekton pipelines](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines)
 * [Getting started IBM Cloud CLI](https://cloud.ibm.com/docs/cli?topic=cloud-cli-getting-started)
-* [Whitewater Detect Secrets](https://github.ibm.com/github-apps/whitewater-detect-secrets)
 * [Getting started IBM Cloud CLI](https://cloud.ibm.com/docs/cli?topic=cloud-cli-getting-started)
