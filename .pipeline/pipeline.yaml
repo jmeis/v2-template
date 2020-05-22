@@ -1,20 +1,16 @@
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   name: pipeline
 spec:
   params:
-    - name: pipeline-pvc
-      description: pipeline pvc name place holder
-    - name: pipelineRunId
-      description: pipelineRunId unique ID
+    - name: pipeline-run-id
+      description: pipeline-run-id unique ID
     - name: registry-namespace
       description: The namespace in the container image registry. You can set it up
         with {bx cr namespace-add]. Learn more at
         https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started#getting-started.
-    - name: repo
-      description: GIT_REPO
     - name: repository
       description: The git repo
     - name: app-name
@@ -60,18 +56,24 @@ spec:
       description: inventory repository owner and name
     - name: version
       description: cr branch name
+
   resources:
     - name: app-image
       type: image
     - name: target-cluster
       type: cluster
+
+  workspaces:
+    - name: artifacts
+
   tasks:
     - name: fetch-credentials
       taskRef:
-        name: get-git-credentials
+        name: git-get-credentials
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
       params:
-        - name: credentials-pvc
-          value: $(params.pipeline-pvc)
         - name: ibmcloud-api-key
           value: $(params.api-key)
         - name: repository
@@ -80,13 +82,16 @@ spec:
           value: $(params.repository-integration)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+
     - name: fetch-code
-      runAfter: [fetch-credentials]
+      runAfter:
+        - fetch-credentials
       taskRef:
         name: git-clone
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: repository
           value: $(params.repository)
         - name: branch
@@ -95,45 +100,48 @@ spec:
           value: $(params.revision)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+
     - name: unit-tests
-      runAfter: [fetch-code]
+      runAfter:
+        - fetch-code
       taskRef:
-        name: unit-tests-task
+        name: compliance-unit-test
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
-        - name: pipelineRunId
-          value: $(params.pipelineRunId)
+        - name: pipeline-run-id
+          value: $(params.pipeline-run-id)
         - name: context
           value: tekton/ci-unit-tests
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-    - name: gitsecure-vuln
-      runAfter: [unit-tests]
+
+    - name: gitsecure-vulnerability-scan
+      runAfter:
+        - unit-tests
       taskRef:
-        name: gitsecure-discovery-task
+        name: gitsecure-discovery
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: repository
           value: $(params.repository)
         - name: revision
           value: $(params.branch)
-        - name: apikey
-          value: $(params.api-key)
-        - name: pipelineRunId
-          value: $(params.pipelineRunId)
-        - name: evidence-repo
-          value: $(params.evidence-repo)
         - name: commit-id
           value: $(params.commit-id)
-    - name: gitsecure-vuln-remediation
-      runAfter: [gitsecure-vuln]
+
+    - name: gitsecure-vulnerability-remediation
+      runAfter:
+        - gitsecure-vulnerability-scan
       taskRef:
-        name: gitsecure-vulnerability-remediation-task
+        name: gitsecure-vulnerability-remediation
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: repository
           value: $(params.repository)
         - name: revision
@@ -141,18 +149,21 @@ spec:
         - name: api-key
           value: $(params.api-key)
         - name: pipeline-run-id
-          value: $(params.pipelineRunId)
+          value: $(params.pipeline-run-id)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
           value: $(params.commit-id)
-    - name: gitsecure-cis
+
+    - name: gitsecure-cis-check
       taskRef:
-        name: gitsecure-cis-task
-      runAfter: [gitsecure-vuln]
+        name: gitsecure-cis-check
+      runAfter:
+        - gitsecure-vulnerability-remediation
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: repository
           value: $(params.repository)
         - name: revision
@@ -160,15 +171,17 @@ spec:
         - name: api-key
           value: $(params.api-key)
         - name: pipeline-run-id
-          value: $(params.pipelineRunId)
+          value: $(params.pipeline-run-id)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
           value: $(params.commit-id)
-    - name: gitsecure-ossc
-      runAfter: [gitsecure-vuln]
+
+    - name: gitsecure-ossc-check
+      runAfter:
+        - gitsecure-vulnerability-remediation
       taskRef:
-        name: gitsecure-ossc-task
+        name: gitsecure-ossc-check
       params:
         - name: repository
           value: $(params.repository)
@@ -176,16 +189,15 @@ spec:
           value: $(params.branch)
         - name: api-key
           value: $(params.api-key)
-        - name: pipeline-run-id
-          value: $(params.pipelineRunId)
-        - name: evidence-repo
-          value: $(params.evidence-repo)
         - name: commit-id
           value: $(params.commit-id)
+
     - name: gitsecure-evidence-emitter
-      runAfter: [gitsecure-ossc]
+      runAfter:
+        - gitsecure-ossc-check
+        - gitsecure-cis-check
       taskRef:
-        name: gitsecure-evidence-emitter-task
+        name: gitsecure-evidence-emitter
       params:
         - name: repository
           value: $(params.repository)
@@ -193,26 +205,29 @@ spec:
           value: $(params.branch)
         - name: apikey
           value: $(params.api-key)
-        - name: pipelineRunId
-          value: $(params.pipelineRunId)
+        - name: pipeline-run-id
+          value: $(params.pipeline-run-id)
         - name: evidence-repo
           value: $(params.evidence-repo)
         - name: commit-id
           value: $(params.commit-id)
+
     - name: check-github-statuses
-      runAfter: [gitsecure-vuln]
+      runAfter:
+        - gitsecure-cis-check
       taskRef:
-        name: check-github-statuses-task
+        name: compliance-check-github-statuses
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
-        - name: pipelineRunId
-          value: $(params.pipelineRunId)
+        - name: pipeline-run-id
+          value: $(params.pipeline-run-id)
         - name: target-branch
           value: $(params.branch)
         - name: repository-integration
           value: $(params.repository-integration)
-        - name: requiredChecks
+        - name: required-checks
           value: |
             [{
               "type": "check-run",
@@ -242,17 +257,32 @@ spec:
           value: "true"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-    - name: containerize
-      runAfter: [check-github-statuses]
+
+    - name: check-dockerfile
+      runAfter:
+        - check-github-statuses
       taskRef:
-        name: containerize-task
+        name: icr-check-dockerfile
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: containerize
+      taskRef:
+        name: icr-containerize
+      runAfter:
+        - check-dockerfile
+      workspaces:
+        - name: source
+          workspace: artifacts
+      params:
         - name: additional-tags-script
           value: |
             # Include the clone task output variables in the environment
-            source /artifacts/build.properties
+            source /source/build.properties
             # The script is providing tag(s) as output
             # But logs can be written as error stderr
             echo "Providing an image tag including git branch and commit" >&2
@@ -264,27 +294,31 @@ spec:
         outputs:
           - name: built-image
             resource: app-image
+
     - name: update-inventory
       taskRef:
-        name: update-inventory-task
+        name: inventory-update-version
       runAfter:
         - containerize
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: inventory-repo
           value: $(params.inventory-repo)
         - name: version
           value: $(params.version)
+
     - name: vulnerability-advisor
       taskRef:
-        name: vulnerability-advisor-task
+        name: icr-check-va-scan
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
-        - name: scanReportFile
+        - name: scan-report-file
           value: 'app-image-va-report.json'
         - name: ibmcloud-api-key
           value: $(params.api-key)
@@ -302,20 +336,16 @@ spec:
             resource: app-image
             from:
               - containerize
-    - name: additional-image-checks
-      taskRef:
-        name: additional-image-checks-task
-      runAfter: [vulnerability-advisor]
-      params:
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
+
     - name: docker-image-sign
-      runAfter: [additional-image-checks]
+      runAfter:
+        - vulnerability-advisor
       taskRef:
-        name: docker-signing-task
+        name: dct-sign
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: app-name
           value: $(params.app-name)
         - name: api-key
@@ -336,13 +366,16 @@ spec:
           value: $(params.dev-region)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+
     - name: fetch-iks-cluster-config
-      runAfter: [docker-image-sign]
+      runAfter:
+        - docker-image-sign
       taskRef:
-        name: fetch-iks-cluster-config
+        name: iks-fetch-config
+      workspaces:
+        - name: cluster-configuration
+          workspace: artifacts
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: ibmcloud-api-key
           value: $(params.api-key)
         - name: cluster-name
@@ -358,17 +391,18 @@ spec:
         outputs:
           - name: cluster
             resource: target-cluster
+
     - name: pipeline-1-kubectl-task
-      runAfter: [fetch-iks-cluster-config]
+      runAfter:
+        - fetch-iks-cluster-config
       taskRef:
-        name: kubernetes-contextual-execution
+        name: iks-contextual-execution
+      workspaces:
+        - name: cluster-configuration
+          workspace: artifacts
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
-        - name: task-pvc-mountpath
-          value: /pipelinerun
-        - name: clusterPipelineResourcesDirectory
-          value: /pipelinerun/.tekton-clusters
+        - name: cluster-pipeline-resources-directory
+          value: .tekton-clusters
         - name: script
           value: |
             echo "** Here is the kubectl version:"
@@ -388,15 +422,13 @@ spec:
 
     - name: deploy-dev
       taskRef:
-        name: deploy-to-cluster
-      runAfter: [pipeline-1-kubectl-task]
+        name: iks-deploy
+      runAfter:
+        - pipeline-1-kubectl-task
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
-        - name: repository
-          value: $(params.repository)
-        - name: revision
-          value: $(params.revision)
         - name: cluster-name
           value: $(params.cluster-name)
         - name: cluster-namespace

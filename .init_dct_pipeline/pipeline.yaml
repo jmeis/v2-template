@@ -1,14 +1,10 @@
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: pipeline
+  name: dct-pipeline
 spec:
   params:
-    - name: pipeline-pvc
-      description: pipeline pvc name place holder
-    - name: pipeline-id
-      description: id of the pipeline run
     - name: api-key
       description: The IBM Cloud API key is used to access the IBM Cloud Kubernetes
         Service API and interact with the cluster. You can obtain your API key with
@@ -34,13 +30,20 @@ spec:
       description: Resource Group
     - name: validation-signer
       description: the validation signer
+    - name: pipeline-debug
+      description: toggles debug mode for the pipeline
+
+  workspaces:
+    - name: artifacts
+
   tasks:
     - name: init-docker-content-trust
       taskRef:
-        name: init-docker-content-trust
+        name: dct-init
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: app-name
           value: $(params.app-name)
         - name: api-key
@@ -59,13 +62,17 @@ spec:
           value: $(params.dev-resource-group)
         - name: validation-signer
           value: $(params.validation-signer)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
     - name: apply-image-enforcement-policy
       runAfter: [init-docker-content-trust]
       taskRef:
-        name: apply-image-enforcement-task
+        name: dct-apply-image-enforcement-policy
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
       params:
-        - name: task-pvc
-          value: $(params.pipeline-pvc)
         - name: app-name
           value: $(params.app-name)
         - name: api-key
@@ -84,3 +91,5 @@ spec:
           value: $(params.dev-resource-group)
         - name: validation-signer
           value: $(params.validation-signer)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)

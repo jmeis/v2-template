@@ -19,7 +19,7 @@ inputs:
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: preview/containerize
+    path: preview/container-registry
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
@@ -28,6 +28,10 @@ inputs:
     branch: master
     service: ${TEKTON_CATALOG_REPO}
     path: preview/inventory
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: preview/gitsecure
 triggers:
   - type: git
     name: Git PR Trigger

@@ -1,8 +1,8 @@
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
-  name: template
+  name: dct-template
 spec:
   params:
     - name: app-name
@@ -14,8 +14,6 @@ spec:
         by clicking **Create API key** (Each API key only can be viewed once).
     - name: validation-signer
       description: validation signer
-    - name: build-signer
-      description: build signer
     - name: registry-namespace
       description: The registry namespace
     - name: registry-region
@@ -28,6 +26,9 @@ spec:
       description: the name of the targeted cluster
     - name: dev-region
       description: target region
+    - name: pipeline-debug
+      description: toggles debug mode for the pipeline
+
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -36,7 +37,7 @@ spec:
       spec:
         resources:
           requests:
-            storage:  5Gi
+            storage: 5Gi
         volumeMode: Filesystem
         accessModes:
           - ReadWriteOnce
@@ -52,7 +53,7 @@ spec:
       type: Opaque
       stringData:
         API_KEY: $(params.api-key)
-    - apiVersion: tekton.dev/v1alpha1
+    - apiVersion: tekton.dev/v1beta1
       kind: PipelineResource
       metadata:
         name: $(params.cluster-name)
@@ -69,16 +70,16 @@ spec:
           value: norealvalueneeded
         - name: cadata
           value: norealvalueneeded
-    - apiVersion: tekton.dev/v1alpha1
+    - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
-        name: pipelinerun-$(uid)
+        name: dct-pipelinerun-$(uid)
       spec:
+        workspaces:
+          - name: artifacts
+            persistentVolumeClaim:
+              claimName: pipelinerun-$(uid)-pvc
         params:
-          - name: pipeline-pvc
-            value: pipelinerun-$(uid)-pvc
-          - name: pipeline-id
-            value: $(uid)
           - name: registry-namespace
             value: $(params.registry-namespace)
           - name: vault-name
@@ -95,12 +96,12 @@ spec:
             value: $(params.dev-resource-group)
           - name: validation-signer
             value: $(params.validation-signer)
-          - name: build-signer
-            value: $(params.build-signer)
           - name: cluster-name
             value: $(params.cluster-name)
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
         pipelineRef:
-          name: pipeline
+          name: dct-pipeline
         serviceAccountName: tiller
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -116,10 +117,10 @@ subjects:
     name: tiller
     namespace: default
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
-  name: binding
+  name: dct-binding
 spec:
   params:
     - name: repository
@@ -127,13 +128,13 @@ spec:
     - name: revision
       value: master
 ---
-apiVersion: tekton.dev/v1alpha1
+apiVersion: tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: listener
+  name: dct-listener
 spec:
   triggers:
     - binding:
-        name: binding
+        name: dct-binding
       template:
-        name: template
+        name: dct-template
