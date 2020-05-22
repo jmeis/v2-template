@@ -32,6 +32,18 @@ inputs:
     branch: master
     service: ${TEKTON_CATALOG_REPO}
     path: preview/gitsecure
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: preview/github
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: preview/evidence
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: preview/util
 triggers:
   - type: git
     name: Git PR Trigger
