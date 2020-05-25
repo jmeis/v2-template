@@ -1,11 +1,6 @@
 # GitHub Repository Configuration
 
-### 1. Add Whitewater Detect Secrets Github App to your repository
-![Whitewater Detect Secrets](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/whitewater-detect-secrets-screenshot.png)
-
-Use the following [link](https://github.ibm.com/github-apps/whitewater-detect-secrets) to add the Whitewater Detect Secrets app to your repository. Detect Secrets identifies potential secrets in your git source repo. 
-
-### 2. Add the required Branch Protection Rules
+### Add the required Branch Protection Rules
 ![Branch Protection](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/branch-protection-rules-screenshot.png)
 
 On the settings tab in your repository, you can configure the Branch Protection rules.
