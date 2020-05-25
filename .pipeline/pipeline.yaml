@@ -47,6 +47,8 @@ spec:
       description: toggles debug mode for the pipeline
     - name: evidence-repo
       description: evidence repo
+    - name: issues-repo
+      description: incident issues repo
     - name: commit-id
       description: commit id
     - name: pr-url
