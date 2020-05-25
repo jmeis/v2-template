@@ -131,7 +131,7 @@ spec:
         - name: commit-id
           value: $(params.commit-id)
 
-    - name: setup-unit-test-run
+    - name: setup-set-status
       runAfter:
         - gitsecure-vulnerability-scan
       workspaces:
@@ -160,7 +160,7 @@ spec:
 
     - name: unit-tests-status-pending
       runAfter:
-        - setup-unit-test-run
+        - setup-set-status
       taskRef:
         name: github-set-status
       workspaces:
@@ -222,9 +222,31 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: check-github-statuses
+    - name: set-github-status-checks-pending
       runAfter:
         - set-unit-test-status
+      taskRef:
+        name: github-set-status
+      workspaces:
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: secret-name
+          value: github-token
+        - name: repo-url
+          value: $(params.repository)
+        - name: commit-sha
+          value: $(params.commit-id)
+        - name: state
+          value: pending
+        - name: context
+          value: tekton/pr-compliance
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: check-github-statuses
+      runAfter:
+        - set-github-status-checks-pending
       taskRef:
         name: compliance-check-github-statuses
       workspaces:
@@ -244,9 +266,29 @@ spec:
                 ]
               }
             }]
-        - name: context
-          value: tekton/pr-compliance
         - name: collect-evidence
           value: "false"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: set-github-status
+      runAfter:
+        - check-github-statuses
+      taskRef:
+        name: github-set-status
+      workspaces:
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: secret-name
+          value: github-token
+        - name: repo-url
+          value: $(params.repository)
+        - name: commit-sha
+          value: $(params.commit-id)
+        - name: state
+          value: $(tasks.check-github-statuses.results.status)
+        - name: context
+          value: tekton/ci-compliance
         - name: pipeline-debug
           value: $(params.pipeline-debug)

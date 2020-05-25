@@ -260,9 +260,31 @@ spec:
         - name: commit-id
           value: $(params.commit-id)
 
-    - name: check-github-statuses
+    - name: set-github-status-checks-pending
       runAfter:
         - gitsecure-cis-check
+      taskRef:
+        name: github-set-status
+      workspaces:
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: secret-name
+          value: github-token
+        - name: repo-url
+          value: $(params.repository)
+        - name: commit-sha
+          value: $(params.commit-id)
+        - name: state
+          value: pending
+        - name: context
+          value: tekton/ci-compliance
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: check-github-statuses
+      runAfter:
+        - set-github-status-checks-pending
       taskRef:
         name: compliance-check-github-statuses
       workspaces:
@@ -284,16 +306,36 @@ spec:
                 ]
               }
             }]
-        - name: context
-          value: tekton/ci-compliance
         - name: collect-evidence
           value: "false"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: check-dockerfile
+    - name: set-github-status
       runAfter:
         - check-github-statuses
+      taskRef:
+        name: github-set-status
+      workspaces:
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: secret-name
+          value: github-token
+        - name: repo-url
+          value: $(params.repository)
+        - name: commit-sha
+          value: $(params.commit-id)
+        - name: state
+          value: $(tasks.check-github-statuses.results.status)
+        - name: context
+          value: tekton/ci-compliance
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: check-dockerfile
+      runAfter:
+        - set-github-status
       taskRef:
         name: icr-check-dockerfile
       workspaces:
