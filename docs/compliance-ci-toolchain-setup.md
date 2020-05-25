@@ -209,7 +209,7 @@ Configure your application repository by following these [instructions](https://
 | ![PR status checks](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/pr-checks.png) |
 | :--: | 
 
-- Several status checks will run on your branch,  which can be set in you branch protection rules e.g.(`tekton/pr-unit-tests`, `tekton/pr-compliance`)
+- Several status checks will run on your branch,  which can be set in you branch protection rules e.g.(`tekton/pr-compliance`)
   
 **Run CI Pipeline**
 

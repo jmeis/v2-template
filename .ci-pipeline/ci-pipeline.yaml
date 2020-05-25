@@ -283,12 +283,6 @@ spec:
                   "tekton/pr-compliance"
                 ]
               }
-            }, {
-              "type": "status",
-              "name": "unit-tests",
-              "params": {
-                "name": "tekton/ci-unit-tests"
-              }
             }]
         - name: context
           value: tekton/ci-compliance

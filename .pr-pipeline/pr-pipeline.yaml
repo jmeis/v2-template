@@ -243,12 +243,6 @@ spec:
                   "tekton/pr-compliance"
                 ]
               }
-            }, {
-              "type": "status",
-              "name": "unit-tests",
-              "params": {
-                "name": "tekton/pr-unit-tests"
-              }
             }]
         - name: context
           value: tekton/pr-compliance

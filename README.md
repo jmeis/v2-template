@@ -37,16 +37,14 @@ Status checks let you know if your commits meet the conditions set for the repos
 ![PR Pipeline Screenshot](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/pr-pipeline-screenshot.png)
 
 The `PR` Pipeline contains the following required Status Checks:
-1. `tekton/pr-unit-tests` - Represents the result of the unit tests.
-2. `tekton/pr-compliance` - Checks if the Branch Protection Settings, Code Review criterias are met.
+- `tekton/pr-compliance` - Checks if the Branch Protection Settings, Code Review criterias are met.
 
 
 #### `CI` Pipeline Status Checks
 ![CI Pipeline Screenshot](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/ci-pipeline-screenshot.png)
 
 The `PR` Pipeline contains the following required Status Checks:
-1. `tekton/ci-unit-tests` - Represents the result of the unit tests on the master branch.
-2. `tekton/ci-compliance` - Checks if the Branch Protection Settings, Code Review criterias are met.
+- `tekton/ci-compliance` - Checks if the Branch Protection Settings, Code Review criterias are met.
 
 Read our [step by step guide](./docs/github-repository-configuration.md) to configure your Github Repository.
 
