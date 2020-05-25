@@ -27,11 +27,13 @@ template:
       "[" + $env.branch + "]" +
         "(" + $env.repository +
           "/tree/" + $env.branch + ")"
+
 toolchain:
   name: 'compliance-ci-toolchain-{{timestamp}}'
   template:
     getting_started:
       $ref: "#/messages/template.gettingStarted"
+
 services:
   artifactoryComp:
     service_id: artifactory
@@ -72,6 +74,7 @@ services:
       has_issues: false
       enable_traceability: false
       legal: true
+
   tekton-catalog-repo:
     service_id: github_integrated
     parameters:
@@ -86,6 +89,7 @@ services:
       has_issues: false
       enable_traceability: false
       legal: true
+
   evidence-repo:
     service_id: github_integrated
     parameters:
@@ -95,6 +99,7 @@ services:
       has_issues: false
       enable_traceability: false
       legal: true
+
   issues-repo:
     service_id: github_integrated
     parameters:
@@ -104,6 +109,7 @@ services:
       has_issues: true
       enable_traceability: false
       legal: true
+
   inventory-repo:
     service_id: github_integrated
     parameters:
@@ -113,6 +119,7 @@ services:
       has_issues: false
       enable_traceability: false
       legal: true
+
   build:
     service_id: pipeline
     parameters:
@@ -141,11 +148,13 @@ services:
           VAULT_INSTANCE: '{{form.pipeline.parameters.vault_name}}'
           BUILD_SIGNER: '{{form.pipeline.parameters.build_signer}}'
           VALIDATION_SIGNER: '{{form.pipeline.parameters.validation_signer}}'
+          ISSUES_REPO: 'https://github.ibm.com/{{form.issues-repo.parameters.owner_id}}/{{form.issues-repo.parameters.repo_name}}'
           EVIDENCE_REPO: 'https://github.ibm.com/{{form.evidence-repo.parameters.owner_id}}/{{form.evidence-repo.parameters.repo_name}}'
           APP_REPO_FULL: 'https://github.ibm.com/{{form.app-repo.parameters.owner_id}}/{{form.app-repo.parameters.repo_name}}'
           TEKTON_CATALOG_REPO: tekton-catalog-repo
           DOCKER_CONFIG_JSON: '{{form.artifactoryComp.parameters.docker_config_json}}'
         execute: false
+
   init_dct:
     service_id: pipeline
     parameters:
@@ -174,8 +183,10 @@ services:
           BUILD_SIGNER: '{{form.pipeline.parameters.build_signer}}'
           VALIDATION_SIGNER: '{{form.pipeline.parameters.validation_signer}}'
         execute: false
+
   webide:
     service_id: orion
+
 form:
   pipeline:
     parameters:

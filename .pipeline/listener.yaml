@@ -44,6 +44,8 @@ spec:
     description: the repo integration name
   - name: evidence-repo
     description: evidence repo
+  - name: issues-repo
+    description: incident issues repo
   - name: commit-id
     description: commit id
   - name: pipeline-debug
@@ -167,6 +169,8 @@ spec:
           value: $(params.evidence-repo)
         - name: inventory-repo
           value: $(params.inventory-repo)
+        - name: issues-repo
+          value: $(params.issues-repo)
         - name: version
           value: $(params.version)
         serviceAccountName: sa-pullsecret

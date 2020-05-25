@@ -72,6 +72,9 @@ properties:
   - name: evidence-repo
     value: ${EVIDENCE_REPO}
     type: text
+  - name: issues-repo
+    value: ${ISSUES_REPO}
+    type: text
   - name: revision
     value: master
     type: text
