@@ -287,7 +287,7 @@ spec:
         - name: context
           value: tekton/ci-compliance
         - name: collect-evidence
-          value: "true"
+          value: "false"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
