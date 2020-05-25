@@ -1,0 +1,47 @@
+---
+inputs:
+  - type: git
+    branch: master
+    service: ${PIPELINE_REPO}
+    path: .pr-pipeline
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: preview/git
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: preview/compliance-checks
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: preview/gitsecure
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: preview/util
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: preview/github
+triggers:
+  - type: git
+    name: Git PR Trigger
+    service: ${APP_REPO}
+    branch: master
+    events:
+      pull_request: true
+    eventListener: pr-listener
+properties:
+  - name: api-key
+    value: ${API_KEY}
+    type: SECURE
+  - name: repository
+    value: ${APP_REPO_FULL}
+    type: text
+  - name: pipeline-debug
+    value: "0"
+    type: text
+  - name: dockerconfigjson
+    value: ${DOCKER_CONFIG_JSON}
+    type: SECURE

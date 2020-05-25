@@ -120,19 +120,40 @@ services:
       enable_traceability: false
       legal: true
 
-  build:
+  pr:
     service_id: pipeline
     parameters:
       services:
         - app-repo
         - pipeline-repo
         - tekton-catalog-repo
-      name: '{{services.app-repo.parameters.repo_name}}'
+      name: 'pr-{{services.app-repo.parameters.repo_name}}'
       ui-pipeline: true
       type: tekton
       configuration:
         content:
-          $text: pipeline_tekton.yml
+          $text: pr-tekton.yaml
+        env:
+          PIPELINE_REPO: pipeline-repo
+          APP_REPO: app-repo
+          API_KEY: '{{form.pipeline.parameters.api-key}}'
+          APP_REPO_FULL: 'https://github.ibm.com/{{form.app-repo.parameters.owner_id}}/{{form.app-repo.parameters.repo_name}}'
+          TEKTON_CATALOG_REPO: tekton-catalog-repo
+          DOCKER_CONFIG_JSON: '{{form.artifactoryComp.parameters.docker_config_json}}'
+        execute: false
+  ci:
+    service_id: pipeline
+    parameters:
+      services:
+        - app-repo
+        - pipeline-repo
+        - tekton-catalog-repo
+      name: 'ci-{{services.app-repo.parameters.repo_name}}'
+      ui-pipeline: true
+      type: tekton
+      configuration:
+        content:
+          $text: ci-tekton.yaml
         env:
           PIPELINE_REPO: pipeline-repo
           APP_REPO: app-repo

@@ -1,0 +1,176 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: template
+spec:
+  params:
+    - name: registry-namespace
+      description: The namespace in the container image registry. You can set it up
+        with {bx cr namespace-add]. Learn more at https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started#getting-started.
+    - name: vault-name
+      description: Specify the Key Protect instance name, where the image signing keys
+        have been stored. The build and validation signer fields contain default names
+        for these signers. The values must match the values created in the Key-Management-Admin-Template.
+        See https://github.com/open-toolchain/key-management-admin-toolchain
+    - name: repository
+      description: The git repo
+    - name: app-name
+      description: The name of your app
+    - name: revision
+      description: the branch for the git repo
+    - name: registry-region
+      description: The IBM Cloud region for image registry
+    - name: api-key
+      description: The IBM Cloud API key is used to access the IBM Cloud Kubernetes
+        Service API and interact with the cluster. You can obtain your API key with
+        'ic iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
+        by clicking **Create API key** (Each API key only can be viewed once).
+    - name: cluster-name
+      description: the name of the cluster to target
+    - name: dev-resource-group
+      description: Resource Group
+    - name: dev-region
+      description: target region
+    - name: validation-signer
+      description: VALIDATION_SIGNER
+    - name: branch
+      description: the branch for the git repo
+    - name: imageUrl
+      description: The image url in your container registry
+    - name: dev-cluster-namespace
+      description: namespace dev
+    - name: repository-integration
+      description: the repo integration name
+    - name: evidence-repo
+      description: evidence repo
+    - name: issues-repo
+      description: incident issues repo
+    - name: commit-id
+      description: commit id
+    - name: pipeline-debug
+      description: toggles debug mode for the pipeline
+    - name: inventory-repo
+      description: inventory repository owner and name
+    - name: version
+      description: cr branch name
+  resourcetemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: pipelinerun-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage:  5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: cd-secret
+      type: Opaque
+      stringData:
+        API_KEY: $(params.api-key)
+    - apiVersion: v1
+      kind: Secret
+      data:
+        .dockerconfigjson: $(params.dockerconfigjson)
+      metadata:
+        name: artifactory-pull-secret
+      type: kubernetes.io/dockerconfigjson
+    - apiVersion: v1
+      kind: ServiceAccount
+      imagePullSecrets:
+        - name: artifactory-pull-secret
+      metadata:
+        name: sa-pullsecret
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineResource
+      metadata:
+        name: image-to-build
+      spec:
+        type: image
+        params:
+          - name: url
+            value: $(params.imageUrl)
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineResource
+      metadata:
+        name: $(params.cluster-name)
+      spec:
+        type: cluster
+        params:
+          - name: name
+            value: $(params.cluster-name)
+          - name: username
+            value: norealvalueneeded
+          - name: url
+            value: https://no.real.value.needed
+          - name: token
+            value: norealvalueneeded
+          - name: cadata
+            value: norealvalueneeded
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: pipelinerun-$(uid)
+      spec:
+        pipelineRef:
+          name: pipeline
+        workspaces:
+          - name: artifacts
+            persistentVolumeClaim:
+              claimName: pipelinerun-$(uid)-pvc
+        resources:
+          - name: app-image
+            resourceRef:
+              name: image-to-build
+          - name: target-cluster
+            resourceRef:
+              name: $(params.cluster-name)
+        params:
+          - name: pipeline-run-id
+            value: $(uid)
+          - name: registry-namespace
+            value: $(params.registry-namespace)
+          - name: vault-name
+            value: $(params.vault-name)
+          - name: repository
+            value: $(params.repository)
+          - name: app-name
+            value: $(params.app-name)
+          - name: revision
+            value: $(params.revision)
+          - name: registry-region
+            value: $(params.registry-region)
+          - name: api-key
+            value: $(params.api-key)
+          - name: dev-region
+            value: $(params.dev-region)
+          - name: dev-resource-group
+            value: $(params.dev-resource-group)
+          - name: validation-signer
+            value: $(params.validation-signer)
+          - name: branch
+            value: $(params.branch)
+          - name: cluster-name
+            value: $(params.cluster-name)
+          - name: dev-cluster-namespace
+            value: $(params.dev-cluster-namespace)
+          - name: repository-integration
+            value: $(params.repository-integration)
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
+          - name: commit-id
+            value: $(params.commit-id)
+          - name: evidence-repo
+            value: $(params.evidence-repo)
+          - name: inventory-repo
+            value: $(params.inventory-repo)
+          - name: issues-repo
+            value: $(params.issues-repo)
+          - name: version
+            value: $(params.version)
+        serviceAccountName: sa-pullsecret

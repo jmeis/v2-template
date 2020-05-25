@@ -1,0 +1,15 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: pr-binding
+spec:
+  params:
+    - name: branch
+      value: $(event.pull_request.head.ref)
+    - name: target-branch
+      value: $(event.pull_request.base.ref)
+    - name: commit-id
+      value: $(event.pull_request.head.sha)
+    - name: pr-url
+      value: $(event.pull_request.url)

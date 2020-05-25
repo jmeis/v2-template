@@ -1,0 +1,13 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: binding
+spec:
+  params:
+    - name: revision
+      value: master
+    - name: branch
+      value: "master"
+    - name: commit-id
+      value: $(event.head_commit.id)
