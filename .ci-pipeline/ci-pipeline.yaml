@@ -5,8 +5,6 @@ metadata:
   name: pipeline
 spec:
   params:
-    - name: pipeline-run-id
-      description: pipeline-run-id unique ID
     - name: registry-namespace
       description: The namespace in the container image registry. You can set it up
         with {bx cr namespace-add]. Learn more at
@@ -112,8 +110,6 @@ spec:
         - name: artifacts
           workspace: artifacts
       params:
-        - name: pipeline-run-id
-          value: $(params.pipeline-run-id)
         - name: context
           value: tekton/ci-unit-tests
         - name: pipeline-debug
@@ -150,8 +146,6 @@ spec:
           value: $(params.branch)
         - name: api-key
           value: $(params.api-key)
-        - name: pipeline-run-id
-          value: $(params.pipeline-run-id)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
@@ -172,8 +166,6 @@ spec:
           value: $(params.branch)
         - name: api-key
           value: $(params.api-key)
-        - name: pipeline-run-id
-          value: $(params.pipeline-run-id)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
@@ -207,8 +199,6 @@ spec:
           value: $(params.branch)
         - name: apikey
           value: $(params.api-key)
-        - name: pipeline-run-id
-          value: $(params.pipeline-run-id)
         - name: evidence-repo
           value: $(params.evidence-repo)
         - name: commit-id
@@ -223,8 +213,6 @@ spec:
         - name: artifacts
           workspace: artifacts
       params:
-        - name: pipeline-run-id
-          value: $(params.pipeline-run-id)
         - name: target-branch
           value: $(params.branch)
         - name: repository-integration
