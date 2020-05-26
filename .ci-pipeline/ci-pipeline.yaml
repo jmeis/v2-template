@@ -168,27 +168,9 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: setup-set-status
-      runAfter:
-        - fetch-code
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      taskSpec:
-        workspaces:
-          - name: artifacts
-            mountPath: /artifacts
-        steps:
-          - name: save-git-token-to-file
-            image: ibmcom/pipeline-base-image:2.6
-            script: |
-              #!/bin/bash
-              source /artifacts/build.properties
-              echo -n $GHE_TOKEN > ./artifacts/github-token
-
     - name: unit-tests
       runAfter:
-        - setup-set-status
+        - fetch-code
       taskRef:
         name: compliance-unit-test
       workspaces:
