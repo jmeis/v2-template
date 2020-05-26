@@ -83,6 +83,62 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
+    - name: save-git-token
+      runAfter:
+        - fetch-credentials
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      taskSpec:
+        params:
+          - name: pipeline-debug
+        workspaces:
+          - name: artifacts
+            mountPath: /artifacts
+        stepTemplate:
+          env:
+            - name: PIPELINE_DEBUG
+              value: $(params.pipeline-debug)
+        steps:
+          - name: save-git-token-to-file
+            image: ibmcom/pipeline-base-image:2.6
+            workingDir: "/artifacts"
+            command: ["/bin/bash", "-c"]
+            args:
+              - |
+                set -e -o pipefail
+
+                if [ $PIPELINE_DEBUG == 1 ]; then
+                  pwd
+                  env
+                  trap env EXIT
+                  set -x
+                fi
+
+                source ./build.properties
+                echo -n $GIT_TOKEN > ./github-token
+
+    - name: fetch-evidence-locker
+      runAfter:
+        - fetch-credentials
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: repository
+          value: $(params.evidence-repo)
+        - name: branch
+          value: "master"
+        - name: directory-name
+          value: evidence-locker
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
     - name: fetch-code
       runAfter:
         - fetch-credentials
@@ -319,6 +375,82 @@ spec:
             resource: app-image
             from:
               - containerize
+
+    - name: va-scan-result-adapter
+      runAfter:
+        - vulnerability-advisor
+      params:
+        - name: scan-status
+          value: $(tasks.vulnerability-advisor.results.scan-status)
+      taskSpec:
+        params:
+          - name: scan-status
+        results:
+          - name: status
+        steps:
+          - name: parse-result
+            image: ibmcom/pipeline-base-image:2.6
+            command: ["/bin/bash", "-c"]
+            args:
+              - |
+                if [[ "$(params.scan-status)" == "OK" ]]; then
+                  echo -n "success" > $(results.status.path)
+                else
+                  echo -n "failure" > $(results.status.path)
+                fi
+
+    - name: incident-issues-of-va-scan
+      taskRef:
+        name: evidence-create-incident-issue
+      runAfter:
+        - save-git-token
+        - va-scan-result-adapter
+      workspaces:
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: task-name
+          value: icr-check-va-scan
+        - name: result-status
+          value: $(tasks.va-scan-result-adapter.results.status)
+        - name: commit-hash
+          value: $(params.commit-id)
+        - name: repository
+          value: $(params.repository)
+        - name: incident-issue-repo
+          value: $(params.issues-repo)
+        - name: secret-name
+          value: github-token
+
+    - name: evidence-collection-of-va-scan
+      runAfter:
+        - va-scan-result-adapter
+        - incident-issues-of-va-scan
+      taskRef:
+        name: evidence-add
+      params:
+        - name: evidence-repo-path
+          value: "evidence-locker"
+        - name: namespace
+          value: "ci"
+        - name: evidence-name
+          value: "vulnerability-advisor-scan"
+        - name: evidence-type
+          value: "com.ibm.cloud.icr-check-va-scan"
+        - name: evidence-type-version
+          value: "1.0.0"
+        - name: result
+          value: "$(tasks.va-scan-result-adapter.results.status)"
+        - name: issues
+          value: >
+            [
+              "$(tasks.incident-issues-of-va-scan.results.issue-url)"
+            ]
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: evidence-locker
+          workspace: artifacts
 
     - name: docker-image-sign
       runAfter:
