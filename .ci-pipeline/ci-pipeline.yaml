@@ -89,10 +89,19 @@ spec:
       workspaces:
         - name: artifacts
           workspace: artifacts
+      params:
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
       taskSpec:
+        params:
+          - name: pipeline-debug
         workspaces:
           - name: artifacts
             mountPath: /artifacts
+        stepTemplate:
+          env:
+            - name: PIPELINE_DEBUG
+              value: $(params.pipeline-debug)
         steps:
           - name: save-git-token-to-file
             image: ibmcom/pipeline-base-image:2.6
@@ -100,12 +109,15 @@ spec:
             command: ["/bin/bash", "-c"]
             args:
               - |
-                #!/bin/bash
                 set -e -o pipefail
-                pwd
-                env
-                trap env EXIT
-                set -x
+
+                if [ $PIPELINE_DEBUG == 1 ]; then
+                  pwd
+                  env
+                  trap env EXIT
+                  set -x
+                fi
+
                 source ./build.properties
                 echo -n $GIT_TOKEN > ./github-token
 
@@ -381,11 +393,10 @@ spec:
             command: ["/bin/bash", "-c"]
             args:
               - |
-                echo "$(params.scan-status)"
                 if [[ "$(params.scan-status)" == "OK" ]]; then
-                  echo -n "passed" > $(results.status.path)
+                  echo -n "success" > $(results.status.path)
                 else
-                  echo -n "failed" > $(results.status.path)
+                  echo -n "failure" > $(results.status.path)
                 fi
 
     - name: incident-issues-of-va-scan
