@@ -67,7 +67,18 @@ spec:
     - name: artifacts
 
   tasks:
+    - name: extract-toolchain-crn
+      taskRef:
+        name: toolchain-extract-value
+      params:
+        - name: expression
+          value: ".crn"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
     - name: fetch-credentials
+      runAfter:
+        - extract-toolchain-crn
       taskRef:
         name: git-get-credentials
       workspaces:
