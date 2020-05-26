@@ -44,6 +44,10 @@ inputs:
     branch: master
     service: ${TEKTON_CATALOG_REPO}
     path: preview/util
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: preview/toolchain
 triggers:
   - type: git
     name: Git CI Trigger
