@@ -386,9 +386,40 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: check-dockerfile
+    - name: evidence-collection-of-github-status-check
       runAfter:
         - create-branch-protection-issue
+      taskRef:
+        name: evidence-add
+      workspaces:
+        - name: evidence-locker
+          workspace: artifacts
+      params:
+        - name: evidence-repo-path
+          value: "evidence-locker"
+        - name: namespace
+          value: "ci"
+        - name: evidence-name
+          value: "github-status-checks"
+        - name: evidence-type
+          value: "com.ibm.branch_protection"
+        - name: evidence-type-version
+          value: "1.0.0"
+        - name: result
+          value: $(tasks.check-github-statuses.results.status)
+        - name: issues
+          value: >
+            [
+              "$(tasks.create-branch-protection-issue.results.issue-url)"
+            ]
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: toolchain-crn
+          value: $(tasks.extract-toolchain-crn.results.extracted-value)
+
+    - name: check-dockerfile
+      runAfter:
+        - evidence-collection-of-github-status-check
       taskRef:
         name: icr-check-dockerfile
       workspaces:
