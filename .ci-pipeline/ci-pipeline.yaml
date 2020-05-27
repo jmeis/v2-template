@@ -152,7 +152,7 @@ spec:
 
     - name: fetch-code
       runAfter:
-        - fetch-credentials
+        - fetch-evidence-locker
       taskRef:
         name: git-clone
       workspaces:
@@ -168,23 +168,120 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: unit-tests
+    - name: start-unit-tests-status
       runAfter:
-        - fetch-code
+        - save-git-token
       taskRef:
-        name: compliance-unit-test
+        name: github-set-status
       workspaces:
-        - name: artifacts
+        - name: secrets
           workspace: artifacts
       params:
+        - name: secret-name
+          value: github-token
+        - name: repo-url
+          value: $(params.repository)
+        - name: commit-sha
+          value: $(params.commit-id)
+        - name: state
+          value: pending
         - name: context
           value: tekton/ci-unit-tests
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: description
+          value: Tekton CI Unit test run status
+
+    - name: run-unit-tests
+      runAfter:
+        - start-unit-tests-status
+        - fetch-code
+      taskRef:
+        name: util-run
+      workspaces:
+        - name: scripts
+          workspace: artifacts
+      params:
+        - name: script
+          value: . /root/.nvm/nvm.sh && cd /scripts/$(echo $(params.repository) | sed -E "s/(.*)(\/)//") && npm ci -q && npm run test
+
+    - name: incident-issues-of-unit-test
+      runAfter:
+        - run-unit-tests
+      taskRef:
+        name: evidence-create-incident-issue
+      workspaces:
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: secret-name
+          value: github-token
+        - name: repository
+          value: $(params.repository)
+        - name: incident-issue-repo
+          value: $(params.issues-repo)
+        - name: task-name
+          value: "run-unit-tests"
+        - name: result-status
+          value: $(tasks.run-unit-tests.results.status)
+        - name: commit-hash
+          value: $(params.commit-id)
+
+    - name: add-unit-test-evidence-to-evidence-locker
+      runAfter:
+        - incident-issues-of-unit-test
+        - extract-toolchain-crn
+      taskRef:
+        name: evidence-add
+      workspaces:
+        - name: evidence-locker
+          workspace: artifacts
+      params:
+        - name: evidence-repo-path
+          value: "evidence-locker"
+        - name: namespace
+          value: "ci"
+        - name: evidence-name
+          value: "unit-test"
+        - name: toolchain-crn
+          value: $(tasks.extract-toolchain-crn.results.extracted-value)
+        - name: evidence-type
+          value: "com.ibm.unit_test"
+        - name: evidence-type-version
+          value: "1.0.0"
+        - name: result
+          value: $(tasks.run-unit-tests.results.status)
+        - name: issues
+          value: |
+            "$(tasks.incident-issues-of-unit-test.results.issue-url)"
+
+    - name: end-unit-tests-status
+      runAfter:
+        - add-unit-test-evidence-to-evidence-locker
+      taskRef:
+        name: github-set-status
+      workspaces:
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: secret-name
+          value: github-token
+        - name: repo-url
+          value: $(params.repository)
+        - name: commit-sha
+          value: $(params.commit-id)
+        - name: state
+          value: $(tasks.run-unit-tests.results.status)
+        - name: context
+          value: tekton/ci-unit-tests
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: description
+          value: Tekton CI Unit test run status
 
     - name: gitsecure-vulnerability-scan
       runAfter:
-        - unit-tests
+        - save-git-token
       taskRef:
         name: gitsecure-discovery
       workspaces:
@@ -295,7 +392,7 @@ spec:
 
     - name: check-github-statuses
       runAfter:
-        - set-github-status-checks-pending
+        - end-unit-test-status
       taskRef:
         name: compliance-check-github-statuses
       workspaces:
@@ -324,7 +421,7 @@ spec:
 
     - name: set-github-status
       runAfter:
-        - check-github-statuses
+        - evidence-collection-of-github-status-check
       taskRef:
         name: github-set-status
       workspaces:
@@ -345,8 +442,6 @@ spec:
           value: $(params.pipeline-debug)
 
     - name: create-branch-protection-issue
-      runAfter:
-        - set-github-status
       taskRef:
         name: evidence-create-incident-issue
       workspaces:
@@ -369,8 +464,6 @@ spec:
           value: $(params.pipeline-debug)
 
     - name: evidence-collection-of-github-status-check
-      runAfter:
-        - create-branch-protection-issue
       taskRef:
         name: evidence-add
       workspaces:
@@ -477,8 +570,6 @@ spec:
               - containerize
 
     - name: va-scan-result-adapter
-      runAfter:
-        - vulnerability-advisor
       params:
         - name: scan-status
           value: $(tasks.vulnerability-advisor.results.scan-status)
