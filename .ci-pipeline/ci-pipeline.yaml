@@ -67,7 +67,18 @@ spec:
     - name: artifacts
 
   tasks:
+    - name: extract-toolchain-crn
+      taskRef:
+        name: toolchain-extract-value
+      params:
+        - name: expression
+          value: ".crn"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
     - name: fetch-credentials
+      runAfter:
+        - extract-toolchain-crn
       taskRef:
         name: git-get-credentials
       workspaces:
@@ -260,9 +271,31 @@ spec:
         - name: commit-id
           value: $(params.commit-id)
 
-    - name: check-github-statuses
+    - name: set-github-status-checks-pending
       runAfter:
         - gitsecure-cis-check
+      taskRef:
+        name: github-set-status
+      workspaces:
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: secret-name
+          value: github-token
+        - name: repo-url
+          value: $(params.repository)
+        - name: commit-sha
+          value: $(params.commit-id)
+        - name: state
+          value: pending
+        - name: context
+          value: tekton/ci-compliance
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: check-github-statuses
+      runAfter:
+        - set-github-status-checks-pending
       taskRef:
         name: compliance-check-github-statuses
       workspaces:
@@ -283,23 +316,92 @@ spec:
                   "tekton/pr-compliance"
                 ]
               }
-            }, {
-              "type": "status",
-              "name": "unit-tests",
-              "params": {
-                "name": "tekton/ci-unit-tests"
-              }
             }]
-        - name: context
-          value: tekton/ci-compliance
         - name: collect-evidence
-          value: "true"
+          value: "false"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: check-dockerfile
+    - name: set-github-status
       runAfter:
         - check-github-statuses
+      taskRef:
+        name: github-set-status
+      workspaces:
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: secret-name
+          value: github-token
+        - name: repo-url
+          value: $(params.repository)
+        - name: commit-sha
+          value: $(params.commit-id)
+        - name: state
+          value: $(tasks.check-github-statuses.results.status)
+        - name: context
+          value: tekton/ci-compliance
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: create-branch-protection-issue
+      runAfter:
+        - set-github-status
+      taskRef:
+        name: evidence-create-incident-issue
+      workspaces:
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: secret-name
+          value: github-token
+        - name: repository
+          value: $(params.repository)
+        - name: incident-issue-repo
+          value: $(params.issues-repo)
+        - name: task-name
+          value: check-github-statuses
+        - name: result-status
+          value: $(tasks.check-github-statuses.results.status)
+        - name: commit-hash
+          value: $(params.commit-id)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: evidence-collection-of-github-status-check
+      runAfter:
+        - create-branch-protection-issue
+      taskRef:
+        name: evidence-add
+      workspaces:
+        - name: evidence-locker
+          workspace: artifacts
+      params:
+        - name: evidence-repo-path
+          value: "evidence-locker"
+        - name: namespace
+          value: "ci"
+        - name: evidence-name
+          value: "github-status-checks"
+        - name: evidence-type
+          value: "com.ibm.branch_protection"
+        - name: evidence-type-version
+          value: "1.0.0"
+        - name: result
+          value: $(tasks.check-github-statuses.results.status)
+        - name: issues
+          value: >
+            [
+              "$(tasks.create-branch-protection-issue.results.issue-url)"
+            ]
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: toolchain-crn
+          value: $(tasks.extract-toolchain-crn.results.extracted-value)
+
+    - name: check-dockerfile
+      runAfter:
+        - evidence-collection-of-github-status-check
       taskRef:
         name: icr-check-dockerfile
       workspaces:
