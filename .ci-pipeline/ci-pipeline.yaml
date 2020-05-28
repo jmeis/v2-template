@@ -390,10 +390,8 @@ spec:
         - name: result
           value: $(tasks.check-github-statuses.results.status)
         - name: issues
-          value: >
-            [
-              "$(tasks.create-branch-protection-issue.results.issue-url)"
-            ]
+          value: |
+            "$(tasks.create-branch-protection-issue.results.issue-url)"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: toolchain-crn
@@ -544,10 +542,8 @@ spec:
         - name: result
           value: "$(tasks.va-scan-result-adapter.results.status)"
         - name: issues
-          value: >
-            [
-              "$(tasks.incident-issues-of-va-scan.results.issue-url)"
-            ]
+          value: |
+            "$(tasks.incident-issues-of-va-scan.results.issue-url)"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
