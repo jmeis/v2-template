@@ -152,7 +152,7 @@ spec:
 
     - name: fetch-code
       runAfter:
-        - fetch-evidence-locker
+        - fetch-credentials
       taskRef:
         name: git-clone
       workspaces:
@@ -276,7 +276,7 @@ spec:
 
     - name: gitsecure-vulnerability-scan
       runAfter:
-        - save-git-token
+        - run-unit-tests
       taskRef:
         name: gitsecure-discovery
       workspaces:
@@ -363,7 +363,7 @@ spec:
         - name: commit-id
           value: $(params.commit-id)
 
-    - name: set-branch-protection-github-status-pending
+    - name: set-github-status-checks-pending
       runAfter:
         - gitsecure-cis-check
       taskRef:
@@ -385,7 +385,7 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: check-branch-protection
+    - name: check-github-statuses
       runAfter:
         - end-unit-tests-status
       taskRef:
@@ -414,7 +414,9 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: set-branch-protection-github-status-result
+    - name: set-github-status
+      runAfter:
+        - check-github-statuses
       taskRef:
         name: github-set-status
       workspaces:
@@ -428,13 +430,15 @@ spec:
         - name: commit-sha
           value: $(params.commit-id)
         - name: state
-          value: $(tasks.check-branch-protection.results.status)
+          value: $(tasks.check-github-statuses.results.status)
         - name: context
           value: tekton/ci-compliance
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
     - name: create-branch-protection-issue
+      runAfter:
+        - set-github-status
       taskRef:
         name: evidence-create-incident-issue
       workspaces:
@@ -448,19 +452,17 @@ spec:
         - name: incident-issue-repo
           value: $(params.issues-repo)
         - name: task-name
-          value: check-branch-protection
+          value: check-github-statuses
         - name: result-status
-          value: $(tasks.check-branch-protection.results.status)
+          value: $(tasks.check-github-statuses.results.status)
         - name: commit-hash
           value: $(params.commit-id)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-<<<<<<< HEAD
     - name: evidence-collection-of-github-status-check
-=======
-    - name: evidence-collection-of-branch-protection-check
->>>>>>> b8d95d4... feat: removing redundant runAfter keys renaming check-github-status to
+      runAfter:
+        - create-branch-protection-issue
       taskRef:
         name: evidence-add
       workspaces:
@@ -478,7 +480,7 @@ spec:
         - name: evidence-type-version
           value: "1.0.0"
         - name: result
-          value: $(tasks.check-branch-protection.results.status)
+          value: $(tasks.check-github-statuses.results.status)
         - name: issues
           value: |
             "$(tasks.create-branch-protection-issue.results.issue-url)"
@@ -489,7 +491,7 @@ spec:
 
     - name: check-dockerfile
       runAfter:
-        - evidence-collection-of-branch-protection-check
+        - evidence-collection-of-github-status-check
       taskRef:
         name: icr-check-dockerfile
       workspaces:
@@ -567,6 +569,8 @@ spec:
               - containerize
 
     - name: va-scan-result-adapter
+      runAfter:
+        - vulnerability-advisor
       params:
         - name: scan-status
           value: $(tasks.vulnerability-advisor.results.scan-status)
