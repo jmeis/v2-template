@@ -5,9 +5,11 @@ metadata:
   name: binding
 spec:
   params:
-  - name: branch
-    value: $(event.pull_request.head.ref)
-  - name: target-branch
-    value: $(event.pull_request.base.ref)
-  - name: statuses-url
-    value: $(event.pull_request.statuses_url)
+    - name: repository
+      value: $(event.pull_request.head.repo.html_url)
+    - name: branch
+      value: $(event.pull_request.head.ref)
+    - name: origin
+      value: $(event.pull_request.base.ref)
+    - name: revision
+      value: $(event.pull_request.head.sha)

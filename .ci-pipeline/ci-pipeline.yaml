@@ -571,25 +571,11 @@ spec:
     - name: va-scan-result-adapter
       runAfter:
         - vulnerability-advisor
-      params:
-        - name: scan-status
-          value: $(tasks.vulnerability-advisor.results.scan-status)
-      taskSpec:
+      taskRef:
+        name: va-scan-result-adapter
         params:
           - name: scan-status
-        results:
-          - name: status
-        steps:
-          - name: parse-result
-            image: ibmcom/pipeline-base-image:2.6
-            command: ["/bin/bash", "-c"]
-            args:
-              - |
-                if [[ "$(params.scan-status)" == "OK" ]]; then
-                  echo -n "success" > $(results.status.path)
-                else
-                  echo -n "failure" > $(results.status.path)
-                fi
+            value: $(tasks.vulnerability-advisor.results.scan-status)
 
     - name: incident-issues-of-va-scan
       taskRef:

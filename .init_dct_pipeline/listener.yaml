@@ -60,16 +60,16 @@ spec:
       spec:
         type: cluster
         params:
-        - name: name
-          value: $(params.cluster-name)
-        - name: username
-          value: norealvalueneeded
-        - name: url
-          value: https://no.real.value.needed
-        - name: token
-          value: norealvalueneeded
-        - name: cadata
-          value: norealvalueneeded
+          - name: name
+            value: $(params.cluster-name)
+          - name: username
+            value: norealvalueneeded
+          - name: url
+            value: https://no.real.value.needed
+          - name: token
+            value: norealvalueneeded
+          - name: cadata
+            value: norealvalueneeded
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
