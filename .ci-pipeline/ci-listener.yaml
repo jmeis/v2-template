@@ -5,8 +5,7 @@ metadata:
   name: listener
 spec:
   triggers:
-  - binding:
-      name: binding
-    template:
-      name: template
-
+    - binding:
+        name: binding
+      template:
+        name: template
