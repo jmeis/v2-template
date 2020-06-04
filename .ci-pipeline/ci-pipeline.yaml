@@ -573,9 +573,9 @@ spec:
         - vulnerability-advisor
       taskRef:
         name: va-scan-result-adapter
-        params:
-          - name: scan-status
-            value: $(tasks.vulnerability-advisor.results.scan-status)
+      params:
+        - name: scan-status
+          value: $(tasks.vulnerability-advisor.results.scan-status)
 
     - name: incident-issues-of-va-scan
       taskRef:
