@@ -228,6 +228,7 @@ spec:
     - name: run-unit-tests
       runAfter:
         - unit-tests-status-pending
+        - fetch-code
       taskRef:
         name: util-run
       workspaces:
@@ -235,13 +236,7 @@ spec:
           workspace: artifacts
       params:
         - name: script
-          value: |
-            #!/bin/bash
-            . /root/.nvm/nvm.sh
-            APP_DIR=$(echo "$(params.repository)" | sed -E "s/(.*)(\/)//")
-            cd /scripts/${APP_DIR}
-            npm ci -q
-            npm test
+          value: . /root/.nvm/nvm.sh && cd /scripts/$(echo $(params.repository) | sed -E "s/(.*)(\/)//") && npm ci -q && npm run test
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
