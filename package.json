@@ -5,7 +5,7 @@
   "main": "toolchain.yml",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "yamllint -c yamllint-rules.yaml .bluemix",
+    "lint": "yamllint -c yamllint-rules.yaml .bluemix .pr-pipeline .ci-pipeline",
     "postinstall": "pip install --user yamllint || brew install yamllint"
   },
   "repository": {
