@@ -498,6 +498,8 @@ spec:
         - name: artifacts
           workspace: artifacts
       params:
+        - name: app-directory
+          value: $(tasks.fetch-code.results.directory-name)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
