@@ -168,6 +168,53 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
+    - name: get-commit-id
+      runAfter:
+        - fetch-code
+      params:
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: pipeline-commit-id
+          value: $(params.commit-id)
+        - name: latest-commit-id
+          value: $(tasks.fetch-code.results.git-commit)
+      taskSpec:
+        params:
+          - name: pipeline-debug
+            default: "0"
+          - name: pipeline-commit-id
+            default: ""
+          - name: latest-commit-id
+            default: ""
+        results:
+          - name: commit-id
+            description: Either the commit id received by the pipeline from the git trigger, or the latest from master.
+        stepTemplate:
+          env:
+            - name: PIPELINE_DEBUG
+              value: $(params.pipeline-debug)
+        steps:
+          - name: save-git-token-to-file
+            image: ibmcom/pipeline-base-image:2.6
+            workingDir: "/artifacts"
+            command: ["/bin/bash", "-c"]
+            args:
+              - |
+                set -e -o pipefail
+
+                if [ $PIPELINE_DEBUG == 1 ]; then
+                  pwd
+                  env
+                  trap env EXIT
+                  set -x
+                fi
+
+                if [ -z "$(params.pipeline-commit-id)" ]; then
+                  echo -n "$(params.latest-commit-id)" | tee $(results.commit-id.path)
+                else
+                  echo -n "$(params.pipeline-commit-id)" | tee $(results.commit-id.path)
+                fi;
+
     - name: start-unit-tests-status
       runAfter:
         - save-git-token
@@ -182,7 +229,7 @@ spec:
         - name: repo-url
           value: $(params.repository)
         - name: commit-sha
-          value: $(params.commit-id)
+          value: $(tasks.get-commit-id.results.commit-id)
         - name: state
           value: pending
         - name: context
@@ -225,7 +272,7 @@ spec:
         - name: result-status
           value: $(tasks.run-unit-tests.results.status)
         - name: commit-hash
-          value: $(params.commit-id)
+          value: $(tasks.get-commit-id.results.commit-id)
 
     - name: add-unit-test-evidence-to-evidence-locker
       taskRef:
@@ -264,7 +311,7 @@ spec:
         - name: repo-url
           value: $(params.repository)
         - name: commit-sha
-          value: $(params.commit-id)
+          value: $(tasks.get-commit-id.results.commit-id)
         - name: state
           value: $(tasks.run-unit-tests.results.status)
         - name: context
@@ -288,7 +335,7 @@ spec:
         - name: revision
           value: $(params.branch)
         - name: commit-id
-          value: $(params.commit-id)
+          value: $(tasks.get-commit-id.results.commit-id)
 
     - name: gitsecure-vulnerability-remediation
       runAfter:
@@ -308,7 +355,7 @@ spec:
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
-          value: $(params.commit-id)
+          value: $(tasks.get-commit-id.results.commit-id)
 
     - name: gitsecure-cis-check
       taskRef:
@@ -328,7 +375,7 @@ spec:
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
-          value: $(params.commit-id)
+          value: $(tasks.get-commit-id.results.commit-id)
 
     - name: gitsecure-ossc-check
       runAfter:
@@ -343,7 +390,7 @@ spec:
         - name: api-key
           value: $(params.api-key)
         - name: commit-id
-          value: $(params.commit-id)
+          value: $(tasks.get-commit-id.results.commit-id)
 
     - name: gitsecure-evidence-emitter
       runAfter:
@@ -361,7 +408,7 @@ spec:
         - name: evidence-repo
           value: $(params.evidence-repo)
         - name: commit-id
-          value: $(params.commit-id)
+          value: $(tasks.get-commit-id.results.commit-id)
 
     - name: set-github-status-checks-pending
       runAfter:
@@ -377,7 +424,7 @@ spec:
         - name: repo-url
           value: $(params.repository)
         - name: commit-sha
-          value: $(params.commit-id)
+          value: $(tasks.get-commit-id.results.commit-id)
         - name: state
           value: pending
         - name: context
@@ -428,7 +475,7 @@ spec:
         - name: repo-url
           value: $(params.repository)
         - name: commit-sha
-          value: $(params.commit-id)
+          value: $(tasks.get-commit-id.results.commit-id)
         - name: state
           value: $(tasks.check-github-statuses.results.status)
         - name: context
@@ -456,7 +503,7 @@ spec:
         - name: result-status
           value: $(tasks.check-github-statuses.results.status)
         - name: commit-hash
-          value: $(params.commit-id)
+          value: $(tasks.get-commit-id.results.commit-id)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -594,7 +641,7 @@ spec:
         - name: result-status
           value: $(tasks.va-scan-result-adapter.results.status)
         - name: commit-hash
-          value: $(params.commit-id)
+          value: $(tasks.get-commit-id.results.commit-id)
         - name: repository
           value: $(params.repository)
         - name: incident-issue-repo
