@@ -19,6 +19,7 @@ template:
     - issues-repo
     - inventory-repo
     - artifactoryComp
+    - privateWorker
   info:
     git url: >
       "[" + $env.repository + "]" +
@@ -35,6 +36,11 @@ toolchain:
       $ref: "#/messages/template.gettingStarted"
 
 services:
+  privateWorker:
+    service_id: private_worker
+    parameters:
+      name: private-worker
+
   artifactoryComp:
     service_id: artifactory
     parameters:
@@ -140,6 +146,7 @@ services:
           APP_REPO_FULL: 'https://github.ibm.com/{{form.app-repo.parameters.owner_id}}/{{form.app-repo.parameters.repo_name}}'
           TEKTON_CATALOG_REPO: tekton-catalog-repo
           ARTIFACTORY_DOCKER_CONFIG_JSON: '{{form.artifactoryComp.parameters.docker_config_json}}'
+          PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
         execute: false
   ci:
     service_id: pipeline
@@ -174,6 +181,7 @@ services:
           APP_REPO_FULL: 'https://github.ibm.com/{{form.app-repo.parameters.owner_id}}/{{form.app-repo.parameters.repo_name}}'
           TEKTON_CATALOG_REPO: tekton-catalog-repo
           ARTIFACTORY_DOCKER_CONFIG_JSON: '{{form.artifactoryComp.parameters.docker_config_json}}'
+          PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
         execute: false
 
   init_dct:
@@ -203,6 +211,7 @@ services:
           VAULT_INSTANCE: '{{form.pipeline.parameters.vault_name}}'
           BUILD_SIGNER: '{{form.pipeline.parameters.build_signer}}'
           VALIDATION_SIGNER: '{{form.pipeline.parameters.validation_signer}}'
+          PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
         execute: false
 
   webide:
