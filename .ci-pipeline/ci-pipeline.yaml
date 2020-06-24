@@ -215,33 +215,8 @@ spec:
                   echo -n "$(params.pipeline-commit-id)" | tee $(results.commit-id.path)
                 fi;
 
-    - name: start-unit-tests-status
-      runAfter:
-        - save-git-token
-      taskRef:
-        name: github-set-status
-      workspaces:
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: secret-name
-          value: github-token
-        - name: repo-url
-          value: $(params.repository)
-        - name: commit-sha
-          value: $(tasks.get-commit-id.results.commit-id)
-        - name: state
-          value: pending
-        - name: context
-          value: tekton/ci-unit-tests
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-        - name: description
-          value: Tekton CI Unit test run status
-
     - name: run-unit-tests
       runAfter:
-        - start-unit-tests-status
         - fetch-code
       taskRef:
         name: util-run
@@ -298,28 +273,6 @@ spec:
         - name: issues
           value: |
             "$(tasks.incident-issues-of-unit-test.results.issue-url)"
-
-    - name: end-unit-tests-status
-      taskRef:
-        name: github-set-status
-      workspaces:
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: secret-name
-          value: github-token
-        - name: repo-url
-          value: $(params.repository)
-        - name: commit-sha
-          value: $(tasks.get-commit-id.results.commit-id)
-        - name: state
-          value: $(tasks.run-unit-tests.results.status)
-        - name: context
-          value: tekton/ci-unit-tests
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-        - name: description
-          value: Tekton CI Unit test run status
 
     - name: gitsecure-vulnerability-scan
       runAfter:
@@ -410,31 +363,7 @@ spec:
         - name: commit-id
           value: $(tasks.get-commit-id.results.commit-id)
 
-    - name: set-github-status-checks-pending
-      runAfter:
-        - gitsecure-cis-check
-      taskRef:
-        name: github-set-status
-      workspaces:
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: secret-name
-          value: github-token
-        - name: repo-url
-          value: $(params.repository)
-        - name: commit-sha
-          value: $(tasks.get-commit-id.results.commit-id)
-        - name: state
-          value: pending
-        - name: context
-          value: tekton/ci-compliance
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
     - name: check-github-statuses
-      runAfter:
-        - end-unit-tests-status
       taskRef:
         name: compliance-check-github-statuses
       workspaces:
@@ -461,31 +390,9 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: set-github-status
-      runAfter:
-        - check-github-statuses
-      taskRef:
-        name: github-set-status
-      workspaces:
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: secret-name
-          value: github-token
-        - name: repo-url
-          value: $(params.repository)
-        - name: commit-sha
-          value: $(tasks.get-commit-id.results.commit-id)
-        - name: state
-          value: $(tasks.check-github-statuses.results.status)
-        - name: context
-          value: tekton/ci-compliance
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
     - name: create-branch-protection-issue
       runAfter:
-        - set-github-status
+        - check-github-statuses
       taskRef:
         name: evidence-create-incident-issue
       workspaces:
