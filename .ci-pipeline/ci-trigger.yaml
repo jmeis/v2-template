@@ -54,6 +54,8 @@ spec:
       description: inventory repository owner and name
     - name: version
       description: cr branch name
+    - name: artifactory-dockerconfigjson
+      description: dockerconfigjson for pullsecrets
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -76,10 +78,10 @@ spec:
     - apiVersion: v1
       kind: Secret
       data:
-        .artifactory-dockerconfigjson: $(params.artifactory-dockerconfigjson)
+        .dockerconfigjson: $(params.artifactory-dockerconfigjson)
       metadata:
         name: artifactory-pull-secret
-      type: kubernetes.io/artifactory-dockerconfigjson
+      type: kubernetes.io/dockerconfigjson
     - apiVersion: v1
       kind: ServiceAccount
       imagePullSecrets:
