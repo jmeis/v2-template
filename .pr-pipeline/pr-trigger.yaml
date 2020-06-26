@@ -21,8 +21,6 @@ spec:
       description: toggles debug mode for the pipeline
     - name: pr-url
       description: PR url
-    - name: artifactory-dockerconfigjson
-      description: dockerconfigjson for pullsecrets
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -38,7 +36,7 @@ spec:
     - apiVersion: v1
       kind: Secret
       data:
-        .dockerconfigjson: $(params.artifactory-dockerconfigjson)
+        .dockerconfigjson: $(params.dockerconfigjson)
       metadata:
         name: artifactory-pull-secret
       type: kubernetes.io/dockerconfigjson

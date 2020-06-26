@@ -108,8 +108,8 @@ properties:
   - name: repository-integration
     value: app-repo
     type: text
-  - name: artifactory-dockerconfigjson
-    value: ${ARTIFACTORY_DOCKER_CONFIG_JSON}
+  - name: dockerconfigjson
+    value: ${DOCKER_CONFIG_JSON}
     type: SECURE
   - name: repository
     value: ${APP_REPO_FULL}

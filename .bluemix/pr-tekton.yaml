@@ -42,6 +42,6 @@ properties:
   - name: pipeline-debug
     value: "0"
     type: text
-  - name: artifactory-dockerconfigjson
-    value: ${ARTIFACTORY_DOCKER_CONFIG_JSON}
+  - name: dockerconfigjson
+    value: ${DOCKER_CONFIG_JSON}
     type: SECURE
