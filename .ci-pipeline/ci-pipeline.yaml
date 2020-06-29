@@ -67,7 +67,7 @@ spec:
     - name: artifacts
 
   tasks:
-    - name: extract-toolchain-crn
+    - name: code-extract-toolchain-crn
       taskRef:
         name: toolchain-extract-value
       params:
@@ -76,9 +76,9 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: fetch-credentials
+    - name: code-fetch-credentials
       runAfter:
-        - extract-toolchain-crn
+        - code-extract-toolchain-crn
       taskRef:
         name: git-get-credentials
       workspaces:
@@ -94,9 +94,9 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: save-git-token
+    - name: code-save-git-token
       runAfter:
-        - fetch-credentials
+        - code-fetch-credentials
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -132,9 +132,9 @@ spec:
                 source ./build.properties
                 echo -n $GIT_TOKEN > ./github-token
 
-    - name: fetch-evidence-locker
+    - name: code-fetch-evidence-locker
       runAfter:
-        - fetch-credentials
+        - code-fetch-credentials
       taskRef:
         name: git-clone
       workspaces:
@@ -150,9 +150,9 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: fetch-code
+    - name: code-fetch-code
       runAfter:
-        - fetch-credentials
+        - code-fetch-credentials
       taskRef:
         name: git-clone
       workspaces:
@@ -168,16 +168,16 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: get-commit-id
+    - name: code-get-commit-id
       runAfter:
-        - fetch-code
+        - code-fetch-code
       params:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: pipeline-commit-id
           value: $(params.commit-id)
         - name: latest-commit-id
-          value: $(tasks.fetch-code.results.git-commit)
+          value: $(tasks.code-fetch-code.results.git-commit)
       taskSpec:
         params:
           - name: pipeline-debug
@@ -215,9 +215,9 @@ spec:
                   echo -n "$(params.pipeline-commit-id)" | tee $(results.commit-id.path)
                 fi;
 
-    - name: run-unit-tests
+    - name: code-unit-tests
       runAfter:
-        - fetch-code
+        - code-fetch-code
       taskRef:
         name: util-run
       workspaces:
@@ -227,9 +227,9 @@ spec:
         - name: script
           value: . /root/.nvm/nvm.sh && cd /scripts/$(echo $(params.repository) | sed -E "s/(.*)(\/)//") && npm ci -q && npm run test
 
-    - name: incident-issues-of-unit-test
+    - name: code-unit-tests-create-issue
       runAfter:
-        - run-unit-tests
+        - code-unit-tests
       taskRef:
         name: evidence-create-incident-issue
       workspaces:
@@ -243,13 +243,13 @@ spec:
         - name: incident-issue-repo
           value: $(params.issues-repo)
         - name: task-name
-          value: "run-unit-tests"
+          value: "code-unit-tests"
         - name: result-status
-          value: $(tasks.run-unit-tests.results.status)
+          value: $(tasks.code-unit-tests.results.status)
         - name: commit-hash
-          value: $(tasks.get-commit-id.results.commit-id)
+          value: $(tasks.code-get-commit-id.results.commit-id)
 
-    - name: add-unit-test-evidence-to-evidence-locker
+    - name: code-unit-tests-create-evidence
       taskRef:
         name: evidence-add
       workspaces:
@@ -263,20 +263,20 @@ spec:
         - name: evidence-name
           value: "unit-test"
         - name: toolchain-crn
-          value: $(tasks.extract-toolchain-crn.results.extracted-value)
+          value: $(tasks.code-extract-toolchain-crn.results.extracted-value)
         - name: evidence-type
           value: "com.ibm.unit_test"
         - name: evidence-type-version
           value: "1.0.0"
         - name: result
-          value: $(tasks.run-unit-tests.results.status)
+          value: $(tasks.code-unit-tests.results.status)
         - name: issues
           value: |
-            "$(tasks.incident-issues-of-unit-test.results.issue-url)"
+            "$(tasks.code-unit-tests-create-issue.results.issue-url)"
 
-    - name: gitsecure-vulnerability-scan
+    - name: code-vulnerability-scan
       runAfter:
-        - run-unit-tests
+        - code-unit-tests
       taskRef:
         name: gitsecure-discovery
       workspaces:
@@ -288,11 +288,11 @@ spec:
         - name: revision
           value: $(params.branch)
         - name: commit-id
-          value: $(tasks.get-commit-id.results.commit-id)
+          value: $(tasks.code-get-commit-id.results.commit-id)
 
-    - name: gitsecure-vulnerability-remediation
+    - name: code-vulnerability-scan-uploader
       runAfter:
-        - gitsecure-vulnerability-scan
+        - code-vulnerability-scan
       taskRef:
         name: gitsecure-vulnerability-remediation
       workspaces:
@@ -308,9 +308,9 @@ spec:
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
-          value: $(tasks.get-commit-id.results.commit-id)
+          value: $(tasks.code-get-commit-id.results.commit-id)
 
-    - name: incident-issues-of-gitsecure-va-remediation
+    - name: code-vulnerability-scan-create-issue
       taskRef:
         name: evidence-create-incident-issue
       workspaces:
@@ -324,13 +324,13 @@ spec:
         - name: incident-issue-repo
           value: $(params.issues-repo)
         - name: task-name
-          value: "gitsecure-vulnerability-remediation"
+          value: "code-vulnerability-scan-uploader"
         - name: result-status
-          value: $(tasks.gitsecure-vulnerability-remediation.results.status)
+          value: $(tasks.code-vulnerability-scan-uploader.results.status)
         - name: commit-hash
-          value: $(tasks.get-commit-id.results.commit-id)
+          value: $(tasks.code-get-commit-id.results.commit-id)
 
-    - name: add-gitsecure-va-remediation-evidence-to-evidence-locker
+    - name: code-vulnerability-scan-create-evidence
       taskRef:
         name: evidence-add
       workspaces:
@@ -338,28 +338,28 @@ spec:
           workspace: artifacts
       params:
         - name: evidence-repo-path
-          value: $(tasks.fetch-evidence-locker.results.directory-name)
+          value: $(tasks.code-fetch-evidence-locker.results.directory-name)
         - name: namespace
           value: "ci"
         - name: evidence-name
-          value: "gitsecure-vulnerability-remediation"
+          value: "code-vulnerability-scan-uploader"
         - name: toolchain-crn
-          value: $(tasks.extract-toolchain-crn.results.extracted-value)
+          value: $(tasks.code-extract-toolchain-crn.results.extracted-value)
         - name: evidence-type
-          value: "com.ibm.gitsecure-vulnerability-remediation"
+          value: "com.ibm.code-vulnerability-scan-uploader"
         - name: evidence-type-version
           value: "1.0.0"
         - name: result
-          value: $(tasks.gitsecure-vulnerability-remediation.results.status)
+          value: $(tasks.code-vulnerability-scan-uploader.results.status)
         - name: issues
           value: |
-            "$(tasks.incident-issues-of-gitsecure-va-remediation.results.issue-url)"
+            "$(tasks.code-vulnerability-scan-create-issue.results.issue-url)"
 
-    - name: gitsecure-cis-check
+    - name: code-cis-check
       taskRef:
         name: gitsecure-cis-check
       runAfter:
-        - gitsecure-vulnerability-remediation
+        - code-vulnerability-scan-uploader
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -373,11 +373,11 @@ spec:
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
-          value: $(tasks.get-commit-id.results.commit-id)
+          value: $(tasks.code-get-commit-id.results.commit-id)
 
-    - name: gitsecure-ossc-check
+    - name: code-ossc-check
       runAfter:
-        - gitsecure-vulnerability-remediation
+        - code-vulnerability-scan-uploader
       taskRef:
         name: gitsecure-ossc-check
       params:
@@ -388,12 +388,12 @@ spec:
         - name: api-key
           value: $(params.api-key)
         - name: commit-id
-          value: $(tasks.get-commit-id.results.commit-id)
+          value: $(tasks.code-get-commit-id.results.commit-id)
 
-    - name: gitsecure-evidence-emitter
+    - name: code-ossc-cis-create-evidence
       runAfter:
-        - gitsecure-ossc-check
-        - gitsecure-cis-check
+        - code-ossc-check
+        - code-cis-check
       taskRef:
         name: gitsecure-evidence-emitter
       params:
@@ -406,9 +406,9 @@ spec:
         - name: evidence-repo
           value: $(params.evidence-repo)
         - name: commit-id
-          value: $(tasks.get-commit-id.results.commit-id)
+          value: $(tasks.code-get-commit-id.results.commit-id)
 
-    - name: check-github-statuses
+    - name: code-branch-protection
       taskRef:
         name: compliance-check-github-statuses
       workspaces:
@@ -435,9 +435,9 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: create-branch-protection-issue
+    - name: code-branch-protection-create-issue
       runAfter:
-        - check-github-statuses
+        - code-branch-protection
       taskRef:
         name: evidence-create-incident-issue
       workspaces:
@@ -451,17 +451,17 @@ spec:
         - name: incident-issue-repo
           value: $(params.issues-repo)
         - name: task-name
-          value: check-github-statuses
+          value: code-branch-protection
         - name: result-status
-          value: $(tasks.check-github-statuses.results.status)
+          value: $(tasks.code-branch-protection.results.status)
         - name: commit-hash
-          value: $(tasks.get-commit-id.results.commit-id)
+          value: $(tasks.code-get-commit-id.results.commit-id)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: evidence-collection-of-github-status-check
+    - name: code-branch-protection-create-evidence
       runAfter:
-        - create-branch-protection-issue
+        - code-branch-protection-create-issue
       taskRef:
         name: evidence-add
       workspaces:
@@ -479,18 +479,18 @@ spec:
         - name: evidence-type-version
           value: "1.0.0"
         - name: result
-          value: $(tasks.check-github-statuses.results.status)
+          value: $(tasks.code-branch-protection.results.status)
         - name: issues
           value: |
-            "$(tasks.create-branch-protection-issue.results.issue-url)"
+            "$(tasks.code-branch-protection-create-issue.results.issue-url)"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: toolchain-crn
-          value: $(tasks.extract-toolchain-crn.results.extracted-value)
+          value: $(tasks.code-extract-toolchain-crn.results.extracted-value)
 
-    - name: check-dockerfile
+    - name: code-check-dockerfile
       runAfter:
-        - evidence-collection-of-github-status-check
+        - code-branch-protection-create-evidence
       taskRef:
         name: icr-check-dockerfile
       workspaces:
@@ -498,15 +498,15 @@ spec:
           workspace: artifacts
       params:
         - name: app-directory
-          value: $(tasks.fetch-code.results.directory-name)
+          value: $(tasks.code-fetch-code.results.directory-name)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: containerize
+    - name: build-containerize
       taskRef:
         name: icr-containerize
       runAfter:
-        - check-dockerfile
+        - code-check-dockerfile
       workspaces:
         - name: source
           workspace: artifacts
@@ -527,11 +527,11 @@ spec:
           - name: built-image
             resource: app-image
 
-    - name: update-inventory
+    - name: build-update-inventory
       taskRef:
         name: inventory-update-version
       runAfter:
-        - containerize
+        - build-containerize
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -543,7 +543,7 @@ spec:
         - name: version
           value: $(params.version)
 
-    - name: vulnerability-advisor
+    - name: build-vulnerability-advisor
       taskRef:
         name: icr-check-va-scan
       workspaces:
@@ -567,23 +567,23 @@ spec:
           - name: image
             resource: app-image
             from:
-              - containerize
+              - build-containerize
 
-    - name: va-scan-result-adapter
+    - name: build-vulnerability-advisor-result-adapter
       runAfter:
-        - vulnerability-advisor
+        - build-vulnerability-advisor
       taskRef:
         name: va-scan-result-adapter
       params:
         - name: scan-status
-          value: $(tasks.vulnerability-advisor.results.scan-status)
+          value: $(tasks.build-vulnerability-advisor.results.scan-status)
 
-    - name: incident-issues-of-va-scan
+    - name: build-vulnerability-advisor-create-issue
       taskRef:
         name: evidence-create-incident-issue
       runAfter:
-        - save-git-token
-        - va-scan-result-adapter
+        - code-save-git-token
+        - build-vulnerability-advisor-result-adapter
       workspaces:
         - name: secrets
           workspace: artifacts
@@ -591,9 +591,9 @@ spec:
         - name: task-name
           value: icr-check-va-scan
         - name: result-status
-          value: $(tasks.va-scan-result-adapter.results.status)
+          value: $(tasks.build-vulnerability-advisor-result-adapter.results.status)
         - name: commit-hash
-          value: $(tasks.get-commit-id.results.commit-id)
+          value: $(tasks.code-get-commit-id.results.commit-id)
         - name: repository
           value: $(params.repository)
         - name: incident-issue-repo
@@ -601,10 +601,10 @@ spec:
         - name: secret-name
           value: github-token
 
-    - name: evidence-collection-of-va-scan
+    - name: build-vulnerability-advisor-create-evidence
       runAfter:
-        - va-scan-result-adapter
-        - incident-issues-of-va-scan
+        - build-vulnerability-advisor-result-adapter
+        - build-vulnerability-advisor-create-issue
       taskRef:
         name: evidence-add
       params:
@@ -613,25 +613,25 @@ spec:
         - name: namespace
           value: "ci"
         - name: evidence-name
-          value: "vulnerability-advisor-scan"
+          value: "build-vulnerability-advisor"
         - name: evidence-type
           value: "com.ibm.cloud.icr-check-va-scan"
         - name: evidence-type-version
           value: "1.0.0"
         - name: result
-          value: "$(tasks.va-scan-result-adapter.results.status)"
+          value: "$(tasks.build-vulnerability-advisor-result-adapter.results.status)"
         - name: issues
           value: |
-            "$(tasks.incident-issues-of-va-scan.results.issue-url)"
+            "$(tasks.build-vulnerability-advisor-create-issue.results.issue-url)"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:
         - name: evidence-locker
           workspace: artifacts
 
-    - name: docker-image-sign
+    - name: build-docker-image-sign
       runAfter:
-        - vulnerability-advisor
+        - build-vulnerability-advisor
       taskRef:
         name: dct-sign
       workspaces:
@@ -659,9 +659,9 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: fetch-iks-cluster-config
+    - name: build-fetch-iks-cluster-config
       runAfter:
-        - docker-image-sign
+        - build-docker-image-sign
       taskRef:
         name: iks-fetch-config
       workspaces:
@@ -684,9 +684,9 @@ spec:
           - name: cluster
             resource: target-cluster
 
-    - name: pipeline-1-kubectl-task
+    - name: build-pipeline-1-kubectl-task
       runAfter:
-        - fetch-iks-cluster-config
+        - build-fetch-iks-cluster-config
       taskRef:
         name: iks-contextual-execution
       workspaces:
@@ -710,13 +710,13 @@ spec:
           - name: cluster
             resource: target-cluster
             from:
-              - fetch-iks-cluster-config
+              - build-fetch-iks-cluster-config
 
-    - name: deploy-dev
+    - name: build-deploy-dev
       taskRef:
         name: iks-deploy
       runAfter:
-        - pipeline-1-kubectl-task
+        - build-pipeline-1-kubectl-task
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -734,9 +734,9 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: ci-pipeline-evaluator
+    - name: build-pipeline-evaluator
       runAfter:
-        - deploy-dev
+        - build-deploy-dev
       taskRef:
         name: util-evaluate-pipeline-results
       params:
@@ -746,16 +746,16 @@ spec:
               {
                 "name": "run-unit-tests",
                 "expected": "success",
-                "actual": "$(tasks.run-unit-tests.results.status)"
+                "actual": "$(tasks.code-unit-tests.results.status)"
               },
               {
                 "name": "check-github-statuses",
                 "expected": "success",
-                "actual": "$(tasks.check-github-statuses.results.status)"
+                "actual": "$(tasks.code-branch-protection.results.status)"
               },
               {
                 "name": "vulnerability-advisor",
                 "expected": "OK",
-                "actual": "$(tasks.vulnerability-advisor.results.scan-status)"
+                "actual": "$(tasks.build-vulnerability-advisor.results.scan-statu)"
               }
             ]
