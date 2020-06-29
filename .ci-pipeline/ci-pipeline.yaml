@@ -429,7 +429,7 @@ spec:
               "name": "code-review",
               "params": {
                 "checks": [
-                  "tekton/pr-compliance"
+                  "tekton/code-branch-protection"
                 ]
               }
             }]
