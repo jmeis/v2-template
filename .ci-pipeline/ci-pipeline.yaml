@@ -733,3 +733,29 @@ spec:
           value: "true"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+
+    - name: ci-pipeline-evaluator
+      runAfter:
+        - deploy-dev
+      taskRef:
+        name: util-evaluate-pipeline-results
+      params:
+        - name: results
+          value: |
+            [
+              {
+                "name": "run-unit-tests",
+                "expected": "success",
+                "actual": "$(tasks.run-unit-tests.results.status)"
+              },
+              {
+                "name": "check-github-statuses",
+                "expected": "success",
+                "actual": "$(tasks.check-github-statuses.results.status)"
+              },
+              {
+                "name": "vulnerability-advisor",
+                "expected": "OK",
+                "actual": "$(tasks.vulnerability-advisor.results.scan-status)"
+              }
+            ]
