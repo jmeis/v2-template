@@ -49,3 +49,4 @@ properties:
   - name: build-signer
     value: ${BUILD_SIGNER}
     type: text
+private_worker: ${PRIVATE_WORKER}
