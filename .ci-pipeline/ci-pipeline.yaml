@@ -411,6 +411,9 @@ spec:
     - name: code-branch-protection
       taskRef:
         name: compliance-check-github-statuses
+      runAfter:
+        - code-save-git-token
+        - code-fetch-code
       workspaces:
         - name: artifacts
           workspace: artifacts
