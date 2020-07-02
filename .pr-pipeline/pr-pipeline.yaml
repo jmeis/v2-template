@@ -29,7 +29,7 @@ spec:
     - name: artifacts
 
   tasks:
-    - name: fetch-credentials
+    - name: code-fetch-credentials
       taskRef:
         name: git-get-credentials
       workspaces:
@@ -45,9 +45,9 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: setup-set-status
+    - name: code-setup-set-status
       runAfter:
-        - fetch-credentials
+        - code-fetch-credentials
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -71,9 +71,9 @@ spec:
           - name: artifacts
             mountPath: /artifacts
 
-    - name: fetch-code
+    - name: code-fetch-code
       runAfter:
-        - fetch-credentials
+        - code-fetch-credentials
       taskRef:
         name: git-clone
       workspaces:
@@ -87,10 +87,10 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: gitsecure-vulnerability-scan-status-pending
+    - name: code-vulnerability-scan-status-pending
       runAfter:
-        - fetch-code
-        - setup-set-status
+        - code-fetch-code
+        - code-setup-set-status
       taskRef:
         name: github-set-status
       workspaces:
@@ -110,9 +110,9 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: gitsecure-vulnerability-scan
+    - name: code-vulnerability-scan
       runAfter:
-        - gitsecure-vulnerability-scan-status-pending
+        - code-vulnerability-scan-status-pending
       taskRef:
         name: gitsecure-discovery
       workspaces:
@@ -126,9 +126,9 @@ spec:
         - name: commit-id
           value: $(params.commit-id)
 
-    - name: set-gitsecure-vulnerability-scan-status
+    - name: code-vulnerability-scan-status-finished
       runAfter:
-        - gitsecure-vulnerability-scan
+        - code-vulnerability-scan
       taskRef:
         name: github-set-status
       workspaces:
@@ -142,15 +142,15 @@ spec:
         - name: commit-sha
           value: $(params.commit-id)
         - name: state
-          value: "$(tasks.gitsecure-vulnerability-scan.results.status)"
+          value: "$(tasks.code-vulnerability-scan.results.status)"
         - name: context
           value: tekton/pr-gitsecure-vulnerability-scan
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: gitsecure-vulnerability-remediation
+    - name: code-vulnerability-scan-uploader
       runAfter:
-        - gitsecure-vulnerability-scan
+        - code-vulnerability-scan
       taskRef:
         name: gitsecure-vulnerability-remediation
       workspaces:
@@ -168,11 +168,11 @@ spec:
         - name: commit-id
           value: $(params.commit-id)
 
-    - name: gitsecure-cis
+    - name: code-cis-check
       taskRef:
         name: gitsecure-cis-check
       runAfter:
-        - gitsecure-vulnerability-scan
+        - code-vulnerability-scan
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -188,9 +188,9 @@ spec:
         - name: commit-id
           value: $(params.commit-id)
 
-    - name: gitsecure-ossc
+    - name: code-ossc-check
       runAfter:
-        - gitsecure-vulnerability-scan
+        - code-vulnerability-scan
       taskRef:
         name: gitsecure-ossc-check
       params:
@@ -203,9 +203,9 @@ spec:
         - name: commit-id
           value: $(params.commit-id)
 
-    - name: unit-tests-status-pending
+    - name: code-unit-tests-status-pending
       runAfter:
-        - setup-set-status
+        - code-setup-set-status
       taskRef:
         name: github-set-status
       workspaces:
@@ -225,10 +225,10 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: run-unit-tests
+    - name: code-unit-tests
       runAfter:
-        - unit-tests-status-pending
-        - fetch-code
+        - code-unit-tests-status-pending
+        - code-fetch-code
       taskRef:
         name: util-run
       workspaces:
@@ -240,9 +240,9 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: set-unit-test-status
+    - name: code-unit-tests-status-finished
       runAfter:
-        - run-unit-tests
+        - code-unit-tests
       taskRef:
         name: github-set-status
       workspaces:
@@ -256,15 +256,15 @@ spec:
         - name: commit-sha
           value: $(params.commit-id)
         - name: state
-          value: $(tasks.run-unit-tests.results.status)
+          value: $(tasks.code-unit-tests.results.status)
         - name: context
           value: tekton/pr-unit-tests
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: set-github-status-checks-pending
+    - name: code-branch-protection-status-pending
       runAfter:
-        - set-unit-test-status
+        - code-unit-tests-status-finished
       taskRef:
         name: github-set-status
       workspaces:
@@ -284,9 +284,9 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: check-github-statuses
+    - name: code-branch-protection
       runAfter:
-        - set-github-status-checks-pending
+        - code-branch-protection-status-pending
       taskRef:
         name: compliance-check-github-statuses
       workspaces:
@@ -311,9 +311,9 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: set-github-status
+    - name: code-branch-protection-status-finished
       runAfter:
-        - check-github-statuses
+        - code-branch-protection
       taskRef:
         name: github-set-status
       workspaces:
@@ -327,15 +327,15 @@ spec:
         - name: commit-sha
           value: $(params.commit-id)
         - name: state
-          value: $(tasks.check-github-statuses.results.status)
+          value: $(tasks.code-branch-protection.results.status)
         - name: context
           value: tekton/pr-compliance
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: pr-pipeline-evaluator
+    - name: code-pipeline-evaluator
       runAfter:
-        - set-github-status
+        - code-branch-protection-status-finished
       taskRef:
         name: util-evaluate-pipeline-results
       params:
@@ -343,18 +343,18 @@ spec:
           value: |
             [
               {
-                "name": "run-unit-tests",
+                "name": "code-unit-tests",
                 "expected": "success",
-                "actual": "$(tasks.run-unit-tests.results.status)"
+                "actual": "$(tasks.code-unit-tests.results.status)"
               },
               {
-                "name": "check-github-statuses",
+                "name": "code-branch-protection",
                 "expected": "success",
-                "actual": "$(tasks.check-github-statuses.results.status)"
+                "actual": "$(tasks.code-branch-protection.results.status)"
               },
               {
-                "name": "gitsecure-vulnerability-scan",
+                "name": "code-vulnerability-scan",
                 "expected": "success",
-                "actual": "$(tasks.gitsecure-vulnerability-scan.results.status)"
+                "actual": "$(tasks.code-vulnerability-scan.results.status)"
               }
             ]
