@@ -13,8 +13,6 @@ spec:
       description: The git repo
     - name: app-name
       description: The name of your app
-    - name: revision
-      description: the branch for the git repo
     - name: registry-region
       description: The IBM Cloud region for image registry
     - name: api-key
@@ -98,53 +96,17 @@ spec:
       workspaces:
         - name: artifacts
           workspace: artifacts
+        - name: secrets
+          workspace: artifacts
       params:
-        - name: ibmcloud-api-key
-          value: $(params.api-key)
+        - name: ibmcloud-api-key-secret-key
+          value: api-key
         - name: repository
           value: $(params.repository)
         - name: repository-integration
           value: $(params.repository-integration)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-
-    - name: code-save-git-token
-      runAfter:
-        - code-fetch-credentials
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-      taskSpec:
-        params:
-          - name: pipeline-debug
-        workspaces:
-          - name: artifacts
-            mountPath: /artifacts
-        stepTemplate:
-          env:
-            - name: PIPELINE_DEBUG
-              value: $(params.pipeline-debug)
-        steps:
-          - name: save-git-token-to-file
-            image: ibmcom/pipeline-base-image:2.6
-            workingDir: "/artifacts"
-            command: ["/bin/bash", "-c"]
-            args:
-              - |
-                set -e -o pipefail
-
-                if [ $PIPELINE_DEBUG == 1 ]; then
-                  pwd
-                  env
-                  trap env EXIT
-                  set -x
-                fi
-
-                source ./build.properties
-                echo -n $GIT_TOKEN > ./github-token
 
     - name: code-fetch-evidence-locker
       runAfter:
@@ -154,9 +116,13 @@ spec:
       workspaces:
         - name: artifacts
           workspace: artifacts
+        - name: secrets
+          workspace: artifacts
       params:
         - name: repository
           value: $(params.evidence-repo)
+        - name: git-user
+          value: $(tasks.code-fetch-credentials.results.git-auth-user)
         - name: branch
           value: "master"
         - name: directory-name
@@ -172,9 +138,13 @@ spec:
       workspaces:
         - name: artifacts
           workspace: artifacts
+        - name: secrets
+          workspace: artifacts
       params:
         - name: repository
           value: $(params.repository)
+        - name: git-user
+          value: $(tasks.code-fetch-credentials.results.git-auth-user)
         - name: branch
           value: $(params.branch)
         - name: revision
@@ -221,7 +191,7 @@ spec:
           workspace: artifacts
       params:
         - name: secret-name
-          value: github-token
+          value: git-token
         - name: repository
           value: $(params.repository)
         - name: incident-issue-repo
@@ -329,8 +299,8 @@ spec:
           value: $(params.repository)
         - name: revision
           value: $(params.branch)
-        - name: api-key
-          value: $(params.api-key)
+        - name: ibmcloud-api-key-secret-key
+          value: api-key
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
@@ -358,7 +328,7 @@ spec:
           workspace: artifacts
       params:
         - name: secret-name
-          value: github-token
+          value: git-token
         - name: repository
           value: $(params.repository)
         - name: incident-issue-repo
@@ -450,8 +420,6 @@ spec:
           value: $(params.repository)
         - name: revision
           value: $(params.branch)
-        - name: api-key
-          value: $(params.api-key)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
@@ -479,7 +447,7 @@ spec:
           workspace: artifacts
       params:
         - name: secret-name
-          value: github-token
+          value: git-token
         - name: repository
           value: $(params.repository)
         - name: incident-issue-repo
@@ -571,8 +539,8 @@ spec:
           value: $(params.repository)
         - name: revision
           value: $(params.branch)
-        - name: api-key
-          value: $(params.api-key)
+        - name: ibmcloud-api-key-secret-key
+          value: api-key
         - name: commit-id
           value: $(tasks.code-fetch-code.results.git-commit)
 
@@ -598,7 +566,7 @@ spec:
           workspace: artifacts
       params:
         - name: secret-name
-          value: github-token
+          value: git-token
         - name: repository
           value: $(params.repository)
         - name: incident-issue-repo
@@ -677,20 +645,54 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
+    - name: get-org
+      runAfter:
+        - code-fetch-credentials
+      params:
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: repository
+          value: $(params.repository)
+      taskSpec:
+        params:
+          - name: pipeline-debug
+            default: "0"
+          - name: repository
+        results:
+          - name: gh-org
+        stepTemplate:
+          env:
+            - name: PIPELINE_DEBUG
+              value: $(params.pipeline-debug)
+        steps:
+          - name: get-params
+            image: ibmcom/pipeline-base-image:2.6
+            script: |
+              #!/bin/bash
+
+              set -e -o pipefail
+
+              if [ $PIPELINE_DEBUG == 1 ]; then
+                pwd
+                env
+                trap env EXIT
+                set -x
+              fi
+
+              OWNER=$(echo "$(params.repository)" | cut -d/ -f4 )
+              echo -n $OWNER | tee $(results.gh-org.path)
+
     - name: code-branch-protection
       taskRef:
         name: compliance-check-github-statuses
       runAfter:
-        - code-save-git-token
         - code-fetch-code
       workspaces:
-        - name: artifacts
+        - name: secrets
           workspace: artifacts
       params:
         - name: target-branch
           value: $(params.branch)
-        - name: repository-integration
-          value: $(params.repository-integration)
         - name: required-checks
           value: |
             [{
@@ -707,6 +709,12 @@ spec:
             }]
         - name: collect-evidence
           value: "false"
+        - name: gh-org
+          value: $(tasks.get-org.results.gh-org)
+        - name: repository
+          value: $(tasks.code-fetch-credentials.results.repo-name)
+        - name: git-commit
+          value: $(tasks.code-fetch-code.results.git-commit)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -720,7 +728,7 @@ spec:
           workspace: artifacts
       params:
         - name: secret-name
-          value: github-token
+          value: git-token
         - name: repository
           value: $(params.repository)
         - name: incident-issue-repo
@@ -856,6 +864,8 @@ spec:
       workspaces:
         - name: artifacts
           workspace: artifacts
+        - name: secrets
+          workspace: artifacts
       params:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
@@ -921,7 +931,6 @@ spec:
       taskRef:
         name: evidence-create-incident-issue
       runAfter:
-        - code-save-git-token
         - build-vulnerability-advisor-result-adapter
       workspaces:
         - name: secrets
@@ -938,7 +947,7 @@ spec:
         - name: incident-issue-repo
           value: $(params.issues-repo)
         - name: secret-name
-          value: github-token
+          value: git-token
 
     - name: build-vulnerability-advisor-create-evidence
       runAfter:
@@ -1137,20 +1146,18 @@ spec:
           value: $(params.dev-cluster-namespace)
         - name: cluster-region
           value: $(params.registry-region)
+        - name: ibmcloud-api-key-secret-key
+          value: api-key
+        - name: allow-create-route
+          value: "true"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
         - name: app-directory
           value: $(tasks.code-fetch-code.results.directory-name)
-        - name: image-tags
+        - name: image-tag
           value: $(tasks.build-containerize.results.image-tags)
         - name: image-url
           value: $(tasks.build-containerize.results.image-repository)
-        - name: ibmcloud-api-key
-          value: $(params.api-key)
-        - name: allow-create-route
-          value: "true"
-        - name: build-properties
-          value: ""
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
 
     - name: build-acceptance-tests
       runAfter:
@@ -1181,7 +1188,7 @@ spec:
           workspace: artifacts
       params:
         - name: secret-name
-          value: github-token
+          value: git-token
         - name: repository
           value: $(params.repository)
         - name: incident-issue-repo

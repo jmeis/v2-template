@@ -13,8 +13,6 @@ spec:
       description: target branch
     - name: repository-integration
       description: the repo integration name
-    - name: api-key
-      description: the ibmcloud api key
     - name: commit-id
       description: commit id
     - name: pipeline-debug
@@ -50,13 +48,6 @@ spec:
         - name: artifactory-pull-secret
       metadata:
         name: sa-pullsecret
-    - apiVersion: v1
-      kind: Secret
-      metadata:
-        name: cd-secret
-      type: Opaque
-      stringData:
-        API_KEY: $(params.api-key)
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
@@ -76,8 +67,6 @@ spec:
             value: $(params.branch)
           - name: target-branch
             value: $(params.target-branch)
-          - name: api-key
-            value: $(params.api-key)
           - name: repository-integration
             value: $(params.repository-integration)
           - name: commit-id
