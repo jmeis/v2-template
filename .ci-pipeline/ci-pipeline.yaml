@@ -759,6 +759,6 @@ spec:
               {
                 "name": "vulnerability-advisor",
                 "expected": "OK",
-                "actual": "$(tasks.build-vulnerability-advisor.results.scan-statu)"
+                "actual": "$(tasks.build-vulnerability-advisor.results.scan-status)"
               }
             ]
