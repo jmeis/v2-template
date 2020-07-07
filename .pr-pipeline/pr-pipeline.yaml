@@ -106,7 +106,7 @@ spec:
         - name: state
           value: pending
         - name: context
-          value: tekton/pr-gitsecure-vulnerability-scan
+          value: tekton/code-vulnerability-scan
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -144,7 +144,7 @@ spec:
         - name: state
           value: "$(tasks.code-vulnerability-scan.results.status)"
         - name: context
-          value: tekton/pr-gitsecure-vulnerability-scan
+          value: tekton/code-vulnerability-scan
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -221,7 +221,7 @@ spec:
         - name: state
           value: pending
         - name: context
-          value: tekton/pr-unit-tests
+          value: tekton/code-unit-tests
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -258,7 +258,7 @@ spec:
         - name: state
           value: $(tasks.code-unit-tests.results.status)
         - name: context
-          value: tekton/pr-unit-tests
+          value: tekton/code-unit-tests
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -280,7 +280,7 @@ spec:
         - name: state
           value: pending
         - name: context
-          value: tekton/pr-compliance
+          value: tekton/code-branch-protection
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -302,7 +302,7 @@ spec:
               "name": "code-review",
               "params": {
                 "checks": [
-                  "tekton/pr-compliance"
+                  "tekton/code-branch-protection"
                 ]
               }
             }]
@@ -329,7 +329,7 @@ spec:
         - name: state
           value: $(tasks.code-branch-protection.results.status)
         - name: context
-          value: tekton/pr-compliance
+          value: tekton/code-branch-protection
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
