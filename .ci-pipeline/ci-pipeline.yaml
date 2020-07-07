@@ -164,56 +164,9 @@ spec:
         - name: branch
           value: $(params.branch)
         - name: revision
-          value: $(params.revision)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: code-get-commit-id
-      runAfter:
-        - code-fetch-code
-      params:
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-        - name: pipeline-commit-id
           value: $(params.commit-id)
-        - name: latest-commit-id
-          value: $(tasks.code-fetch-code.results.git-commit)
-      taskSpec:
-        params:
-          - name: pipeline-debug
-            default: "0"
-          - name: pipeline-commit-id
-            default: ""
-          - name: latest-commit-id
-            default: ""
-        results:
-          - name: commit-id
-            description: Either the commit id received by the pipeline from the git trigger, or the latest from master.
-        stepTemplate:
-          env:
-            - name: PIPELINE_DEBUG
-              value: $(params.pipeline-debug)
-        steps:
-          - name: save-git-token-to-file
-            image: ibmcom/pipeline-base-image:2.6
-            workingDir: "/artifacts"
-            command: ["/bin/bash", "-c"]
-            args:
-              - |
-                set -e -o pipefail
-
-                if [ $PIPELINE_DEBUG == 1 ]; then
-                  pwd
-                  env
-                  trap env EXIT
-                  set -x
-                fi
-
-                if [ -z "$(params.pipeline-commit-id)" ]; then
-                  echo -n "$(params.latest-commit-id)" | tee $(results.commit-id.path)
-                else
-                  echo -n "$(params.pipeline-commit-id)" | tee $(results.commit-id.path)
-                fi;
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
 
     - name: code-unit-tests
       runAfter:
@@ -247,7 +200,7 @@ spec:
         - name: result-status
           value: $(tasks.code-unit-tests.results.status)
         - name: commit-hash
-          value: $(tasks.code-get-commit-id.results.commit-id)
+          value: $(tasks.code-fetch-code.results.git-commit)
 
     - name: code-unit-tests-create-evidence
       taskRef:
@@ -288,7 +241,7 @@ spec:
         - name: revision
           value: $(params.branch)
         - name: commit-id
-          value: $(tasks.code-get-commit-id.results.commit-id)
+          value: $(tasks.code-fetch-code.results.git-commit)
 
     - name: code-vulnerability-scan-uploader
       runAfter:
@@ -308,7 +261,7 @@ spec:
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
-          value: $(tasks.code-get-commit-id.results.commit-id)
+          value: $(tasks.code-fetch-code.results.git-commit)
 
     - name: code-vulnerability-scan-create-issue
       taskRef:
@@ -328,7 +281,7 @@ spec:
         - name: result-status
           value: $(tasks.code-vulnerability-scan-uploader.results.status)
         - name: commit-hash
-          value: $(tasks.code-get-commit-id.results.commit-id)
+          value: $(tasks.code-fetch-code.results.git-commit)
 
     - name: code-vulnerability-scan-create-evidence
       taskRef:
@@ -373,7 +326,7 @@ spec:
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
-          value: $(tasks.code-get-commit-id.results.commit-id)
+          value: $(tasks.code-fetch-code.results.git-commit)
 
     - name: code-ossc-check
       runAfter:
@@ -388,7 +341,7 @@ spec:
         - name: api-key
           value: $(params.api-key)
         - name: commit-id
-          value: $(tasks.code-get-commit-id.results.commit-id)
+          value: $(tasks.code-fetch-code.results.git-commit)
 
     - name: code-ossc-cis-create-evidence
       runAfter:
@@ -406,7 +359,7 @@ spec:
         - name: evidence-repo
           value: $(params.evidence-repo)
         - name: commit-id
-          value: $(tasks.code-get-commit-id.results.commit-id)
+          value: $(tasks.code-fetch-code.results.git-commit)
 
     - name: code-branch-protection
       taskRef:
@@ -458,7 +411,7 @@ spec:
         - name: result-status
           value: $(tasks.code-branch-protection.results.status)
         - name: commit-hash
-          value: $(tasks.code-get-commit-id.results.commit-id)
+          value: $(tasks.code-fetch-code.results.git-commit)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -596,7 +549,7 @@ spec:
         - name: result-status
           value: $(tasks.build-vulnerability-advisor-result-adapter.results.status)
         - name: commit-hash
-          value: $(tasks.code-get-commit-id.results.commit-id)
+          value: $(tasks.code-fetch-code.results.git-commit)
         - name: repository
           value: $(params.repository)
         - name: incident-issue-repo
