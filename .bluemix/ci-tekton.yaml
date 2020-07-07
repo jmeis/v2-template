@@ -48,6 +48,10 @@ inputs:
     branch: master
     service: ${TEKTON_CATALOG_REPO}
     path: preview/toolchain
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: preview/devops-insights
 triggers:
   - type: git
     name: Git CI Trigger
