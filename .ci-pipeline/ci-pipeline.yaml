@@ -168,6 +168,23 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
+    - name: build-doi-publish-buildrecord
+      taskRef:
+        name: doi-publish-buildrecord
+      params:
+        - name: app-name
+          value: "$(params.app-name)[$(params.branch)]"
+        - name: toolchain-apikey-secret-key
+          value: "api-key"
+        - name: git-repository
+          value: $(params.repository)
+        - name: git-branch
+          value: $(params.branch)
+        - name: git-commit
+          value: $(tasks.code-fetch-code.results.git-commit)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
     - name: code-unit-tests
       runAfter:
         - code-fetch-code
@@ -227,6 +244,40 @@ spec:
         - name: issues
           value: |
             "$(tasks.code-unit-tests-create-issue.results.issue-url)"
+
+    - name: code-unit-tests-create-doi-data
+      runAfter:
+        - code-unit-tests
+      taskRef:
+        name: unit-test-transformer
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: result-status
+          value: $(tasks.code-unit-tests.results.status)
+
+    - name: add-unit-test-results-to-doi
+      runAfter:
+        - code-unit-tests-create-doi-data
+      taskRef:
+        name: doi-publish-testrecord
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: app-name
+          value: "$(params.app-name)[$(params.branch)]"
+        - name: file-locations
+          value: $(tasks.code-unit-tests-create-doi-data.results.file-locations)
+        - name: test-types
+          value: $(tasks.code-unit-tests-create-doi-data.results.test-types)
+        - name: toolchain-apikey-secret-key
+          value: "api-key"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
 
     - name: code-vulnerability-scan
       runAfter:
