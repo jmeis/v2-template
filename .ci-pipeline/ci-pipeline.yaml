@@ -205,6 +205,7 @@ spec:
     - name: code-unit-tests-create-evidence
       taskRef:
         name: evidence-add
+      retries: 2
       workspaces:
         - name: evidence-locker
           workspace: artifacts
@@ -286,6 +287,7 @@ spec:
     - name: code-vulnerability-scan-create-evidence
       taskRef:
         name: evidence-add
+      retries: 2
       workspaces:
         - name: evidence-locker
           workspace: artifacts
@@ -420,6 +422,7 @@ spec:
         - code-branch-protection-create-issue
       taskRef:
         name: evidence-add
+      retries: 2
       workspaces:
         - name: evidence-locker
           workspace: artifacts
@@ -563,6 +566,7 @@ spec:
         - build-vulnerability-advisor-create-issue
       taskRef:
         name: evidence-add
+      retries: 2
       params:
         - name: evidence-repo-path
           value: "evidence-locker"
