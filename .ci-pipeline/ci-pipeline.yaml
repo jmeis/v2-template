@@ -381,6 +381,52 @@ spec:
         - name: commit-id
           value: $(tasks.code-fetch-code.results.git-commit)
 
+    - name: code-cis-check-create-issue
+      taskRef:
+        name: evidence-create-incident-issue
+      workspaces:
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: secret-name
+          value: github-token
+        - name: repository
+          value: $(params.repository)
+        - name: incident-issue-repo
+          value: $(params.issues-repo)
+        - name: task-name
+          value: "code-cis-check"
+        - name: result-status
+          value: $(tasks.code-cis-check.results.status)
+        - name: commit-hash
+          value: $(tasks.code-fetch-code.results.git-commit)
+
+    - name: code-cis-check-create-evidence
+      taskRef:
+        name: evidence-add
+      retries: 2
+      workspaces:
+        - name: evidence-locker
+          workspace: artifacts
+      params:
+        - name: evidence-repo-path
+          value: $(tasks.code-fetch-evidence-locker.results.directory-name)
+        - name: namespace
+          value: "ci"
+        - name: evidence-name
+          value: "code-cis-check"
+        - name: toolchain-crn
+          value: $(tasks.code-extract-toolchain-crn.results.extracted-value)
+        - name: evidence-type
+          value: "com.ibm.code-cis-check"
+        - name: evidence-type-version
+          value: "1.0.0"
+        - name: result
+          value: $(tasks.code-cis-check.results.status)
+        - name: issues
+          value: |
+            "$(tasks.code-cis-check-create-issue.results.issue-url)"
+
     - name: code-ossc-check
       runAfter:
         - code-vulnerability-scan-uploader
