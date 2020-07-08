@@ -5,8 +5,17 @@
 * **Artifactory access**
 * **IBM Cloud CLI**
 * **Docker Content Trust signing keys**
+* **Api Key**
+
 
 If you've never set up image signing in your k8s cluster, you have to create the signing keys that will be used for the signing itself. Set up and run the key-management-admin-toolchain (https://github.ibm.com/one-pipeline/compliance-ci-key-management)
+
+The GitHub token that is issued to the IBM Cloud API key holder, has no access to read/set protected branch settings on repos.
+This can be only done by admin level access to the repo: in case of an org it's the admins of the org, in case of a user, it's only the user.
+
+Note: 
+    Use your personal IBM API key and personal repositories.
+    Use an IBM API key of a functional ID and a repo org, that is administered by the same id.
 
 ### 1. Create toolchain:
 
