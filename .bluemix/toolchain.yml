@@ -111,6 +111,7 @@ services:
       has_issues: false
       enable_traceability: false
       legal: true
+      kind: ['pipeline']
 
   tekton-catalog-repo:
     service_id: github_integrated
@@ -126,6 +127,7 @@ services:
       has_issues: false
       enable_traceability: false
       legal: true
+      kind: ['pipeline']
 
   pr:
     service_id: pipeline
