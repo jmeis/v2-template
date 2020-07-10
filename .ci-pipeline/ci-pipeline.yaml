@@ -427,6 +427,70 @@ spec:
           value: |
             "$(tasks.code-cis-check-create-issue.results.issue-url)"
 
+    - name: code-bom-check
+      runAfter:
+        - code-vulnerability-scan-uploader
+      taskRef:
+        name: gitsecure-bom-check
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.branch)
+        - name: api-key
+          value: $(params.api-key)
+        - name: commit-id
+          value: $(tasks.code-fetch-code.results.git-commit)
+
+    - name: code-bom-check-create-issue
+      taskRef:
+        name: evidence-create-incident-issue
+      workspaces:
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: secret-name
+          value: github-token
+        - name: repository
+          value: $(params.repository)
+        - name: incident-issue-repo
+          value: $(params.issues-repo)
+        - name: task-name
+          value: "code-bom-check"
+        - name: result-status
+          value: $(tasks.code-bom-check.results.status)
+        - name: commit-hash
+          value: $(tasks.code-fetch-code.results.git-commit)
+
+    - name: code-bom-check-create-evidence
+      taskRef:
+        name: evidence-add
+      retries: 2
+      workspaces:
+        - name: evidence-locker
+          workspace: artifacts
+      params:
+        - name: evidence-repo-path
+          value: $(tasks.code-fetch-evidence-locker.results.directory-name)
+        - name: namespace
+          value: "ci"
+        - name: evidence-name
+          value: "code-bom-check"
+        - name: toolchain-crn
+          value: $(tasks.code-extract-toolchain-crn.results.extracted-value)
+        - name: evidence-type
+          value: "com.ibm.code-bom-check"
+        - name: evidence-type-version
+          value: "1.0.0"
+        - name: result
+          value: $(tasks.code-bom-check.results.status)
+        - name: issues
+          value: |
+            "$(tasks.code-bom-check-create-issue.results.issue-url)"
+
     - name: code-branch-protection
       taskRef:
         name: compliance-check-github-statuses
@@ -528,6 +592,7 @@ spec:
     - name: build-containerize
       taskRef:
         name: icr-containerize
+      retries: 5
       runAfter:
         - code-check-dockerfile
       workspaces:
