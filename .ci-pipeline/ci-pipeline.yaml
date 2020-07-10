@@ -427,39 +427,6 @@ spec:
           value: |
             "$(tasks.code-cis-check-create-issue.results.issue-url)"
 
-    - name: code-ossc-check
-      runAfter:
-        - code-vulnerability-scan-uploader
-      taskRef:
-        name: gitsecure-ossc-check
-      params:
-        - name: repository
-          value: $(params.repository)
-        - name: revision
-          value: $(params.branch)
-        - name: api-key
-          value: $(params.api-key)
-        - name: commit-id
-          value: $(tasks.code-fetch-code.results.git-commit)
-
-    - name: code-ossc-cis-create-evidence
-      runAfter:
-        - code-ossc-check
-        - code-cis-check
-      taskRef:
-        name: gitsecure-evidence-emitter
-      params:
-        - name: repository
-          value: $(params.repository)
-        - name: revision
-          value: $(params.branch)
-        - name: apikey
-          value: $(params.api-key)
-        - name: evidence-repo
-          value: $(params.evidence-repo)
-        - name: commit-id
-          value: $(tasks.code-fetch-code.results.git-commit)
-
     - name: code-branch-protection
       taskRef:
         name: compliance-check-github-statuses
