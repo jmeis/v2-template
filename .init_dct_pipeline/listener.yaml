@@ -53,7 +53,7 @@ spec:
       type: Opaque
       stringData:
         API_KEY: $(params.api-key)
-    - apiVersion: tekton.dev/v1beta1
+    - apiVersion: tekton.dev/v1alpha1
       kind: PipelineResource
       metadata:
         name: $(params.cluster-name)
