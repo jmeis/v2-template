@@ -88,7 +88,7 @@ spec:
         - name: artifactory-pull-secret
       metadata:
         name: sa-pullsecret
-    - apiVersion: tekton.dev/v1beta1
+    - apiVersion: tekton.dev/v1alpha1
       kind: PipelineResource
       metadata:
         name: image-to-build
@@ -97,7 +97,7 @@ spec:
         params:
           - name: url
             value: $(params.imageUrl)
-    - apiVersion: tekton.dev/v1beta1
+    - apiVersion: tekton.dev/v1alpha1
       kind: PipelineResource
       metadata:
         name: $(params.cluster-name)
