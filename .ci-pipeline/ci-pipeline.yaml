@@ -24,6 +24,7 @@ spec:
         by clicking **Create API key** (Each API key only can be viewed once).
     - name: branch
       description: the branch for the git repo
+      default: "master"
     - name: cluster-name
       description: the name of the cluster to target
     - name: dev-cluster-namespace
@@ -56,12 +57,6 @@ spec:
       description: inventory repository owner and name
     - name: version
       description: cr branch name
-
-  resources:
-    - name: app-image
-      type: image
-    - name: target-cluster
-      type: cluster
 
   workspaces:
     - name: artifacts
@@ -577,7 +572,7 @@ spec:
 
     - name: code-check-dockerfile
       runAfter:
-        - code-branch-protection-create-evidence
+        - code-fetch-code
       taskRef:
         name: icr-check-dockerfile
       workspaces:
@@ -591,29 +586,34 @@ spec:
 
     - name: build-containerize
       taskRef:
-        name: icr-containerize
-      retries: 5
+        name: icr-cr-build
       runAfter:
         - code-check-dockerfile
       workspaces:
         - name: source
           workspace: artifacts
       params:
+        - name: registry-region
+          value: $(params.registry-region)
+        - name: registry-namespace
+          value: $(params.registry-namespace)
+        - name: image-name
+          value: $(params.app-name)
         - name: additional-tags-script
           value: |
-            # Include the clone task output variables in the environment
-            source /source/build.properties
             # The script is providing tag(s) as output
             # But logs can be written as error stderr
             echo "Providing an image tag including git branch and commit" >&2
             # Add a specific tag with branch and commit
-            echo "${BUILD_TIMESTAMP}-${GIT_BRANCH}-${GIT_COMMIT}"
+            echo "$(date +%Y%m%d%H%M%S)-$(tasks.code-fetch-code.results.git-branch)-$(tasks.code-fetch-code.results.git-commit)"
+        - name: container-registry-apikey-secret-key
+          value: api-key
+        - name: path-to-context
+          value: "$(tasks.code-fetch-code.results.directory-name)"
+        - name: path-to-dockerfile
+          value: "./$(tasks.code-fetch-code.results.directory-name)"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-      resources:
-        outputs:
-          - name: built-image
-            resource: app-image
 
     - name: build-update-inventory
       taskRef:
@@ -638,6 +638,10 @@ spec:
         - name: artifacts
           workspace: artifacts
       params:
+        - name: image-url
+          value: $(tasks.build-containerize.results.image-repository)
+        - name: image-digest
+          value: $(tasks.build-containerize.results.image-digest)
         - name: scan-report-file
           value: 'app-image-va-report.json'
         - name: ibmcloud-api-key
@@ -650,12 +654,6 @@ spec:
         #   value: 'false'
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-      resources:
-        inputs:
-          - name: image
-            resource: app-image
-            from:
-              - build-containerize
 
     - name: build-vulnerability-advisor-result-adapter
       runAfter:
@@ -761,17 +759,14 @@ spec:
           value: $(params.api-key)
         - name: cluster-name
           value: $(params.cluster-name)
+        - name: resource-group
+          value: $(params.dev-resource-group)
+        - name: cluster-region
+          value: $(params.dev-region)
         - name: cluster-pipeline-resources-directory-fallback
           value: .tekton-clusters
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-      resources:
-        inputs:
-          - name: cluster
-            resource: target-cluster
-        outputs:
-          - name: cluster
-            resource: target-cluster
 
     - name: build-pipeline-1-kubectl-task
       runAfter:
@@ -782,6 +777,8 @@ spec:
         - name: cluster-configuration
           workspace: artifacts
       params:
+        - name: cluster-name
+          value: $(params.cluster-name)
         - name: cluster-pipeline-resources-directory
           value: .tekton-clusters
         - name: script
@@ -794,12 +791,6 @@ spec:
             kubectl get namespaces
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-      resources:
-        inputs:
-          - name: cluster
-            resource: target-cluster
-            from:
-              - build-fetch-iks-cluster-config
 
     - name: build-deploy-dev
       taskRef:
