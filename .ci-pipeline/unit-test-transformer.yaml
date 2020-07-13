@@ -22,11 +22,13 @@ spec:
       env:
         - name: RESULT_STATUS
           value: $(params.result-status)
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
       workingDir: /artifacts
       script: |
         #!/bin/bash
 
-        if [ $PIPELINE_DEBUG = 1 ]; then
+        if [ "$PIPELINE_DEBUG" = 1 ]; then
           pwd
           env
           trap env EXIT
