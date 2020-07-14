@@ -831,6 +831,21 @@ spec:
                 "actual": "$(tasks.code-unit-tests.results.status)"
               },
               {
+                "name": "code-vulnerability-scan",
+                "expected": "success",
+                "actual": "$(tasks.code-vulnerability-scan.results.status)"
+              },
+              {
+                "name": "code-cis-check",
+                "expected": "success",
+                "actual": "$(tasks.code-cis-check.results.status)"
+              },
+              {
+                "name": "code-bom-check",
+                "expected": "success",
+                "actual": "$(tasks.code-bom-check.results.status)"
+              },
+              {
                 "name": "check-github-statuses",
                 "expected": "success",
                 "actual": "$(tasks.code-branch-protection.results.status)"
