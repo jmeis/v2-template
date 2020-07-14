@@ -215,6 +215,8 @@ spec:
           value: $(tasks.code-fetch-code.results.git-commit)
 
     - name: code-unit-tests-create-evidence
+      runAfter:
+        - code-fetch-evidence-locker
       taskRef:
         name: evidence-add
       retries: 2
@@ -331,6 +333,8 @@ spec:
           value: $(tasks.code-fetch-code.results.git-commit)
 
     - name: code-vulnerability-scan-create-evidence
+      runAfter:
+        - code-unit-tests-create-evidence
       taskRef:
         name: evidence-add
       retries: 2
@@ -397,6 +401,8 @@ spec:
           value: $(tasks.code-fetch-code.results.git-commit)
 
     - name: code-cis-check-create-evidence
+      runAfter:
+        - code-vulnerability-scan-create-evidence
       taskRef:
         name: evidence-add
       retries: 2
@@ -461,6 +467,8 @@ spec:
           value: $(tasks.code-fetch-code.results.git-commit)
 
     - name: code-bom-check-create-evidence
+      runAfter:
+        - code-cis-check-create-evidence
       taskRef:
         name: evidence-add
       retries: 2
@@ -542,7 +550,7 @@ spec:
 
     - name: code-branch-protection-create-evidence
       runAfter:
-        - code-branch-protection-create-issue
+        - code-bom-check-create-evidence
       taskRef:
         name: evidence-add
       retries: 2
@@ -691,6 +699,7 @@ spec:
       runAfter:
         - build-vulnerability-advisor-result-adapter
         - build-vulnerability-advisor-create-issue
+        - code-branch-protection-create-evidence
       taskRef:
         name: evidence-add
       retries: 2
