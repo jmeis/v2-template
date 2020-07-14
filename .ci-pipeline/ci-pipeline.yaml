@@ -822,6 +822,8 @@ spec:
           value: $(params.api-key)
         - name: allow-create-route
           value: "true"
+        - name: build-properties
+          value: ""
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
