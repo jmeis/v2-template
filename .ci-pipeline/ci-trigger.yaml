@@ -88,32 +88,6 @@ spec:
         - name: artifactory-pull-secret
       metadata:
         name: sa-pullsecret
-    - apiVersion: tekton.dev/v1alpha1
-      kind: PipelineResource
-      metadata:
-        name: image-to-build
-      spec:
-        type: image
-        params:
-          - name: url
-            value: $(params.imageUrl)
-    - apiVersion: tekton.dev/v1alpha1
-      kind: PipelineResource
-      metadata:
-        name: $(params.cluster-name)
-      spec:
-        type: cluster
-        params:
-          - name: name
-            value: $(params.cluster-name)
-          - name: username
-            value: norealvalueneeded
-          - name: url
-            value: https://no.real.value.needed
-          - name: token
-            value: norealvalueneeded
-          - name: cadata
-            value: norealvalueneeded
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
@@ -125,13 +99,6 @@ spec:
           - name: artifacts
             persistentVolumeClaim:
               claimName: pipelinerun-$(uid)-pvc
-        resources:
-          - name: app-image
-            resourceRef:
-              name: image-to-build
-          - name: target-cluster
-            resourceRef:
-              name: $(params.cluster-name)
         params:
           - name: registry-namespace
             value: $(params.registry-namespace)
