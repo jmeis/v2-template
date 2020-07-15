@@ -638,6 +638,8 @@ spec:
           value: $(params.inventory-repo)
         - name: version
           value: $(params.version)
+        - name: repository
+          value: $(params.app-name)
 
     - name: build-vulnerability-advisor
       taskRef:
