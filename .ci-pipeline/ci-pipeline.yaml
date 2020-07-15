@@ -318,6 +318,20 @@ spec:
         - name: commit-id
           value: $(tasks.code-fetch-code.results.git-commit)
 
+    - name: code-vulnerability-scan-show-artifact
+      runAfter:
+        - code-vulnerability-scan
+      taskRef:
+        name: log-artifact
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: artifact-path
+          value: $(tasks.code-vulnerability-scan.results.evidence-store)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
     - name: code-vulnerability-scan-create-issue
       taskRef:
         name: evidence-create-incident-issue
@@ -426,6 +440,20 @@ spec:
         - name: commit-id
           value: $(tasks.code-fetch-code.results.git-commit)
 
+    - name: code-cis-check-show-artifact
+      runAfter:
+        - code-cis-check
+      taskRef:
+        name: log-artifact
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: artifact-path
+          value: $(tasks.code-cis-check.results.evidence-store)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
     - name: code-cis-check-create-issue
       taskRef:
         name: evidence-create-incident-issue
@@ -531,6 +559,20 @@ spec:
           value: $(params.api-key)
         - name: commit-id
           value: $(tasks.code-fetch-code.results.git-commit)
+
+    - name: code-bom-check-show-artifact
+      runAfter:
+        - code-bom-check
+      taskRef:
+        name: log-artifact
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: artifact-path
+          value: $(tasks.code-bom-check.results.evidence-store)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
 
     - name: code-bom-check-create-issue
       taskRef:
@@ -828,6 +870,20 @@ spec:
         #   value: '3'
         # - name: failOnScannedIssues
         #   value: 'false'
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: build-vulnerability-advisor-show-artifact
+      runAfter:
+        - build-vulnerability-advisor
+      taskRef:
+        name: log-artifact
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: artifact-path
+          value: $(tasks.build-vulnerability-advisor.results.scan-report-file)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
