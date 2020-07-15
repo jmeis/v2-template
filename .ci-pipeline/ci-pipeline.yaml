@@ -818,6 +818,10 @@ spec:
           value: $(params.registry-region)
         - name: app-directory
           value: $(tasks.code-fetch-code.results.directory-name)
+        - name: image-tags
+          value: $(tasks.build-containerize.results.image-tags)
+        - name: image-url
+          value: $(tasks.build-containerize.results.image-repository)
         - name: ibmcloud-api-key
           value: $(params.api-key)
         - name: allow-create-route
