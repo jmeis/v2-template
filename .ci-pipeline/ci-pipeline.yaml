@@ -801,11 +801,55 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
+    - name: build-create-namespace
+      runAfter:
+        - build-docker-image-sign
+      taskRef:
+        name: iks-create-namespace
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: cluster-name
+          value: $(params.cluster-name)
+        - name: cluster-region
+          value: $(params.dev-region)
+        - name: cluster-namespace
+          value: $(params.dev-cluster-namespace)
+        - name: ibmcloud-api-key-secret-key
+          value: "api-key"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: build-create-image-pull-secrets
+      runAfter:
+        - build-create-namespace
+      taskRef:
+        name: iks-create-pull-secrets
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: cluster-name
+          value: $(params.cluster-name)
+        - name: cluster-region
+          value: $(params.dev-region)
+        - name: cluster-namespace
+          value: $(params.dev-cluster-namespace)
+        - name: ibmcloud-api-key-secret-key
+          value: "api-key"
+        - name: image-url
+          value: $(tasks.build-containerize.results.image-repository)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
     - name: build-deploy-dev
       taskRef:
         name: iks-deploy
       runAfter:
         - build-pipeline-1-kubectl-task
+        - build-create-namespace
+        - build-create-image-pull-secrets
       workspaces:
         - name: artifacts
           workspace: artifacts
