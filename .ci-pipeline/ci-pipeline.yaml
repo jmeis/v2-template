@@ -57,11 +57,35 @@ spec:
       description: inventory repository owner and name
     - name: version
       description: cr branch name
+    - name: slack-notifications
+      description: toggles slack notifications
 
   workspaces:
     - name: artifacts
 
   tasks:
+    - name: code-notify-pipeline-start
+      conditions:
+        - conditionRef: util-is-equal
+          params:
+            - name: left
+              value: $(params.slack-notifications)
+            - name: right
+              value: "1"
+      taskRef:
+        name: slack-post-message
+      workspaces:
+        - name: workspace
+          workspace: artifacts
+      params:
+        - name: message-script
+          value: |
+              #!/usr/bin/env python3
+              import os
+
+              print("CI Pipeline was Triggered By: " + os.getenv("TRIGGERED_BY"))
+              print("<https://cloud.ibm.com/devops/pipelines/tekton/" + os.getenv("PIPELINE_ID") + "/runs/" + os.getenv("PIPELINE_RUN_ID") + "?env_id=ibm:yp:" + os.getenv("TOOLCHAIN_REGION") + "|See the Pipeline Logs>")
+
     - name: code-extract-toolchain-crn
       taskRef:
         name: toolchain-extract-value
@@ -1265,9 +1289,74 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: build-pipeline-evaluator
+    - name: build-notify-pipeline-end
       runAfter:
         - build-deploy-dev
+      conditions:
+        - conditionRef: util-is-equal
+          params:
+            - name: left
+              value: $(params.slack-notifications)
+            - name: right
+              value: "1"
+      taskRef:
+        name: slack-post-message
+      workspaces:
+        - name: workspace
+          workspace: artifacts
+      params:
+        - name: message-script
+          value: |
+              #!/usr/bin/env python3
+
+              import json, os
+
+              results = json.loads("""
+                [
+                  {
+                    "name": "run-unit-tests",
+                    "expected": "success",
+                    "actual": "$(tasks.code-unit-tests.results.status)"
+                  },
+                  {
+                    "name": "code-vulnerability-scan",
+                    "expected": "success",
+                    "actual": "$(tasks.code-vulnerability-scan.results.status)"
+                  },
+                  {
+                    "name": "code-cis-check",
+                    "expected": "success",
+                    "actual": "$(tasks.code-cis-check.results.status)"
+                  },
+                  {
+                    "name": "code-bom-check",
+                    "expected": "success",
+                    "actual": "$(tasks.code-bom-check.results.status)"
+                  },
+                  {
+                    "name": "check-github-statuses",
+                    "expected": "success",
+                    "actual": "$(tasks.code-branch-protection.results.status)"
+                  },
+                  {
+                    "name": "vulnerability-advisor",
+                    "expected": "OK",
+                    "actual": "$(tasks.build-vulnerability-advisor.results.scan-status)"
+                  }
+                ]
+              """)
+
+              for result in results:
+                if result["actual"] != result["expected"]:
+                  print(":x: Task `{taskName}` has failed.".format(taskName=result["name"]))
+                else:
+                  print(":white_check_mark: Task `{taskName}` was successful.".format(taskName=result["name"]))
+              print("CI Pipeline finished!")
+              print("<https://cloud.ibm.com/devops/pipelines/tekton/" + os.getenv("PIPELINE_ID") + "/runs/" + os.getenv("PIPELINE_RUN_ID") + "?env_id=ibm:yp:" + os.getenv("TOOLCHAIN_REGION") + "|See the Pipeline Logs>")
+
+    - name: build-pipeline-evaluator
+      runAfter:
+        - build-notify-pipeline-end
       taskRef:
         name: util-evaluate-pipeline-results
       params:
