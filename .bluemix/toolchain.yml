@@ -225,7 +225,7 @@ services:
 form:
   pipeline:
     parameters:
-      app-name: '{{services.app-repo.parameters.repo_name}}'
+      app-name: hello-compliance-app
       dev-cluster-namespace: default
       build-cluster-namespace: build
       vault_name: ''
