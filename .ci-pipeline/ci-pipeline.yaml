@@ -246,21 +246,27 @@ spec:
       runAfter:
         - code-unit-tests
       taskRef:
-        name: unit-test-transformer
+        name: evidence-to-doi-transformer
+      retries: 2
       workspaces:
         - name: artifacts
           workspace: artifacts
       params:
+        - name: title
+          value: "Unit tests"
+        - name: task-name
+          value: "code-unit-tests"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: result-status
           value: $(tasks.code-unit-tests.results.status)
 
-    - name: add-unit-test-results-to-doi
+    - name: code-unit-tests-results-to-doi
       runAfter:
         - code-unit-tests-create-doi-data
       taskRef:
         name: doi-publish-testrecord
+      retries: 2
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -360,6 +366,46 @@ spec:
           value: |
             "$(tasks.code-vulnerability-scan-create-issue.results.issue-url)"
 
+    - name: code-vulnerability-scan-create-doi-data
+      runAfter:
+        - code-vulnerability-scan
+      taskRef:
+        name: evidence-to-doi-transformer
+      retries: 2
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: title
+          value: "GitSecure vulnerability scan"
+        - name: task-name
+          value: "code-vulnerability-scan"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: result-status
+          value: $(tasks.code-vulnerability-scan.results.status)
+
+    - name: code-vulnerability-scan-results-to-doi
+      runAfter:
+        - code-vulnerability-scan-create-doi-data
+      taskRef:
+        name: doi-publish-testrecord
+      retries: 2
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: app-name
+          value: "$(params.app-name)[$(params.branch)]"
+        - name: file-locations
+          value: $(tasks.code-vulnerability-scan-create-doi-data.results.file-locations)
+        - name: test-types
+          value: $(tasks.code-vulnerability-scan-create-doi-data.results.test-types)
+        - name: toolchain-apikey-secret-key
+          value: "api-key"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
     - name: code-cis-check
       taskRef:
         name: gitsecure-cis-check
@@ -428,6 +474,46 @@ spec:
           value: |
             "$(tasks.code-cis-check-create-issue.results.issue-url)"
 
+    - name: code-cis-check-create-doi-data
+      runAfter:
+        - code-cis-check
+      taskRef:
+        name: evidence-to-doi-transformer
+      retries: 2
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: title
+          value: "GitSecure CIS check"
+        - name: task-name
+          value: "code-cis-check"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: result-status
+          value: $(tasks.code-cis-check.results.status)
+
+    - name: code-cis-check-results-to-doi
+      runAfter:
+        - code-cis-check-create-doi-data
+      taskRef:
+        name: doi-publish-testrecord
+      retries: 2
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: app-name
+          value: "$(params.app-name)[$(params.branch)]"
+        - name: file-locations
+          value: $(tasks.code-cis-check-create-doi-data.results.file-locations)
+        - name: test-types
+          value: $(tasks.code-cis-check-create-doi-data.results.test-types)
+        - name: toolchain-apikey-secret-key
+          value: "api-key"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
     - name: code-bom-check
       runAfter:
         - code-vulnerability-scan-uploader
@@ -493,6 +579,46 @@ spec:
         - name: issues
           value: |
             "$(tasks.code-bom-check-create-issue.results.issue-url)"
+
+    - name: code-bom-check-create-doi-data
+      runAfter:
+        - code-bom-check
+      taskRef:
+        name: evidence-to-doi-transformer
+      retries: 2
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: title
+          value: "GitSecure BOM check"
+        - name: task-name
+          value: "code-bom-check"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: result-status
+          value: $(tasks.code-bom-check.results.status)
+
+    - name: code-bom-check-results-to-doi
+      runAfter:
+        - code-bom-check-create-doi-data
+      taskRef:
+        name: doi-publish-testrecord
+      retries: 2
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: app-name
+          value: "$(params.app-name)[$(params.branch)]"
+        - name: file-locations
+          value: $(tasks.code-bom-check-create-doi-data.results.file-locations)
+        - name: test-types
+          value: $(tasks.code-bom-check-create-doi-data.results.test-types)
+        - name: toolchain-apikey-secret-key
+          value: "api-key"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
 
     - name: code-branch-protection
       taskRef:
@@ -577,6 +703,46 @@ spec:
           value: $(params.pipeline-debug)
         - name: toolchain-crn
           value: $(tasks.code-extract-toolchain-crn.results.extracted-value)
+
+    - name: code-branch-protection-create-doi-data
+      runAfter:
+        - code-branch-protection
+      taskRef:
+        name: evidence-to-doi-transformer
+      retries: 2
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: title
+          value: "Branch protection check"
+        - name: task-name
+          value: "code-branch-protection"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: result-status
+          value: $(tasks.code-branch-protection.results.status)
+
+    - name: code-branch-protection-results-to-doi
+      runAfter:
+        - code-branch-protection-create-doi-data
+      taskRef:
+        name: doi-publish-testrecord
+      retries: 2
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: app-name
+          value: "$(params.app-name)[$(params.branch)]"
+        - name: file-locations
+          value: $(tasks.code-branch-protection-create-doi-data.results.file-locations)
+        - name: test-types
+          value: $(tasks.code-branch-protection-create-doi-data.results.test-types)
+        - name: toolchain-apikey-secret-key
+          value: "api-key"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
 
     - name: code-check-dockerfile
       runAfter:
@@ -726,6 +892,46 @@ spec:
       workspaces:
         - name: evidence-locker
           workspace: artifacts
+
+    - name: build-vulnerability-advisor-create-doi-data
+      runAfter:
+        - build-vulnerability-advisor-result-adapter
+      taskRef:
+        name: evidence-to-doi-transformer
+      retries: 2
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: title
+          value: "IBM CR VA scan"
+        - name: task-name
+          value: "build-vulnerability-advisor"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: result-status
+          value: $(tasks.build-vulnerability-advisor-result-adapter.results.status)
+
+    - name: build-vulnerability-advisor-results-to-doi
+      runAfter:
+        - build-vulnerability-advisor-create-doi-data
+      taskRef:
+        name: doi-publish-testrecord
+      retries: 2
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: app-name
+          value: "$(params.app-name)[$(params.branch)]"
+        - name: file-locations
+          value: $(tasks.build-vulnerability-advisor-create-doi-data.results.file-locations)
+        - name: test-types
+          value: $(tasks.build-vulnerability-advisor-create-doi-data.results.test-types)
+        - name: toolchain-apikey-secret-key
+          value: "api-key"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
 
     - name: build-docker-image-sign
       runAfter:
