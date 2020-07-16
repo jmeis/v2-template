@@ -67,9 +67,6 @@ properties:
   - name: api-key
     value: ${API_KEY}
     type: SECURE
-  - name: imageUrl
-    value: ${IMAGE_URL}
-    type: text
   - name: evidence-repo
     value: ${EVIDENCE_REPO}
     type: text
