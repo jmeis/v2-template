@@ -8,7 +8,9 @@
 * **IBM Cloud Api Key**
 
 
-If you've never set up image signing in your k8s cluster, you have to create the signing keys that will be used for the signing itself. Set up and run the key-management-admin-toolchain (https://github.ibm.com/one-pipeline/compliance-ci-key-management)
+If you've never set up image signing in your k8s cluster, you have to create the signing keys that will be used for the signing itself. Set up and run the key management admin toolchain:
+ - [Tekton Version](https://github.ibm.com/one-pipeline/compliance-ci-key-management)
+ - [Classic Version](https://github.com/open-toolchain/key-management-admin-toolchain)
 
 The GitHub token that is issued to the IBM Cloud API key holder, needs access to read/set protected branch settings on repos.
 This can be only done by admin level access to the repository.
@@ -61,37 +63,19 @@ Note: toolchain region can differ from cluster and registry region.
     - **Owner:** The application repository owner. If you want to switch to a different account, click the Profile avatar icon in the banner and select the account.
       - Default: Your login account. 
     - **Repository Name:** The repository name will be generated from the name you gave for toolchain.
-  
  
-| ![Tekton definitions](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/tekton-definitions.png) |
-| :--: | 
-
-- **Tekton definitions**
-
-    Tekton definitions can be changed also after the toolchain is created. These repositories can be contributed to or can be forked.  
-    All fields are required.
-
-    - **Tekton Definition repository:**
-        The tekton pipeline defintions (pipeline(s), triggers, listeners, etc.) are kept in this repo.  
-        Default: <https://github.ibm.com/one-pipeline/compliance-ci-toolchain>
-
-    - **Tekton Catalog repository:**
-        The common tekton tasks are contained in this repo.  
-        Default: <https://github.ibm.com/one-pipeline/common-tekton-tasks> 
-
-
 - **Application related repositories**
 
     All fields are required.
 
     - **Incident issues repository:** Issues about incidents that happen during the build and deployment process are stored here.    
-        - Default repository type: `New`
+        - Default repository type: `Clone`
 
     - **Evidence locker repository:** All raw compliance evidence that belongs to the application is collected here.  
-        - Default repository type: `New` 
+        - Default repository type: `Clone` 
   
     - **Inventory repository:** Change management is tracked in this repository. CD pipeline creates a new branch named as the created CR number, and merges it to master after deployment is concluded.
-        - Default repository type: `New` 
+        - Default repository type: `Clone` 
 
 #### Delivery Pipeline
 The Tekton CI Toolchain with Compliance comes with an integrated Tekton pipeline to automate continuous build, test and deploy of the Docker application.
@@ -101,7 +85,7 @@ The Tekton CI Toolchain with Compliance comes with an integrated Tekton pipeline
 
 - **App name:**  
 The name of the application.
-    - Default: same as the selected `Repository Name`.
+    - Default: `hello-compliance-app`
     
 - **IBM Cloud API Key:**  
 The API key is used to interact with the ibmcloud CLI tool in several tasks.
@@ -136,7 +120,35 @@ The API key is used to interact with the ibmcloud CLI tool in several tasks.
    - The key protect vault holds the dct init keys for image signing and image validation. This field is required.
 - **DevOps Docker Image Validation signer:**
     - Default: `"devops-validation"`
+    
+    
+##### Tekton Definitions
+
+ Tekton definitions can be changed also after the toolchain is created. These repositories can be contributed to or can be forked.
+ All fields are required.
+ 
+   | ![Tekton definitions](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/tekton-definitions.png) |
+   | :--: | 
+ 
+ - **Tekton Definition repository:**
+     The tekton pipeline defintions (pipeline(s), triggers, listeners, etc.) are kept in this repo.  
+     Default: <https://github.ibm.com/one-pipeline/compliance-ci-toolchain>
+
+ - **Tekton Catalog repository:**
+     The common tekton tasks are contained in this repo.  
+     Default: <https://github.ibm.com/one-pipeline/common-tekton-tasks> 
+     
+  | ![Tekton Definitions](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/tekton-definitions.png) |
+  | :--: | 
   
+  
+#### Delivery Pipeline Private Worker
+
+| ![Private Worker](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/private-worker-tool.png) |
+| :--: | 
+
+The Delivery Pipeline Private Worker tool integration connects with one or more private workers that are capable of running Delivery Pipeline workloads in isolation. For more information, see [Working with Private Workers](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-private-workers).
+
 
 #### Artifactory
 
@@ -169,9 +181,15 @@ Note: You can access the Artifactory [here](https://eu.artifactory.swg-devops.co
     Note: The User ID and the Authentication token is required for pipeline working!
 - **Release URL:**  The url of the artifactory repository  
     Default: `wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com`
-
     
-### 4. Create Toolchain and add Delivery Pipeline Private Worker
+#### DevOps Insights
+
+| ![DevOps Insights](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/doi.png) |
+| :--: | 
+
+DevOps Insights is automatically included in the created toolchain and after each compliance check evidence is published into it. It is not needed to configure insights, the CI pipeline will automatically use the insights instance included in the toolchain.
+    
+### 4. Create Toolchain
 
  **Create toolchain:**
 
@@ -179,31 +197,10 @@ Note: You can access the Artifactory [here](https://eu.artifactory.swg-devops.co
  
   Note: The individual toolchain integrations can be configured also after the pipeline has been created.
 
-**Add Delivery Pipeline Private Worker**
-
-You should add a private worker tool to the CI toolchain for a successful PR/CI run. Currently there are tasks in the tekton definitions which can have access for essential files.
-
-- Click the `Add a Tool+` button and select `Delivery Pipeline Private Worker`.
-
-| ![Private Worker](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/private-worker.png) |
-| :--: | 
-
-- Add the integration name.
-- Click `Create +` button to create Service ID API Key.
-- Click the `Create Integration` button.
-
-| ![Private Worker Delivery Pipeline](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/delivery-pw.png) |
-| :--: |
-
-- Now, your toolchain has got a Delivery Pipeline Private Worker. Click there and follow the installation instructions.
-- Note: You must use IBM Cloud CLI for setup and configure.
-- In the CI pipeline configuration, set the private workers you've created as Workers for the pipeline
-
 **dct init Pipeline**
 
 The DCT init pipeline is used for setting up DCT image signing and signature verification for your cluster. You need to run this pipeline only once:
 
-- In the DCT init pipeline configuration, set the private workers you've created as Workers for the pipeline
 - Run the pipeline, it will set up DCT image signing
 - You don't need to run it again, unless you've reset your signing key pair
 
@@ -218,7 +215,8 @@ Configure your application repository by following these [instructions](https://
 | ![PR status checks](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/pr-checks.png) |
 | :--: | 
 
-- Several status checks will run on your branch,  which can be set in you branch protection rules e.g.(`tekton/pr-compliance`)
+- Several status checks will run on your branch, which can be set in your branch protection rules e.g.(`tekton/code-branch-protection`)
+- Keep in mind, that at least one run is needed for github to list the status checks in Settings, to be able to mark them as required. Because of this, for the first time, pr pipeline will inevitably fail. Mark the status checks required and rerun the pr pipeline from the UI.
   
 **Run CI Pipeline**
 
@@ -233,7 +231,7 @@ If you want to trigger the CI pipeline manually select the Delivery Pipeline car
 
 **Configure Pipeline**
 
-You must add a `commit-id` text property (click `Add property` button and select `"Text property"`), if you trigger the pipeline manually.
+You must add a `commitid` text property (click `Add property` button and select `"Text property"`), if you trigger the pipeline manually.
 
 <!-- TBD: Readme needed after implementing the automated versioning -->
 

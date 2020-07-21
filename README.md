@@ -32,7 +32,7 @@ It implements the following best practices:
 ### Required GitHub Status Checks
 
 Status checks let you know if your commits meet the conditions set for the repository you're contributing to. The toolchain ships with a `CI` and a `PR` pipeline.
-Currently, only `tekton/code-branch-protection` status check has to be set required in both the repository. It is checked by both `PR` and `CI` pipelines.
+Currently, only `tekton/code-branch-protection` status check has to be set required in the repository. It is checked by both `PR` and `CI` pipelines.
 To configure your repository to pass branch protection settings checks, read our [step by step guide](./docs/github-repository-configuration.md).
 
 ---
