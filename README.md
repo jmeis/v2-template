@@ -32,21 +32,8 @@ It implements the following best practices:
 ### Required GitHub Status Checks
 
 Status checks let you know if your commits meet the conditions set for the repository you're contributing to. The toolchain ships with a `CI` and a `PR` pipeline.
-
-#### `PR` Pipeline Status Checks
-![PR Pipeline Screenshot](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/pr-pipeline-screenshot.png)
-
-The `PR` Pipeline contains the following required Status Checks:
-- `tekton/pr-compliance` - Checks if the Branch Protection Settings, Code Review criterias are met.
-
-
-#### `CI` Pipeline Status Checks
-![CI Pipeline Screenshot](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/ci-pipeline-screenshot.png)
-
-The `PR` Pipeline contains the following required Status Checks:
-- `tekton/ci-compliance` - Checks if the Branch Protection Settings, Code Review criterias are met.
-
-Read our [step by step guide](./docs/github-repository-configuration.md) to configure your Github Repository.
+Currently, only `tekton/code-branch-protection` status check has to be set required in both the repository. It is checked by both `PR` and `CI` pipelines.
+To configure your repository to pass branch protection settings checks, read our [step by step guide](./docs/github-repository-configuration.md).
 
 ---
 ### Learn more
@@ -59,5 +46,4 @@ Read our [step by step guide](./docs/github-repository-configuration.md) to conf
 * [Private workers](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-install-private-workers)
 * [Artifactory](https://taas.w3ibm.mybluemix.net/guides#artifactory)
 * [Working with Tekton pipelines](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines)
-* [Getting started IBM Cloud CLI](https://cloud.ibm.com/docs/cli?topic=cloud-cli-getting-started)
 * [Getting started IBM Cloud CLI](https://cloud.ibm.com/docs/cli?topic=cloud-cli-getting-started)
