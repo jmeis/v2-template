@@ -55,7 +55,7 @@ services:
     service_id: >
       $env.source_provider ? $env.source_provider : 'github_integrated'
     parameters:
-      repo_name: 'hello-compliance-{{timestamp}}'
+      repo_name: 'compliance-hello-app-{{timestamp}}'
       repo_url: >
         $env.type === 'link' ?
           $env.app_repo : 'https://github.ibm.com/one-pipeline/hello-compliance-app'
@@ -90,7 +90,7 @@ services:
   evidence-repo:
     service_id: github_integrated
     parameters:
-      repo_name: 'compliance-evidence-{{timestamp}}'
+      repo_name: 'evidence-{{timestamp}}'
       type: clone
       source_repo_url: https://github.ibm.com/one-pipeline/compliance-evidence-locker
       has_issues: false
@@ -100,7 +100,7 @@ services:
   pipeline-repo:
     service_id: github_integrated
     parameters:
-      repo_name: 'compliance-ci-toolchain-{{timestamp}}'
+      repo_name: 'tekton-pipeline-{{timestamp}}'
       repo_url: >
         $env.type === 'link' ?
           $env.app_repo : 'https://github.ibm.com/one-pipeline/compliance-ci-toolchain'
@@ -116,7 +116,7 @@ services:
   tekton-catalog-repo:
     service_id: github_integrated
     parameters:
-      repo_name: 'common-tekton-tasks-{{timestamp}}'
+      repo_name: 'tekton-tasks-{{timestamp}}'
       repo_url: >
         $env.type === 'link' ?
           $env.app_repo : 'https://github.ibm.com/one-pipeline/common-tekton-tasks'
