@@ -136,7 +136,7 @@ services:
         - app-repo
         - pipeline-repo
         - tekton-catalog-repo
-      name: 'pr-{{services.app-repo.parameters.repo_name}}'
+      name: 'ci-pr-pipeline-{{services.app-repo.parameters.repo_name}}'
       ui-pipeline: true
       type: tekton
       configuration:
