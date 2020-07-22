@@ -6,7 +6,9 @@
 * **IBM Cloud CLI**
 * **Docker Content Trust signing keys**
 * **IBM Cloud Api Key**
-
+* [**Servide ID**](https://cloud.ibm.com/docs/account?topic=account-serviceids)
+* [**Service ID API Key**](https://cloud.ibm.com/docs/account?topic=account-serviceidapikeys#create_service_key)
+* [**Registered Worker Agent with the Service ID API Key**](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-install-private-workers#install_pw_cli)
 
 If you've never set up image signing in your k8s cluster, you have to create the signing keys that will be used for the signing itself. Set up and run the key management admin toolchain:
  - [Tekton Version](https://github.ibm.com/one-pipeline/compliance-ci-key-management)
@@ -139,16 +141,20 @@ The API key is used to interact with the ibmcloud CLI tool in several tasks.
      Default: <https://github.ibm.com/one-pipeline/common-tekton-tasks> 
      
   | ![Tekton Definitions](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/tekton-definitions.png) |
-  | :--: | 
-  
-  
+  | :--: |
+
 #### Delivery Pipeline Private Worker
 
-| ![Private Worker](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/private-worker-tool.png) |
+This toolchain comes with a Private Worker integration.
+The Delivery Pipeline Private Worker tool integration connects with one or more private workers that are capable of running Delivery Pipeline workloads in isolation.
+Insert your `Service ID API Key` to the corresponding field.
+
+| ![Delivery Pipeline Private Worker](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/private-worker-integration-setup.png) |
 | :--: | 
 
-The Delivery Pipeline Private Worker tool integration connects with one or more private workers that are capable of running Delivery Pipeline workloads in isolation. For more information, see [Working with Private Workers](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-private-workers).
-
+For more information see:
+ - [Working with Delivery Pipeline Private Workers](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-private-workers)
+ - [Service ID's](https://cloud.ibm.com/iam/serviceids)
 
 #### Artifactory
 
@@ -188,8 +194,8 @@ Note: You can access the Artifactory [here](https://eu.artifactory.swg-devops.co
 | :--: | 
 
 DevOps Insights is automatically included in the created toolchain and after each compliance check evidence is published into it. It is not needed to configure insights, the CI pipeline will automatically use the insights instance included in the toolchain.
-    
-### 4. Create Toolchain
+
+### 4. Create Toolchain and Run DCT init Pipeline
 
  **Create toolchain:**
 
