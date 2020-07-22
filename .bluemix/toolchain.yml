@@ -55,7 +55,7 @@ services:
     service_id: >
       $env.source_provider ? $env.source_provider : 'github_integrated'
     parameters:
-      repo_name: 'application-{{timestamp}}'
+      repo_name: 'compliance-app-{{timestamp}}'
       repo_url: >
         $env.type === 'link' ?
           $env.app_repo : 'https://github.ibm.com/one-pipeline/hello-compliance-app'
