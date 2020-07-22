@@ -45,7 +45,7 @@ services:
   artifactoryComp:
     service_id: artifactory
     parameters:
-      name: 'artifactory-{{timestamp}}'
+      name: 'ci-registry-{{timestamp}}'
       dashboard_url: 'https://na.artifactory.swg-devops.com'
       repository_url: 'https://wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com'
       repository_name: 'wcp-compliance-automation-team-docker-local'
@@ -158,7 +158,7 @@ services:
         - app-repo
         - pipeline-repo
         - tekton-catalog-repo
-      name: 'ci-{{services.app-repo.parameters.repo_name}}'
+      name: 'ci-pipeline-{{services.app-repo.parameters.repo_name}}'
       ui-pipeline: true
       type: tekton
       configuration:
