@@ -386,5 +386,10 @@ spec:
                 "name": "code-vulnerability-scan",
                 "expected": "success",
                 "actual": "$(tasks.code-vulnerability-scan.results.status)"
+              },
+              {
+                "name": "code-cis-check",
+                "expected": "success",
+                "actual": "$(tasks.code-cis-check.results.status)"
               }
             ]
