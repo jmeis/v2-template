@@ -5,9 +5,9 @@ metadata:
   name: helper-template
 spec:
   params:
-    - name: validation-signer
-      description: validation signer
-    - name: vault-name
+    - name: key-name
+      description: key entry
+    - name: vault-instance
       decription: the key protect instance name
     - name: dev-resource-group
       description: the resource group
@@ -58,13 +58,13 @@ spec:
               claimName: pipelinerun-$(uid)-pvc
         params:
           - name: vault-instance
-            value: $(params.vault-name)
+            value: $(params.vault-instance)
           - name: dev-region
             value: $(params.dev-region)
           - name: dev-resource-group
             value: $(params.dev-resource-group)
           - name: key-name
-            value: $(params.validation-signer)
+            value: $(params.key-name)
         pipelineRef:
           name: helper-pipeline
         serviceAccountName: sa-pullsecret

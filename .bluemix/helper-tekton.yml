@@ -1,11 +1,11 @@
 ---
 inputs:
   - type: git
-    branch: ciso-extract-key-test
+    branch: master
     service: ${PIPELINE_REPO}
     path: .setup-helper-pipeline
   - type: git
-    branch: feature/add-ciso-support-task
+    branch: master
     service: ${TEKTON_CATALOG_REPO}
     path: preview/ciso
 triggers:
@@ -25,10 +25,10 @@ properties:
   - name: dev-resource-group
     value: ${DEV_RESOURCE_GROUP}
     type: text
-  - name: vault-name
+  - name: vault-instance
     value: ${VAULT_INSTANCE}
     type: text
-  - name: validation-signer
+  - name: key-name
     value: ${VALIDATION_SIGNER}
     type: text
   - name: artifactory-dockerconfigjson
