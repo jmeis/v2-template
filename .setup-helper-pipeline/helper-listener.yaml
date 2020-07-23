@@ -73,12 +73,6 @@ apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
   name: helper-binding
-spec:
-  params:
-    - name: repository
-      value: https://github.com/open-toolchain/hello-containers
-    - name: revision
-      value: master
 ---
 apiVersion: tekton.dev/v1beta1
 kind: EventListener
