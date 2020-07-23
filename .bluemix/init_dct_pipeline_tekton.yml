@@ -31,4 +31,7 @@ properties:
   - name: validation-signer
     value: ${VALIDATION_SIGNER}
     type: text
+  - name: artifactory-dockerconfigjson
+    value: ${ARTIFACTORY_DOCKER_CONFIG_JSON}
+    type: SECURE
 private_worker: ${PRIVATE_WORKER}
