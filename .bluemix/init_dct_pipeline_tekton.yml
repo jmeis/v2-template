@@ -1,17 +1,17 @@
 ---
 inputs:
   - type: git
-    branch: master
+    branch: feature/add-ciso-support-task
     service: ${DCT_PIPELINE_REPO}
-    path: .init_dct_pipeline
+    path: .setup-helper-pipeline
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: preview/dct
+    path: preview/ciso
 triggers:
   - type: manual
     name: Manual Trigger
-    eventListener: dct-listener
+    eventListener: helper-listener
 properties:
   - name: api-key
     value: ${API_KEY}
@@ -19,23 +19,8 @@ properties:
   - name: revision
     value: master
     type: text
-  - name: registry-region
-    value: ${REGISTRY_REGION_ID}
-    type: text
-  - name: app-name
-    value: ${APP_NAME}
-    type: text
-  - name: registry-namespace
-    value: ${REGISTRY_NAMESPACE}
-    type: text
-  - name: dev-cluster-namespace
-    value: ${DEV_CLUSTER_NAMESPACE}
-    type: text
   - name: dev-region
     value: ${DEV_REGION_ID}
-    type: text
-  - name: cluster-name
-    value: ${DEV_CLUSTER_NAME}
     type: text
   - name: dev-resource-group
     value: ${DEV_RESOURCE_GROUP}
@@ -45,8 +30,5 @@ properties:
     type: text
   - name: validation-signer
     value: ${VALIDATION_SIGNER}
-    type: text
-  - name: build-signer
-    value: ${BUILD_SIGNER}
     type: text
 private_worker: ${PRIVATE_WORKER}
