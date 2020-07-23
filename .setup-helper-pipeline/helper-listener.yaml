@@ -18,7 +18,8 @@ spec:
       description: the resource group
     - name: dev-region
       description: target region
-
+    - name: artifactory-dockerconfigjson
+      description: dockerconfigjson for pullsecrets
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
