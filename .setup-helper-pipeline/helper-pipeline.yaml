@@ -37,4 +37,4 @@ spec:
         - name: resource-group
           value: $(params.dev-resource-group)
         - name: key-name
-          value: $(params.validation-signer)
+          value: $(params.key-name)
