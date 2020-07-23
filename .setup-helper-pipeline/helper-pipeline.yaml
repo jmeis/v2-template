@@ -10,17 +10,14 @@ spec:
         Service API and interact with the cluster. You can obtain your API key with
         'ic iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
         by clicking **Create API key** (Each API key only can be viewed once).
-    - name: vault-name
-      description: Specify the Key Protect instance name, where the image signing keys
-        have been stored. The build and validation signer fields contain default names
-        for these signers. The values must match the values created in the Key-Management-Admin-Template.
-        See https://github.com/open-toolchain/key-management-admin-toolchain
+    - name: vault-instance
+      description: the vault instance name
     - name: dev-region
       description: the target region
     - name: dev-resource-group
       description: Resource Group
-    - name: validation-signer
-      description: the validation signer
+    - name: key-name
+      description: the signer entry
 
   workspaces:
     - name: artifacts
@@ -33,11 +30,11 @@ spec:
         - name: artifacts
           workspace: artifacts
       params:
-        - name: vault-name
-          value: $(params.vault-name)
+        - name: vault-instance
+          value: $(params.vault-instance)
         - name: region
           value: $(params.dev-region)
         - name: resource-group
           value: $(params.dev-resource-group)
-        - name: validation-signer
+        - name: key-name
           value: $(params.validation-signer)

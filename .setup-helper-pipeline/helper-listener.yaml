@@ -48,13 +48,13 @@ spec:
             persistentVolumeClaim:
               claimName: pipelinerun-$(uid)-pvc
         params:
-          - name: vault-name
+          - name: vault-instance
             value: $(params.vault-name)
           - name: dev-region
             value: $(params.dev-region)
           - name: dev-resource-group
             value: $(params.dev-resource-group)
-          - name: validation-signer
+          - name: key-name
             value: $(params.validation-signer)
         pipelineRef:
           name: helper-pipeline
