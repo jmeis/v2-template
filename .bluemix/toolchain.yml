@@ -11,7 +11,7 @@ template:
   icon: secure-lock-kubernetes.svg
   required:
     - build
-    - init_dct
+    - setup-helper
     - app-repo
     - pipeline-repo
     - tekton-catalog-repo
@@ -186,34 +186,30 @@ services:
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
         execute: false
 
-  init_dct:
+  setup-helper:
     service_id: pipeline
     parameters:
       services:
         - pipeline-repo
         - tekton-catalog-repo
-      name: 'dct init {{form.pipeline.parameters.registry-namespace}} {{form.pipeline.parameters.app-name}}'
+      name: 'public cert fetcher {{form.pipeline.parameters.registry-namespace}} {{form.pipeline.parameters.app-name}}'
       ui-pipeline: true
       type: tekton
       configuration:
         content:
-          $text: init_dct_pipeline_tekton.yml
+          $text: helper-tekton.yml
         env:
-          DCT_PIPELINE_REPO: pipeline-repo
+          PIPELINE_REPO: pipeline-repo
           TEKTON_CATALOG_REPO: tekton-catalog-repo
           APP_REPO: app-repo
           APP_NAME: '{{form.pipeline.parameters.app-name}}'
-          REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
-          REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
           API_KEY: '{{form.pipeline.parameters.api-key}}'
           DEV_REGION_ID: '{{form.pipeline.parameters.dev-region}}'
           DEV_RESOURCE_GROUP: '{{form.pipeline.parameters.dev-resource-group}}'
-          DEV_CLUSTER_NAME: '{{form.pipeline.parameters.dev-cluster-name}}'
-          DEV_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.dev-cluster-namespace}}'
           VAULT_INSTANCE: '{{form.pipeline.parameters.vault_name}}'
-          BUILD_SIGNER: '{{form.pipeline.parameters.build_signer}}'
           VALIDATION_SIGNER: '{{form.pipeline.parameters.validation_signer}}'
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
+          ARTIFACTORY_DOCKER_CONFIG_JSON: '{{form.artifactoryComp.parameters.docker_config_json}}'
         execute: false
 
   devops-insights:

@@ -1,11 +1,11 @@
 ---
 inputs:
   - type: git
-    branch: feature/add-ciso-support-task
-    service: ${DCT_PIPELINE_REPO}
+    branch: ciso-extract-key-test
+    service: ${PIPELINE_REPO}
     path: .setup-helper-pipeline
   - type: git
-    branch: master
+    branch: feature/add-ciso-support-task
     service: ${TEKTON_CATALOG_REPO}
     path: preview/ciso
 triggers:
