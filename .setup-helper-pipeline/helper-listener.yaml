@@ -5,8 +5,6 @@ metadata:
   name: helper-template
 spec:
   params:
-    - name: key-name
-      description: key entry
     - name: vault-instance
       decription: the key protect instance name
     - name: dev-resource-group
@@ -63,8 +61,6 @@ spec:
             value: $(params.dev-region)
           - name: dev-resource-group
             value: $(params.dev-resource-group)
-          - name: key-name
-            value: $(params.key-name)
         pipelineRef:
           name: helper-pipeline
         serviceAccountName: sa-pullsecret

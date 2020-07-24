@@ -1,62 +1,66 @@
 ---
 inputs:
   - type: git
-    branch: master
+    branch: ciso-testing
     service: ${PIPELINE_REPO}
     path: .ci-pipeline
   - type: git
-    branch: master
+    branch: feature-test
     service: ${TEKTON_CATALOG_REPO}
     path: preview/git
   - type: git
-    branch: master
+    branch: feature-test
     service: ${TEKTON_CATALOG_REPO}
     path: preview/compliance-checks
   - type: git
-    branch: master
+    branch: feature-test
+    service: ${TEKTON_CATALOG_REPO}
+    path: preview/ciso
+  - type: git
+    branch: feature-test
     service: ${TEKTON_CATALOG_REPO}
     path: preview/iks
   - type: git
-    branch: master
+    branch: feature-test
     service: ${TEKTON_CATALOG_REPO}
     path: preview/container-registry
   - type: git
-    branch: master
+    branch: feature-test
     service: ${TEKTON_CATALOG_REPO}
     path: preview/dct
   - type: git
-    branch: master
+    branch: feature-test
     service: ${TEKTON_CATALOG_REPO}
     path: preview/inventory
   - type: git
-    branch: master
+    branch: feature-test
     service: ${TEKTON_CATALOG_REPO}
     path: preview/gitsecure
   - type: git
-    branch: master
+    branch: feature-test
     service: ${TEKTON_CATALOG_REPO}
     path: preview/github
   - type: git
-    branch: master
+    branch: feature-test
     service: ${TEKTON_CATALOG_REPO}
     path: preview/evidence
   - type: git
-    branch: master
+    branch: feature-test
     service: ${TEKTON_CATALOG_REPO}
     path: preview/util
   - type: git
-    branch: master
+    branch: feature-test
     service: ${TEKTON_CATALOG_REPO}
     path: preview/toolchain
   - type: git
-    branch: master
+    branch: feature-test
     service: ${TEKTON_CATALOG_REPO}
     path: preview/devops-insights
 triggers:
   - type: git
     name: Git CI Trigger
     service: ${APP_REPO}
-    branch: master
+    branch: ciso-testing
     events:
       push: true
     eventListener: listener

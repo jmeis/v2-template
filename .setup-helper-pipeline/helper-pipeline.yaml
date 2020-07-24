@@ -11,8 +11,6 @@ spec:
       description: the target region
     - name: dev-resource-group
       description: Resource Group
-    - name: key-name
-      description: the signer entry
 
   workspaces:
     - name: artifacts
@@ -31,5 +29,3 @@ spec:
           value: $(params.dev-region)
         - name: resource-group
           value: $(params.dev-resource-group)
-        - name: key-name
-          value: $(params.key-name)
