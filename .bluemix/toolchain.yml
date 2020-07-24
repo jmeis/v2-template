@@ -212,7 +212,10 @@ services:
 
   webide:
     service_id: orion
-
+    
+  vault:
+    service_id: keyprotect
+    
 form:
   pipeline:
     parameters:
