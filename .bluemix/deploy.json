@@ -103,6 +103,9 @@
             },
             "type": "string",
             "pattern": "\\S"
+        },
+        "vault_secret": {
+            "type": "password"
         }
     },
     "required": [
@@ -266,7 +269,7 @@
             ]
         },
         {
-            "type": "text",
+            "type": "password",
             "readonly": false,
             "title": {
                 "$ref": "#/messages/deploy.vaultName"
