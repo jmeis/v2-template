@@ -101,15 +101,6 @@ properties:
   - name: dev-resource-group
     value: ${DEV_RESOURCE_GROUP}
     type: text
-  - name: build-signer
-    value: ${BUILD_SIGNER}
-    type: text
-  - name: validation-signer
-    value: ${VALIDATION_SIGNER}
-    type: text
-  - name: vault-name
-    value: ${VAULT_INSTANCE}
-    type: text
   - name: repository-integration
     value: app-repo
     type: text

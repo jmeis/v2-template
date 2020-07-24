@@ -206,7 +206,6 @@ services:
           API_KEY: '{{form.pipeline.parameters.api-key}}'
           DEV_REGION_ID: '{{form.pipeline.parameters.dev-region}}'
           DEV_RESOURCE_GROUP: '{{form.pipeline.parameters.dev-resource-group}}'
-          VAULT_INSTANCE: '{{form.pipeline.parameters.vault_name}}'
           VALIDATION_SIGNER: '{{form.pipeline.parameters.validation_signer}}'
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
           ARTIFACTORY_DOCKER_CONFIG_JSON: '{{form.artifactoryComp.parameters.docker_config_json}}'
@@ -224,8 +223,5 @@ form:
       app-name: hello-compliance-app
       dev-cluster-namespace: default
       build-cluster-namespace: build
-      vault_name: ''
-      build_signer: 'devops-build'
-      validation_signer: 'devops-validation'
     schema:
       $ref: deploy.json

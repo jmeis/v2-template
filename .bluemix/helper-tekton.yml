@@ -25,12 +25,6 @@ properties:
   - name: dev-resource-group
     value: ${DEV_RESOURCE_GROUP}
     type: text
-  - name: vault-instance
-    value: ${VAULT_INSTANCE}
-    type: text
-  - name: key-name
-    value: ${VALIDATION_SIGNER}
-    type: text
   - name: artifactory-dockerconfigjson
     value: ${ARTIFACTORY_DOCKER_CONFIG_JSON}
     type: SECURE

@@ -5,8 +5,8 @@ metadata:
   name: helper-pipeline
 spec:
   params:
-    - name: vault-instance
-      description: the vault instance name
+    - name: vault-secret
+      description: the vault secret
     - name: dev-region
       description: the target region
     - name: dev-resource-group
@@ -23,8 +23,8 @@ spec:
         - name: artifacts
           workspace: artifacts
       params:
-        - name: vault-instance
-          value: $(params.vault-instance)
+        - name: vault-secret
+          value: $(params.vault-secret)
         - name: region
           value: $(params.dev-region)
         - name: resource-group

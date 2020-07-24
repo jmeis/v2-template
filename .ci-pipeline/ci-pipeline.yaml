@@ -997,7 +997,7 @@ spec:
       taskRef:
         name: ciso-sign
       params:
-        - name: vault-instance
+        - name: vault-secret
           value: $(params.vault-name)
         - name: region
           value: $(params.dev-region)

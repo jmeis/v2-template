@@ -5,8 +5,8 @@ metadata:
   name: helper-template
 spec:
   params:
-    - name: vault-instance
-      decription: the key protect instance name
+    - name: vault-secret
+      decription: the vault secret
     - name: dev-resource-group
       description: the resource group
     - name: dev-region
@@ -55,8 +55,8 @@ spec:
             persistentVolumeClaim:
               claimName: pipelinerun-$(uid)-pvc
         params:
-          - name: vault-instance
-            value: $(params.vault-instance)
+          - name: vault-secret
+            value: $(params.vault-secret)
           - name: dev-region
             value: $(params.dev-region)
           - name: dev-resource-group
