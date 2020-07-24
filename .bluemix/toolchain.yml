@@ -21,6 +21,7 @@ template:
     - artifactoryComp
     - privateWorker
     - devops-insights
+    - vault
   info:
     git url: >
       "[" + $env.repository + "]" +
@@ -215,6 +216,8 @@ services:
     
   vault:
     service_id: keyprotect
+    parameters:
+      name: 'ci-compliance-secrets'
     
 form:
   pipeline:
