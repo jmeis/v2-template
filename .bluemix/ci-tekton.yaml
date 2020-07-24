@@ -1,7 +1,7 @@
 ---
 inputs:
   - type: git
-    branch: ciso-testing
+    branch: ciso-extract-key-test
     service: ${PIPELINE_REPO}
     path: .ci-pipeline
   - type: git
