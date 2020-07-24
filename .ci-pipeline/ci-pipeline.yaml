@@ -31,13 +31,8 @@ spec:
       description: the namespace
     - name: repository-integration
       description: the repo integration name
-    - name: validation-signer
-      description: validation signer
-    - name: vault-name
-      description: Specify the Key Protect instance name, where the image signing keys
-        have been stored. The build and validation signer fields contain default names
-        for these signers. The values must match the values created in the Key-Management-Admin-Template.
-        See https://github.com/open-toolchain/key-management-admin-toolchain
+    - name: vault-secret
+      description: the vault secret for CISO
     - name: dev-resource-group
       description: Resource Group
     - name: dev-region
@@ -998,7 +993,7 @@ spec:
         name: ciso-sign
       params:
         - name: vault-secret
-          value: $(params.vault-name)
+          value: $(params.vault-secret)
         - name: region
           value: $(params.dev-region)
         - name: resource-group
