@@ -182,6 +182,7 @@ services:
           TEKTON_CATALOG_REPO: tekton-catalog-repo
           ARTIFACTORY_DOCKER_CONFIG_JSON: '{{form.artifactoryComp.parameters.docker_config_json}}'
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
+          VAULT_SECRET: '{{services.pipeline.parameters.vault_secret}}'
         execute: false
 
   setup-helper:
@@ -206,6 +207,7 @@ services:
           DEV_RESOURCE_GROUP: '{{form.pipeline.parameters.dev-resource-group}}'
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
           ARTIFACTORY_DOCKER_CONFIG_JSON: '{{form.artifactoryComp.parameters.docker_config_json}}'
+          VAULT_SECRET: '{{services.pipeline.parameters.vault_secret}}'
         execute: false
 
   devops-insights:
