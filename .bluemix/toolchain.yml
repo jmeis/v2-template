@@ -192,7 +192,7 @@ services:
       services:
         - pipeline-repo
         - tekton-catalog-repo
-      name: 'dct init {{form.pipeline.parameters.registry-namespace}} {{form.pipeline.parameters.app-name}}'
+      name: 'ci-sign-image-dct-init'
       ui-pipeline: true
       type: tekton
       configuration:
