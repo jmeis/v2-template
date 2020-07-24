@@ -175,9 +175,6 @@ services:
           DEV_RESOURCE_GROUP: '{{form.pipeline.parameters.dev-resource-group}}'
           DEV_CLUSTER_NAME: '{{form.pipeline.parameters.dev-cluster-name}}'
           DEV_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.dev-cluster-namespace}}'
-          VAULT_INSTANCE: '{{form.pipeline.parameters.vault_name}}'
-          BUILD_SIGNER: '{{form.pipeline.parameters.build_signer}}'
-          VALIDATION_SIGNER: '{{form.pipeline.parameters.validation_signer}}'
           ISSUES_REPO: 'https://github.ibm.com/{{form.issues-repo.parameters.owner_id}}/{{form.issues-repo.parameters.repo_name}}'
           EVIDENCE_REPO: 'https://github.ibm.com/{{form.evidence-repo.parameters.owner_id}}/{{form.evidence-repo.parameters.repo_name}}'
           APP_REPO_FULL: 'https://github.ibm.com/{{form.app-repo.parameters.owner_id}}/{{form.app-repo.parameters.repo_name}}'
@@ -206,7 +203,6 @@ services:
           API_KEY: '{{form.pipeline.parameters.api-key}}'
           DEV_REGION_ID: '{{form.pipeline.parameters.dev-region}}'
           DEV_RESOURCE_GROUP: '{{form.pipeline.parameters.dev-resource-group}}'
-          VALIDATION_SIGNER: '{{form.pipeline.parameters.validation_signer}}'
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
           ARTIFACTORY_DOCKER_CONFIG_JSON: '{{form.artifactoryComp.parameters.docker_config_json}}'
         execute: false
