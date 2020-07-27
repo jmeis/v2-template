@@ -332,7 +332,10 @@ spec:
               "name": "code-review",
               "params": {
                 "checks": [
-                  "tekton/code-branch-protection"
+                  "tekton/code-branch-protection",
+                  "tekton/code-unit-tests",
+                  "tekton/code-cis-check",
+                  "tekton/code-vulnerability-scan"
                 ]
               }
             }]
@@ -386,5 +389,10 @@ spec:
                 "name": "code-vulnerability-scan",
                 "expected": "success",
                 "actual": "$(tasks.code-vulnerability-scan.results.status)"
+              },
+              {
+                "name": "code-cis-check",
+                "expected": "success",
+                "actual": "$(tasks.code-cis-check.results.status)"
               }
             ]
