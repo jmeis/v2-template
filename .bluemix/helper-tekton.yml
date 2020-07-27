@@ -1,7 +1,7 @@
 ---
 inputs:
   - type: git
-    branch: feature/integration-ciso
+    branch: master
     service: ${PIPELINE_REPO}
     path: .setup-helper-pipeline
   - type: git
