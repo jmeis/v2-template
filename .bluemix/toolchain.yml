@@ -46,7 +46,7 @@ services:
   artifactoryComp:
     service_id: artifactory
     parameters:
-      name: 'artifactory-{{timestamp}}'
+      name: 'registry-for-images'
       dashboard_url: 'https://na.artifactory.swg-devops.com'
       repository_url: 'https://wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com'
       repository_name: 'wcp-compliance-automation-team-docker-local'
@@ -56,7 +56,7 @@ services:
     service_id: >
       $env.source_provider ? $env.source_provider : 'github_integrated'
     parameters:
-      repo_name: 'hello-compliance-{{timestamp}}'
+      repo_name: 'compliance-app-{{timestamp}}'
       repo_url: >
         $env.type === 'link' ?
           $env.app_repo : 'https://github.ibm.com/one-pipeline/hello-compliance-app'
@@ -91,7 +91,7 @@ services:
   evidence-repo:
     service_id: github_integrated
     parameters:
-      repo_name: 'compliance-evidence-{{timestamp}}'
+      repo_name: 'evidence-{{timestamp}}'
       type: clone
       source_repo_url: https://github.ibm.com/one-pipeline/compliance-evidence-locker
       has_issues: false
@@ -101,7 +101,7 @@ services:
   pipeline-repo:
     service_id: github_integrated
     parameters:
-      repo_name: 'compliance-ci-toolchain-{{timestamp}}'
+      repo_name: 'compliance-ci-toolchain'
       repo_url: >
         $env.type === 'link' ?
           $env.app_repo : 'https://github.ibm.com/one-pipeline/compliance-ci-toolchain'
@@ -117,7 +117,7 @@ services:
   tekton-catalog-repo:
     service_id: github_integrated
     parameters:
-      repo_name: 'common-tekton-tasks-{{timestamp}}'
+      repo_name: 'common-tekton-tasks'
       repo_url: >
         $env.type === 'link' ?
           $env.app_repo : 'https://github.ibm.com/one-pipeline/common-tekton-tasks'
@@ -137,7 +137,7 @@ services:
         - app-repo
         - pipeline-repo
         - tekton-catalog-repo
-      name: 'pr-{{services.app-repo.parameters.repo_name}}'
+      name: 'ci-pr-pipeline'
       ui-pipeline: true
       type: tekton
       configuration:
@@ -159,7 +159,7 @@ services:
         - app-repo
         - pipeline-repo
         - tekton-catalog-repo
-      name: 'ci-{{services.app-repo.parameters.repo_name}}'
+      name: 'ci-pipeline'
       ui-pipeline: true
       type: tekton
       configuration:
