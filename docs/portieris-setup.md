@@ -1,6 +1,7 @@
-Installing and configuring Portieris
+**Installing and configuring Portieris**
 
-Pre-requisites
+
+*Pre-requisites*
 
 Kubernetes 1.16 or above
 
@@ -32,7 +33,8 @@ Connect to Cluster
 Log into your account and ensure that you can run Kube commands. Please
 see <https://cloud.ibm.com/kubernetes/clusters> for help
 
-Portieris Installation
+
+*Portieris Installation*
 
 Portieris is the gatekeeper that the Compliance-CI-Toolchain leverages
 to ensure that only signed images are deployed.
@@ -62,7 +64,8 @@ Run **kubectl create namespace \<namespace\>**
 Run **helm install portieris \--set namespace=\<namespace\>
 helm/portieris**
 
-Provisioning the secrets key
+
+*Provisioning the secrets key*
 
 With the public key on hand we need to use it to generate a Kubernetes
 secret. For this illustration, we will call the public certificate key
@@ -95,7 +98,8 @@ kubectl edit secret fskey -n prod
 We can inspect the secret to ensure that there is data under the data
 field
 
-Portieris Configuration
+
+*Portieris Configuration*
 
 Portieris uses two type of resources to manage securing image
 deployments to the cluster.
@@ -113,9 +117,7 @@ To view the different policies
 
 kubectl edit clusterimagepolicy
 
-![A screenshot of a cell phone Description automatically
-generated](media/image1.png){width="6.268055555555556in"
-height="3.4569444444444444in"}
+![](https://github.ibm.com/one-pipeline/docs/blob/master/assets/signing-setup/portierirs/clusterimage_policy.png)
 
 The important part of the above is
 
@@ -130,9 +132,7 @@ repositories allowing all deployments
 
 kubectl edit imagepolicies default -n prod
 
-![A screenshot of a cell phone Description automatically
-generated](media/image2.png){width="6.268055555555556in"
-height="3.433333333333333in"}
+![](https://github.ibm.com/one-pipeline/docs/blob/master/assets/signing-setup/portierirs/image_policy.png)
 
 The "spec" here needs to be modified to enforce a signature constraint
 on images from our designated registry namespace.
