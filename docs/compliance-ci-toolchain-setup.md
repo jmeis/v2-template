@@ -219,9 +219,22 @@ Configure your application repository by following these [instructions](https://
 - To start the PR pipeline, you should create a pull request in your application repository.
   
 | ![PR status checks](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/pr-checks.png) |
-| :--: | 
+| :--: |
 
-- Several status checks will run on your branch, which can be set in your branch protection rules e.g.(`tekton/code-branch-protection`)
+- Several status checks will run on your branch, which can be set in your branch protection rules
+
+Currently
+
+
+```tekton/code-branch-protection```
+
+```tekton/code-unit-tests```
+
+```tekton/code-cis-check```
+
+```tekton/code-vulnerability-scan```
+
+
 - Keep in mind, that at least one run is needed for github to list the status checks in Settings, to be able to mark them as required. Because of this, for the first time, pr pipeline will inevitably fail. Mark the status checks required and rerun the pr pipeline from the UI.
   
 **Run CI Pipeline**
