@@ -45,7 +45,7 @@ services:
   artifactoryComp:
     service_id: artifactory
     parameters:
-      name: 'ci-registry-{{timestamp}}'
+      name: 'registry-for-images'
       dashboard_url: 'https://na.artifactory.swg-devops.com'
       repository_url: 'https://wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com'
       repository_name: 'wcp-compliance-automation-team-docker-local'
@@ -100,7 +100,7 @@ services:
   pipeline-repo:
     service_id: github_integrated
     parameters:
-      repo_name: 'compliance-ci-toolchain-{{timestamp}}'
+      repo_name: 'compliance-ci-toolchain'
       repo_url: >
         $env.type === 'link' ?
           $env.app_repo : 'https://github.ibm.com/one-pipeline/compliance-ci-toolchain'
@@ -116,7 +116,7 @@ services:
   tekton-catalog-repo:
     service_id: github_integrated
     parameters:
-      repo_name: 'common-tekton-tasks-{{timestamp}}'
+      repo_name: 'common-tekton-tasks'
       repo_url: >
         $env.type === 'link' ?
           $env.app_repo : 'https://github.ibm.com/one-pipeline/common-tekton-tasks'
