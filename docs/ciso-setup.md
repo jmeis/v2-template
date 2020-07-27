@@ -1,5 +1,6 @@
 **CISO Code Signing Service and Key Setup**
 
+
 ***Registering***
 
 The compliance-ci-toolchain leverages the CISO services to sign images.
@@ -8,7 +9,7 @@ Users can register here:
 
 [[https://pgawdccosig01.sl.bluecloud.ibm.com/]{.ul}](https://pgawdccosig01.sl.bluecloud.ibm.com/)
 
-![](https://github.ibm.com/one-pipeline/docs/blob/signingdocs/assets/signing-setup/ciso/landingpage.png)
+![](https://github.ibm.com/one-pipeline/docs/blob/master/assets/signing-setup/ciso/landingpage.png)
 
 
 
@@ -17,21 +18,22 @@ Once registered visit the page again and log in.
 At this point you can request a certificate or have an existing one
 uploaded to the HSM (Hardware Security Module)
 
-![](https://github.ibm.com/one-pipeline/docs/blob/signingdocs/assets/signing-setup/ciso/certrequest.png)
+![](https://github.ibm.com/one-pipeline/docs/blob/master/assets/signing-setup/ciso/certrequest.png)
 
 When ready click on the Local Sign button
 
-![](https://github.ibm.com/one-pipeline/docs/blob/signingdocs/assets/signing-setup/ciso/localsign.png)
+![](https://github.ibm.com/one-pipeline/docs/blob/master/assets/signing-setup/ciso/localsign.png)
 
 Select the following options:
 
-![](https://github.ibm.com/one-pipeline/docs/blob/signingdocs/assets/signing-setup/ciso/installer.png)
+![](https://github.ibm.com/one-pipeline/docs/blob/master/assets/signing-setup/ciso/installer.png)
 
 Click Review Parameters and generate your client bundle.
 
 Extract the contents of the generated .tar file and look for the .pfx
 file. This certificate acts as the key to the users partition. This key
 needs to be saved in a means that can be accessed by a pipeline run.
+
 
 ***Saving the certificate to Key Protect***
 
@@ -58,7 +60,7 @@ and click the Key Protect instance that was created.
 
 Click the Add Key button
 
-![](https://github.ibm.com/one-pipeline/docs/blob/signingdocs/assets/signing-setup/ciso/create_key.png)
+![](https://github.ibm.com/one-pipeline/docs/blob/master/assets/signing-setup/ciso/create_key.png)
 
 On the following dialog, select Import Key and Standard Key.
 
@@ -67,7 +69,7 @@ key material field.
 
 Click import key
 
-![](https://github.ibm.com/one-pipeline/docs/blob/signingdocs/assets/signing-setup/ciso/set_key_data.png)
+![](https://github.ibm.com/one-pipeline/docs/blob/master/assets/signing-setup/ciso/set_key_data.png)
 
 Make note of the Key-protect service instance name as well as the key
 name as these will be required when configuring the Compliance Template
