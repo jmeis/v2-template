@@ -191,7 +191,7 @@ services:
       services:
         - pipeline-repo
         - tekton-catalog-repo
-      name: 'public cert fetcher {{form.pipeline.parameters.registry-namespace}} {{form.pipeline.parameters.app-name}}'
+      name: 'ciso-setup-helper-pipeline'
       ui-pipeline: true
       type: tekton
       configuration:
