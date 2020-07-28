@@ -1,17 +1,20 @@
-**CISO Code Signing Service and Key Setup**
+# CISO Code Signing Service and Key Setup
 
 
-***Registering***
+### Registering a Team
 
 The compliance-ci-toolchain leverages the CISO services to sign images.
-The toolchain admin needs to be registered as a team member on CISO.
-Users can register here:
+A team needs to be registered on CISO.
 
-[[https://pgawdccosig01.sl.bluecloud.ibm.com/]{.ul}](https://pgawdccosig01.sl.bluecloud.ibm.com/)
+Follow the instruction on this page:
+
+<https://pgawdccosig01.sl.bluecloud.ibm.com>
 
 ![](https://github.ibm.com/one-pipeline/docs/blob/master/assets/signing-setup/ciso/landingpage.png)
 
 
+
+### Downloading the Installer
 
 Once registered visit the page again and log in.
 
@@ -20,7 +23,7 @@ uploaded to the HSM (Hardware Security Module)
 
 ![](https://github.ibm.com/one-pipeline/docs/blob/master/assets/signing-setup/ciso/certrequest.png)
 
-When ready click on the Local Sign button
+Click on the Local Sign button
 
 ![](https://github.ibm.com/one-pipeline/docs/blob/master/assets/signing-setup/ciso/localsign.png)
 
@@ -31,31 +34,35 @@ Select the following options:
 Click Review Parameters and generate your client bundle.
 
 Extract the contents of the generated .tar file and look for the .pfx
-file. This certificate acts as the key to the users partition. This key
-needs to be saved in a means that can be accessed by a pipeline run.
+file. This certificate acts as the key to the users partition. 
 
 
-***Saving the certificate to Key Protect***
+### Creating Key-Protect instance
 
 Visit
-[[https://cloud.ibm.com/catalog/services/key-protect]{.ul}](https://cloud.ibm.com/catalog/services/key-protect)
+<https://cloud.ibm.com/catalog/services/key-protect>
 
 Create a new Key Protect instance or use an existing one.
 
-Select the region and specify the a service name for the instance.
+Select the region and specify a service name for the instance.
 
-Uploading the certificate to the Vault.
 
-The certificate content must be converted to a base64 string and the
+### Uploading the certificate to the Vault.
+
+The certificate content must be double encoded to a base64 string and the
 output captured.
 
-This can be done with the following command
+This can be done with the following command in a terminal
 
-cat Client_XXXXXXXXXXXXXXXXX.pfx \| base64 or piped to a file. Make sure
-to delete the file when finished with it.
+```javascript
+echo $(cat Client_XXXXXXXXXXXXXXXXX.pfx | base64) | base64
+```
+
+Copy the base64 output from the terminal
 
 Go to
-[[https://cloud.ibm.com/resources]{.ul}](https://cloud.ibm.com/resources)
+<https://cloud.ibm.com/resources>
+
 and click the Key Protect instance that was created.
 
 Click the Add Key button

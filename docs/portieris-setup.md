@@ -1,7 +1,7 @@
-**Installing and configuring Portieris**
+# Installing and configuring Portieris
 
 
-*Pre-requisites*
+### Pre-requisites
 
 Kubernetes 1.16 or above
 
@@ -17,13 +17,17 @@ Removing Tiller
 Tiller needs to be removed from the cluster. Ensure beforehand that
 uninstalling Tiller will not affect any other services
 
+```javascript
 kubectl delete deployment tiller-deploy -n kube-system
 
 kubectl delete service tiller-deploy -n kube-system
+```
 
 (if there are secrets)
 
+```javascript
 kubectl delete secret tiller-secret -n kube-system
+```
 
 Obtain the public key certificate associated with the GPG certificate
 signing chain.
@@ -34,7 +38,7 @@ Log into your account and ensure that you can run Kube commands. Please
 see <https://cloud.ibm.com/kubernetes/clusters> for help
 
 
-*Portieris Installation*
+### Portieris Installation
 
 Portieris is the gatekeeper that the Compliance-CI-Toolchain leverages
 to ensure that only signed images are deployed.
@@ -51,7 +55,10 @@ Use the same namespace that will be used in the Compliance-CI-Template
 
 Change directory into the Portieris Git repository.
 
-Run **./helm/portieris/gencerts \<namespace\>**
+Run
+```javascript
+./helm/portieris/gencerts <namespace>
+```
 
 The gencerts script generates new SSL certificates and keys for
 Portieris. Portieris presents this certificates to the Kubernetes API
@@ -59,13 +66,18 @@ server when the API server makes admission requests. If you do not
 generate new certificates, it could be possible for an attacker to spoof
 Portieris in your cluster.
 
-Run **kubectl create namespace \<namespace\>**
+Run
+```javascript
+kubectl create namespace <namespace>
+```
 
-Run **helm install portieris \--set namespace=\<namespace\>
-helm/portieris**
+Run
+```javascript
+helm install portieris --set namespace=<namespace\> helm/portieris
+```
 
 
-*Provisioning the secrets key*
+### Provisioning the Secrets Key
 
 With the public key on hand we need to use it to generate a Kubernetes
 secret. For this illustration, we will call the public certificate key
@@ -73,40 +85,42 @@ from GPG key.asc
 
 First change directory to the one containing the key
 
-Run the following:
+Run
+```javascript
+kubectl create secret generic fskey -n <namespace> --from-file=key=key.asc
+```
 
-kubectl create secret generic **fskey** -n **\<namespace\>**
-\--from-file=key=**key.asc**
+***fskey***: the name of the generated secret
 
-where fskey will be the name of the secret generated
-
-namespace: the namespace that was or will be used by the Compliance
+***namespace***: the namespace that was or will be used by the Compliance
 Template deployment.
 
-key.asc : the public key certificate.
-
-Run:
-
-kubectl get secret -n prod
-
-to see that the secret has been created
-
-Run:
-
-kubectl edit secret fskey -n prod
-
-We can inspect the secret to ensure that there is data under the data
-field
+***key.asc***: the public key certificate.
 
 
-*Portieris Configuration*
+To view the secret that has been created:
+
+Run
+```javascript
+kubectl get secret -n <namespace>
+```
+
+To check that the key has provided content in the secret. There data field should not be empty:
+
+Run
+```javascript
+kubectl edit secret fskey -n <namespace>
+```
+
+
+### Portieris Configuration
 
 Portieris uses two type of resources to manage securing image
 deployments to the cluster.
 
--   ClusterImagePolicy
+-   ***ClusterImagePolicy***
 
--   ImagePolices
+-   ***ImagePolices***
 
 The ClusterImagePolicy is a cluster level enforcement. It will take
 effect when no imagepolicy is available. For example, an image policy is
@@ -115,22 +129,28 @@ set up in a namespace called "prod" but an image gets deployed to
 
 To view the different policies
 
+```javascript
 kubectl edit clusterimagepolicy
+```
 
 ![](https://github.ibm.com/one-pipeline/docs/blob/master/assets/signing-setup/portierirs/clusterimage_policy.png)
 
 The important part of the above is
 
+```yaml
 spec:
 
 repositories:
 
--   Name: "\*"
+-   Name: "*"
+```
 
 This is the default setting when installed. Basically a wildcard on all
 repositories allowing all deployments
 
+```javascript
 kubectl edit imagepolicies default -n prod
+```
 
 ![](https://github.ibm.com/one-pipeline/docs/blob/master/assets/signing-setup/portierirs/image_policy.png)
 
@@ -139,9 +159,10 @@ on images from our designated registry namespace.
 
 Edit the image policy to add the following
 
+```yaml
 repositories:
 
-\- name: us.icr.io/hhsigning/\*
+- name: us.icr.io/hhsigning/*
 
 policy:
 
@@ -149,17 +170,18 @@ simple:
 
 requirements:
 
-\- keySecret: fskey
+- keySecret: fskey
 
 type: signedBy
+```
 
-name: refers to the path to the image registry that we wish to check
+***name***: refers to the path to the image registry that we wish to check
 
-policy: is the conditions that we which to enforce
+***policy***: is the conditions that we which to enforce
 
-type: signedBy requires a signature on the image
+***type***: signedBy requires a signature on the image
 
-keySecret is a reference to the secret that we set up previously from
+***keySecret***: is a reference to the secret that we set up previously from
 the GPG public key certificate
 
 The above steps are all the requirements for setting up Portieris in
@@ -168,9 +190,10 @@ relation to the Compliant template usage.
 Portieris can handle multiple signatures from different sources for
 example
 
+```yaml
 repositories:
 
-\- name: us.icr.io/team1-namespace/\*
+- name: us.icr.io/team1-namespace/\*
 
 policy:
 
@@ -178,13 +201,15 @@ simple:
 
 requirements:
 
-\- type: signedBy
+- type: signedBy
 
 keySecret: team1-key
+```
 
+```yaml
 repositories:
 
-\- name: us.icr.io/team2-namespace/\*
+- name: us.icr.io/team2-namespace/\*
 
 policy:
 
@@ -192,9 +217,10 @@ simple:
 
 requirements:
 
-\- type: signedBy
+- type: signedBy
 
 keySecret: team2-key
+```
 
 For more complex setups, please see
 
