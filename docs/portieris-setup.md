@@ -37,6 +37,23 @@ Connect to Cluster
 Log into your account and ensure that you can run Kube commands. Please
 see <https://cloud.ibm.com/kubernetes/clusters> for help
 
+### Migrating from DCT signing to CISO
+This is a second pre-requisite step and only applies to users with an existing toolchain with the Docker siging and image policy in place. This needs to be removed before installing Portieris.
+***Note the following will remove all image policies***. 
+Run
+```javascript
+kubectl delete deployment cise-ibmcloud-image-enforcement -n ibm-system
+kubectl delete --ignore-not-found=true MutatingWebhookConfiguration image-admission-config
+kubectl delete --ignore-not-found=true ValidatingWebhookConfiguration image-admission-config
+kubectl delete crd clusterimagepolicies.securityenforcement.admission.cloud.ibm.com
+kubectl delete crd imagepolicies.securityenforcement.admission.cloud.ibm.com
+```
+And if you have not done so already. Remove Tiller
+```javascript
+kubectl delete deployment tiller-deploy -n kube-system
+kubectl delete service tiller-deploy -n kube-system
+```
+
 
 ### Portieris Installation
 
@@ -146,7 +163,7 @@ repositories:
 ```
 
 This is the default setting when installed. Basically a wildcard on all
-repositories allowing all deployments
+repositories allowing all deployments. This file can be modified for more advanced configurations.
 
 ```javascript
 kubectl edit imagepolicies default -n prod
@@ -154,25 +171,21 @@ kubectl edit imagepolicies default -n prod
 
 ![](https://github.ibm.com/one-pipeline/docs/blob/master/assets/signing-setup/portierirs/image_policy.png)
 
-The "spec" here needs to be modified to enforce a signature constraint
+The "spec" part here needs to be modified to enforce a signature constraint
 on images from our designated registry namespace.
 
 Edit the image policy to add the following
 
 ```yaml
 repositories:
+- name: us.icr.io/registry-namespace/*
+  policy:
+    simple:
+      requirements:
+      - type: signedBy
+        keySecret: fskey
 
-- name: us.icr.io/hhsigning/*
 
-policy:
-
-simple:
-
-requirements:
-
-- keySecret: fskey
-
-type: signedBy
 ```
 
 ***name***: refers to the path to the image registry that we wish to check
@@ -192,34 +205,22 @@ example
 
 ```yaml
 repositories:
-
 - name: us.icr.io/team1-namespace/\*
-
-policy:
-
-simple:
-
-requirements:
-
-- type: signedBy
-
-keySecret: team1-key
+  policy:
+    simple:
+      requirements:
+      - type: signedBy
+        keySecret: team1-key
 ```
 
 ```yaml
 repositories:
-
 - name: us.icr.io/team2-namespace/\*
-
-policy:
-
-simple:
-
-requirements:
-
-- type: signedBy
-
-keySecret: team2-key
+  policy:
+    simple:
+      requirements:
+      - type: signedBy
+        keySecret: team2-key
 ```
 
 For more complex setups, please see
