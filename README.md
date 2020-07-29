@@ -1,12 +1,11 @@
 
-# ![Icon](./.bluemix/secure-lock-kubernetes.png) Tekton CI Pipeline with Compliance automation for Kubernetes
+# ![Icon](./.bluemix/secure-lock-kubernetes.png) Shift-Left Continuous Integration Toolchain
 
-This is a CI toolchain template for continuous integration with Vulnerability Advisor, Docker image signing checking, source control, issue tracking, status checking, and deployment to the IBM Kubernetes Service.
+This is a CI toolchain template that enables shift-left continuous integration in accordance with the the best practices described in [Service Framework DevOps Specification](https://pages.github.ibm.com/CloudEngineering/system_architecture/devops/). This reference implementation is based on the [Tekton open source technology](https://tekton.dev/) and is a key part of the IBM `one-pipeline` initiative which seeks to enable standardized compliance across DevOps pipelines for [IBM Public Cloud](https://www.ibm.com/cloud/public)service teams.  
 
-### Continuously deliver a secure container app to a Kubernetes Cluster
+This toolchain is pre-configured with a simple sample app to enable out of the box evaluation. It features various categories of tasks like static code scanning, unit tests, vulnerability advisories, image signing, source control integration, issue tracking, status checking and so forth. It also is configured with an evidence locker and inventory repository, and is designed to deploy any sample app modifications to an IBM Kubernetes cluster. The image below provides a pictorial overview of the toolchain components and flow. 
 
-The target cluster is configured during toolchain setup (using an IBM Cloud API key and cluster name). You can later change these by altering the Delivery Pipeline configuration.
-Any code change to the Git repo will automatically be built, validated and deployed into the Kubernetes cluster.
+### Graphic Summary
 
 ![Icon](./.bluemix/toolchain.png)
 
@@ -33,13 +32,13 @@ It implements the following best practices:
 
 Status checks let you know if your commits meet the conditions set for the repository you're contributing to. The toolchain ships with a `CI` and a `PR` pipeline.
 Currently, only `tekton/code-branch-protection` status check has to be set required in the repository. It is checked by both `PR` and `CI` pipelines.
-To configure your repository to pass branch protection settings checks, read our [step by step guide](./docs/github-repository-configuration.md).
+To configure your repository to pass the branch protection settings checks, read the [Repository Configuration Guide](./docs/github-repository-configuration.md).
 
 ---
 ### Learn more
 
 * Blog [Continuously deliver your app to Kubernetes with Bluemix](https://www.ibm.com/blogs/bluemix/2017/07/continuously-deliver-your-app-to-kubernetes-with-bluemix/)
-* Step by step [tutorial](https://www.ibm.com/devops/method/tutorials/tc_secure_kube)
+* Step by step [tutorial](https://www.ibm.com/cloud/architecture/tutorials/tekton-pipeline-with-compliance-automation-kubernetes) (WiP)
 * [Getting started with clusters](https://cloud.ibm.com/docs/containers?topic=containers-getting-started)
 * [Getting started with toolchains](https://cloud.ibm.com/devops/getting-started)
 * [Documentation](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-getting-started&pos=2)
