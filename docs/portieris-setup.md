@@ -40,6 +40,7 @@ see <https://cloud.ibm.com/kubernetes/clusters> for help
 ### Migrating from DCT signing to CISO
 This is a second pre-requisite step and only applies to users with an existing toolchain with the Docker siging and image policy in place. This needs to be removed before installing Portieris.
 ***Note the following will remove all image policies***. 
+
 Run
 ```javascript
 kubectl delete deployment cise-ibmcloud-image-enforcement -n ibm-system
@@ -90,7 +91,7 @@ kubectl create namespace <namespace>
 
 Run
 ```javascript
-helm install portieris --set namespace=<namespace\> helm/portieris
+helm install portieris --set namespace=<namespace> helm/portieris
 ```
 
 
@@ -174,10 +175,16 @@ kubectl edit imagepolicies default -n prod
 The "spec" part here needs to be modified to enforce a signature constraint
 on images from our designated registry namespace.
 
-Edit the image policy to add the following
+Edit the image policy. Under repositories:
 
 ```yaml
-repositories:
+spec:
+  repositories:
+
+```
+Add the following:
+
+```yaml
 - name: us.icr.io/registry-namespace/*
   policy:
     simple:
@@ -204,7 +211,6 @@ Portieris can handle multiple signatures from different sources for
 example
 
 ```yaml
-repositories:
 - name: us.icr.io/team1-namespace/\*
   policy:
     simple:
@@ -214,7 +220,6 @@ repositories:
 ```
 
 ```yaml
-repositories:
 - name: us.icr.io/team2-namespace/\*
   policy:
     simple:
