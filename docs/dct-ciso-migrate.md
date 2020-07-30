@@ -3,8 +3,11 @@
 ### Pre-requisites
 
 Ensure the following steps have been performed
+
 <https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/ciso-setup.md>
+
 <https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/portieris-setup.md>
+
 <https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/taas-setup.md>
 
 Go to the CI-pipeline
