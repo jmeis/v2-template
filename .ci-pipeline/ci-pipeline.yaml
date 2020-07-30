@@ -230,6 +230,8 @@ spec:
           value: "ci"
         - name: evidence-name
           value: "unit-test"
+        - name: task-step-name
+          value: "run-script"
         - name: toolchain-crn
           value: $(tasks.code-extract-toolchain-crn.results.extracted-value)
         - name: evidence-type
@@ -368,6 +370,8 @@ spec:
           value: "ci"
         - name: evidence-name
           value: "code-vulnerability-scan"
+        - name: task-step-name
+          value: "remediation"
         - name: toolchain-crn
           value: $(tasks.code-extract-toolchain-crn.results.extracted-value)
         - name: evidence-type
@@ -490,6 +494,8 @@ spec:
           value: "ci"
         - name: evidence-name
           value: "code-cis-check"
+        - name: task-step-name
+          value: "cis"
         - name: toolchain-crn
           value: $(tasks.code-extract-toolchain-crn.results.extracted-value)
         - name: evidence-type
@@ -610,6 +616,8 @@ spec:
           value: "ci"
         - name: evidence-name
           value: "code-bom-check"
+        - name: task-step-name
+          value: "bom"
         - name: toolchain-crn
           value: $(tasks.code-extract-toolchain-crn.results.extracted-value)
         - name: evidence-type
@@ -735,6 +743,8 @@ spec:
           value: "ci"
         - name: evidence-name
           value: "github-status-checks"
+        - name: task-step-name
+          value: "check-github-statuses"
         - name: evidence-type
           value: "com.ibm.branch_protection"
         - name: evidence-type-version
@@ -937,6 +947,8 @@ spec:
           value: "ci"
         - name: evidence-name
           value: "build-vulnerability-advisor"
+        - name: task-step-name
+          value: "run-vulnerability-advisor-scan"
         - name: evidence-type
           value: "com.ibm.cloud.icr-check-va-scan"
         - name: evidence-type-version
@@ -1199,6 +1211,8 @@ spec:
           value: "ci"
         - name: evidence-name
           value: "acceptance-test"
+        - name: task-step-name
+          value: "run-script"
         - name: toolchain-crn
           value: $(tasks.code-extract-toolchain-crn.results.extracted-value)
         - name: evidence-type
