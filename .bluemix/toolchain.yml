@@ -11,6 +11,7 @@ template:
   icon: secure-lock-kubernetes.svg
   required:
     - build
+    - ci
     - app-repo
     - pipeline-repo
     - tekton-catalog-repo
@@ -189,12 +190,12 @@ services:
 
   webide:
     service_id: orion
-    
+
   vault:
     service_id: keyprotect
     parameters:
       name: 'ci-compliance-secrets'
-    
+
 form:
   pipeline:
     parameters:

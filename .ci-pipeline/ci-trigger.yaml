@@ -9,7 +9,7 @@ spec:
       description: The namespace in the container image registry. You can set it up
         with {bx cr namespace-add]. Learn more at https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started#getting-started.
     - name: vault-secret
-      description: the vault-secret for signing 
+      description: the vault-secret for signing
     - name: repository
       description: The git repo
     - name: app-name
