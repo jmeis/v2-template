@@ -163,7 +163,7 @@ spec:
         name: doi-publish-buildrecord
       params:
         - name: app-name
-          value: "$(params.app-name)[$(params.branch)]"
+          value: "$(params.app-name)"
         - name: toolchain-apikey-secret-key
           value: "api-key"
         - name: git-repository
@@ -267,7 +267,7 @@ spec:
           workspace: artifacts
       params:
         - name: app-name
-          value: "$(params.app-name)[$(params.branch)]"
+          value: "$(params.app-name)"
         - name: file-locations
           value: $(tasks.code-unit-tests-create-doi-data.results.file-locations)
         - name: test-types
@@ -405,7 +405,7 @@ spec:
           workspace: artifacts
       params:
         - name: app-name
-          value: "$(params.app-name)[$(params.branch)]"
+          value: "$(params.app-name)"
         - name: file-locations
           value: $(tasks.code-vulnerability-scan-create-doi-data.results.file-locations)
         - name: test-types
@@ -527,7 +527,7 @@ spec:
           workspace: artifacts
       params:
         - name: app-name
-          value: "$(params.app-name)[$(params.branch)]"
+          value: "$(params.app-name)"
         - name: file-locations
           value: $(tasks.code-cis-check-create-doi-data.results.file-locations)
         - name: test-types
@@ -647,7 +647,7 @@ spec:
           workspace: artifacts
       params:
         - name: app-name
-          value: "$(params.app-name)[$(params.branch)]"
+          value: "$(params.app-name)"
         - name: file-locations
           value: $(tasks.code-bom-check-create-doi-data.results.file-locations)
         - name: test-types
@@ -774,7 +774,7 @@ spec:
           workspace: artifacts
       params:
         - name: app-name
-          value: "$(params.app-name)[$(params.branch)]"
+          value: "$(params.app-name)"
         - name: file-locations
           value: $(tasks.code-branch-protection-create-doi-data.results.file-locations)
         - name: test-types
@@ -977,7 +977,7 @@ spec:
           workspace: artifacts
       params:
         - name: app-name
-          value: "$(params.app-name)[$(params.branch)]"
+          value: "$(params.app-name)"
         - name: file-locations
           value: $(tasks.build-vulnerability-advisor-create-doi-data.results.file-locations)
         - name: test-types
@@ -1130,6 +1130,115 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
+    - name: build-acceptance-tests
+      runAfter:
+        - build-deploy-dev
+      taskRef:
+        name: util-run
+      workspaces:
+        - name: scripts
+          workspace: artifacts
+      params:
+        - name: script
+          value: |
+            #!/bin/bash
+            APP_URL="$(tasks.build-deploy-dev.results.app-url)"
+            . /root/.nvm/nvm.sh
+            cd /scripts/$(tasks.code-fetch-code.results.directory-name) || exit
+            npm ci -q
+            export APP_URL
+            npm run acceptance-test
+
+    - name: build-acceptance-tests-create-issue
+      runAfter:
+        - build-acceptance-tests
+      taskRef:
+        name: evidence-create-incident-issue
+      workspaces:
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: secret-name
+          value: github-token
+        - name: repository
+          value: $(params.repository)
+        - name: incident-issue-repo
+          value: $(params.issues-repo)
+        - name: task-name
+          value: "build-acceptance-tests"
+        - name: result-status
+          value: $(tasks.build-acceptance-tests.results.status)
+        - name: commit-hash
+          value: $(tasks.code-fetch-code.results.git-commit)
+
+    - name: build-acceptance-tests-create-evidence
+      runAfter:
+        - build-vulnerability-advisor-create-evidence
+      taskRef:
+        name: evidence-add
+      retries: 2
+      workspaces:
+        - name: evidence-locker
+          workspace: artifacts
+      params:
+        - name: evidence-repo-path
+          value: "evidence-locker"
+        - name: namespace
+          value: "ci"
+        - name: evidence-name
+          value: "acceptance-test"
+        - name: toolchain-crn
+          value: $(tasks.code-extract-toolchain-crn.results.extracted-value)
+        - name: evidence-type
+          value: "com.ibm.acceptance_test"
+        - name: evidence-type-version
+          value: "1.0.0"
+        - name: result
+          value: $(tasks.build-acceptance-tests.results.status)
+        - name: issues
+          value: |
+            "$(tasks.build-acceptance-tests-create-issue.results.issue-url)"
+
+    - name: build-acceptance-tests-create-doi-data
+      runAfter:
+        - build-acceptance-tests
+      taskRef:
+        name: evidence-to-doi-transformer
+      retries: 2
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: title
+          value: "Acceptance tests"
+        - name: task-name
+          value: "build-acceptance-tests"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: result-status
+          value: $(tasks.build-acceptance-tests.results.status)
+
+    - name: build-acceptance-tests-results-to-doi
+      runAfter:
+        - build-acceptance-tests-create-doi-data
+      taskRef:
+        name: doi-publish-testrecord
+      retries: 2
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: app-name
+          value: $(params.app-name)
+        - name: file-locations
+          value: $(tasks.build-acceptance-tests-create-doi-data.results.file-locations)
+        - name: test-types
+          value: $(tasks.build-acceptance-tests-create-doi-data.results.test-types)
+        - name: toolchain-apikey-secret-key
+          value: "api-key"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
     - name: build-pipeline-evaluator
       runAfter:
         - build-deploy-dev
@@ -1143,6 +1252,11 @@ spec:
                 "name": "run-unit-tests",
                 "expected": "success",
                 "actual": "$(tasks.code-unit-tests.results.status)"
+              },
+              {
+                "name": "run-acceptance-test",
+                "expected": "success",
+                "actual": "$(tasks.build-acceptance-tests.results.status)"
               },
               {
                 "name": "code-vulnerability-scan",
