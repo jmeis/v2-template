@@ -11,6 +11,7 @@ template:
   icon: secure-lock-kubernetes.svg
   required:
     - build
+    - setup-helper
     - app-repo
     - pipeline-repo
     - tekton-catalog-repo
@@ -181,6 +182,31 @@ services:
           TEKTON_CATALOG_REPO: tekton-catalog-repo
           ARTIFACTORY_DOCKER_CONFIG_JSON: '{{form.artifactoryComp.parameters.docker_config_json}}'
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
+          VAULT_SECRET: '{{services.pipeline.parameters.vault_secret}}'
+        execute: false
+
+  setup-helper:
+    service_id: pipeline
+    parameters:
+      services:
+        - pipeline-repo
+        - tekton-catalog-repo
+      name: 'ciso-setup-helper-pipeline'
+      ui-pipeline: true
+      type: tekton
+      configuration:
+        content:
+          $text: helper-tekton.yml
+        env:
+          PIPELINE_REPO: pipeline-repo
+          TEKTON_CATALOG_REPO: tekton-catalog-repo
+          APP_REPO: app-repo
+          APP_NAME: '{{form.pipeline.parameters.app-name}}'
+          API_KEY: '{{form.pipeline.parameters.api-key}}'
+          DEV_REGION_ID: '{{form.pipeline.parameters.dev-region}}'
+          DEV_RESOURCE_GROUP: '{{form.pipeline.parameters.dev-resource-group}}'
+          PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
+          ARTIFACTORY_DOCKER_CONFIG_JSON: '{{form.artifactoryComp.parameters.docker_config_json}}'
           VAULT_SECRET: '{{services.pipeline.parameters.vault_secret}}'
         execute: false
 

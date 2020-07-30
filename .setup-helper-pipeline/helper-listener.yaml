@@ -1,0 +1,82 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: helper-template
+spec:
+  params:
+    - name: vault-secret
+      decription: the vault secret
+    - name: dev-resource-group
+      description: the resource group
+    - name: dev-region
+      description: target region
+    - name: artifactory-dockerconfigjson
+      description: dockerconfigjson for pullsecrets
+  resourcetemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: pipelinerun-$(uid)-pvc
+      spec:
+        resources:
+          requests:
+            storage: 5Gi
+        volumeMode: Filesystem
+        accessModes:
+          - ReadWriteOnce
+    - apiVersion: v1
+      kind: Secret
+      metadata:
+        name: cd-secret
+      type: Opaque
+      stringData:
+        API_KEY: $(params.api-key)
+    - apiVersion: v1
+      kind: Secret
+      data:
+        .dockerconfigjson: $(params.artifactory-dockerconfigjson)
+      metadata:
+        name: artifactory-pull-secret
+      type: kubernetes.io/dockerconfigjson
+    - apiVersion: v1
+      kind: ServiceAccount
+      imagePullSecrets:
+        - name: artifactory-pull-secret
+      metadata:
+        name: sa-pullsecret
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: pipelinerun-$(uid)
+      spec:
+        workspaces:
+          - name: artifacts
+            persistentVolumeClaim:
+              claimName: pipelinerun-$(uid)-pvc
+        params:
+          - name: vault-secret
+            value: $(params.vault-secret)
+          - name: dev-region
+            value: $(params.dev-region)
+          - name: dev-resource-group
+            value: $(params.dev-resource-group)
+        pipelineRef:
+          name: helper-pipeline
+        serviceAccountName: sa-pullsecret
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: helper-binding
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: helper-listener
+spec:
+  triggers:
+    - binding:
+        name: helper-binding
+      template:
+        name: helper-template

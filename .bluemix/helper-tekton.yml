@@ -1,0 +1,34 @@
+---
+inputs:
+  - type: git
+    branch: master
+    service: ${PIPELINE_REPO}
+    path: .setup-helper-pipeline
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: preview/ciso
+triggers:
+  - type: manual
+    name: Manual Trigger
+    eventListener: helper-listener
+properties:
+  - name: api-key
+    value: ${API_KEY}
+    type: SECURE
+  - name: vault-secret
+    value: ${VAULT_SECRET}
+    type: SECURE
+  - name: revision
+    value: master
+    type: text
+  - name: dev-region
+    value: ${DEV_REGION_ID}
+    type: text
+  - name: dev-resource-group
+    value: ${DEV_RESOURCE_GROUP}
+    type: text
+  - name: artifactory-dockerconfigjson
+    value: ${ARTIFACTORY_DOCKER_CONFIG_JSON}
+    type: SECURE
+private_worker: ${PRIVATE_WORKER}
