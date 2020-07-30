@@ -4,15 +4,22 @@
 * **K8S Cluster**
 * **Artifactory access**
 * **IBM Cloud CLI**
-* **Docker Content Trust signing keys**
+* **TaaS and Ciso Registrations**
 * **IBM Cloud Api Key**
 * [**Servide ID**](https://cloud.ibm.com/docs/account?topic=account-serviceids)
 * [**Service ID API Key**](https://cloud.ibm.com/docs/account?topic=account-serviceidapikeys#create_service_key)
-* [**Registered Worker Agent with the Service ID API Key**](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-install-private-workers#install_pw_cli)
 
-If you've never set up image signing in your k8s cluster, you have to create the signing keys that will be used for the signing itself. Set up and run the key management admin toolchain:
- - [Tekton Version](https://github.ibm.com/one-pipeline/compliance-ci-key-management)
- - [Classic Version](https://github.com/open-toolchain/key-management-admin-toolchain)
+There are a number of steps that need to be done prior to creating this toolchain for the first time.
+Please see:
+
+- ***CISO Code Signing Service and Key Setup*** <https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/ciso-setup.md>
+
+- ***Service API Key for TaaS Private Worker*** <https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/taas-setup.md>
+
+- ***Obtain the Public Key Certificate*** Create and instance of the toolchain <https://github.ibm.com/one-pipeline/portieris-config-helper>. Once this pipeline has run, you can retrieve the public certificate from the logs
+
+- ***Portieris Set Up*** <https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/portieris-setup.md>
+
 
 The GitHub token that is issued to the IBM Cloud API key holder, needs access to read/set protected branch settings on repos.
 This can be only done by admin level access to the repository.
@@ -118,10 +125,8 @@ The API key is used to interact with the ibmcloud CLI tool in several tasks.
 | ![Kubernetes cluster](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/kubernetes-cluster.png) |
 | :--: | 
     
-- **Key Protect Vault Instance name:**
-   - The key protect vault holds the dct init keys for image signing and image validation. This field is required.
-- **DevOps Docker Image Validation signer:**
-    - Default: `"devops-validation"`
+- **CISO secret:**
+   - Use the picker to select the vault integration and key entry containing the CISO pfx certificate secret
     
     
 ##### Tekton Definitions
@@ -147,7 +152,7 @@ The API key is used to interact with the ibmcloud CLI tool in several tasks.
 
 This toolchain comes with a Private Worker integration.
 The Delivery Pipeline Private Worker tool integration connects with one or more private workers that are capable of running Delivery Pipeline workloads in isolation.
-Insert your `Service ID API Key` to the corresponding field.
+Insert your `Service ID API Key` to the corresponding field. This should be the Service API key obtained from TaaS. It is required to connect to the IBM internal network.
 
 | ![Delivery Pipeline Private Worker](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/private-worker-integration-setup.png) |
 | :--: | 
@@ -203,12 +208,6 @@ DevOps Insights is automatically included in the created toolchain and after eac
  
   Note: The individual toolchain integrations can be configured also after the pipeline has been created.
 
-**dct init Pipeline**
-
-The DCT init pipeline is used for setting up DCT image signing and signature verification for your cluster. You need to run this pipeline only once:
-
-- Run the pipeline, it will set up DCT image signing
-- You don't need to run it again, unless you've reset your signing key pair
 
 ### 5. Run PR/CI Pipeline
 
