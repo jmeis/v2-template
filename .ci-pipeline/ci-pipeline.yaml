@@ -168,7 +168,7 @@ spec:
         name: doi-publish-buildrecord
       params:
         - name: app-name
-          value: "$(params.app-name)[$(params.branch)]"
+          value: "$(params.app-name)"
         - name: toolchain-apikey-secret-key
           value: "api-key"
         - name: git-repository
@@ -272,7 +272,7 @@ spec:
           workspace: artifacts
       params:
         - name: app-name
-          value: "$(params.app-name)[$(params.branch)]"
+          value: "$(params.app-name)"
         - name: file-locations
           value: $(tasks.code-unit-tests-create-doi-data.results.file-locations)
         - name: test-types
@@ -410,7 +410,7 @@ spec:
           workspace: artifacts
       params:
         - name: app-name
-          value: "$(params.app-name)[$(params.branch)]"
+          value: "$(params.app-name)"
         - name: file-locations
           value: $(tasks.code-vulnerability-scan-create-doi-data.results.file-locations)
         - name: test-types
@@ -532,7 +532,7 @@ spec:
           workspace: artifacts
       params:
         - name: app-name
-          value: "$(params.app-name)[$(params.branch)]"
+          value: "$(params.app-name)"
         - name: file-locations
           value: $(tasks.code-cis-check-create-doi-data.results.file-locations)
         - name: test-types
@@ -652,7 +652,7 @@ spec:
           workspace: artifacts
       params:
         - name: app-name
-          value: "$(params.app-name)[$(params.branch)]"
+          value: "$(params.app-name)"
         - name: file-locations
           value: $(tasks.code-bom-check-create-doi-data.results.file-locations)
         - name: test-types
@@ -779,7 +779,7 @@ spec:
           workspace: artifacts
       params:
         - name: app-name
-          value: "$(params.app-name)[$(params.branch)]"
+          value: "$(params.app-name)"
         - name: file-locations
           value: $(tasks.code-branch-protection-create-doi-data.results.file-locations)
         - name: test-types
@@ -982,7 +982,7 @@ spec:
           workspace: artifacts
       params:
         - name: app-name
-          value: "$(params.app-name)[$(params.branch)]"
+          value: "$(params.app-name)"
         - name: file-locations
           value: $(tasks.build-vulnerability-advisor-create-doi-data.results.file-locations)
         - name: test-types
