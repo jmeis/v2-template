@@ -195,6 +195,20 @@ Note: You can access the Artifactory [here](https://eu.artifactory.swg-devops.co
 
 DevOps Insights is automatically included in the created toolchain and after each compliance check evidence is published into it. It is not needed to configure insights, the CI pipeline will automatically use the insights instance included in the toolchain.
 
+#### Slack Integration (Not Required)
+
+If you want to receive notifications about your PR/CI Pipeline events, you can configure the Slack Tool during the setup from the toolchain template, or you can add the Slack Tool later.
+
+In order for a Slack channel to receive notifications from your tools, you need a Slack webhook URL. To get a webhook URL, see the Incoming Webhooks section of the [Slack API website](https://api.slack.com/messaging/webhooks).
+
+| ![Slack Tool](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/slack.png) |
+| :--: | 
+
+After creating your toolchain, you can toggle sending notifications with the `slack-notifications` Environment Property in your PR/CI Pipeline (0 = off, 1 = on):
+
+| ![Slack Tool Toggle](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/slack-toggle.png) |
+| :--: | 
+
 ### 4. Create Toolchain and Run DCT init Pipeline
 
  **Create toolchain:**
