@@ -31,13 +31,8 @@ spec:
       description: the namespace
     - name: repository-integration
       description: the repo integration name
-    - name: validation-signer
-      description: validation signer
-    - name: vault-name
-      description: Specify the Key Protect instance name, where the image signing keys
-        have been stored. The build and validation signer fields contain default names
-        for these signers. The values must match the values created in the Key-Management-Admin-Template.
-        See https://github.com/open-toolchain/key-management-admin-toolchain
+    - name: vault-secret
+      description: the vault secret for CISO
     - name: dev-resource-group
       description: Resource Group
     - name: dev-region
@@ -1027,40 +1022,33 @@ spec:
           value: "api-key"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-
-    - name: build-docker-image-sign
+    - name: signing
       runAfter:
         - build-vulnerability-advisor
       taskRef:
-        name: dct-sign
+        name: ciso-sign
+      params:
+        - name: vault-secret
+          value: $(params.vault-secret)
+        - name: region
+          value: $(params.dev-region)
+        - name: resource-group
+          value: $(params.dev-resource-group)
+        - name: registry-region
+          value: $(params.registry-region)
+        - name: registry-namespace
+          value: $(params.registry-namespace)
+        - name: image-name
+          value: $(params.app-name)
+        - name: image-tag
+          value: $(tasks.build-containerize.results.image-tags)
       workspaces:
         - name: artifacts
           workspace: artifacts
-      params:
-        - name: app-name
-          value: $(params.app-name)
-        - name: api-key
-          value: $(params.api-key)
-        - name: validation-signer
-          value: $(params.validation-signer)
-        - name: registry-namespace
-          value: $(params.registry-namespace)
-        - name: registry-region
-          value: $(params.registry-region)
-        - name: vault-name
-          value: $(params.vault-name)
-        - name: resource-group
-          value: $(params.dev-resource-group)
-        - name: cluster-name
-          value: $(params.cluster-name)
-        - name: region
-          value: $(params.dev-region)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
 
     - name: build-fetch-iks-cluster-config
       runAfter:
-        - build-docker-image-sign
+        - signing
       taskRef:
         name: iks-fetch-config
       workspaces:
@@ -1106,7 +1094,7 @@ spec:
 
     - name: build-create-namespace
       runAfter:
-        - build-docker-image-sign
+        - signing
       taskRef:
         name: iks-create-namespace
       workspaces:
