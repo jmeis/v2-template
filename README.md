@@ -31,8 +31,20 @@ It implements the following best practices:
 ### Required GitHub Status Checks
 
 Status checks let you know if your commits meet the conditions set for the repository you're contributing to. The toolchain ships with a `CI` and a `PR` pipeline.
-Currently, only `tekton/code-branch-protection` status check has to be set required in the repository. It is checked by both `PR` and `CI` pipelines.
-To configure your repository to pass the branch protection settings checks, read the [Repository Configuration Guide](./docs/github-repository-configuration.md).
+Currently these status checks have to be set required in the repository:  
+
+      tekton/code-branch-protection
+      tekton/code-unit-tests
+      tekton/code-cis-check
+      tekton/code-vulnerability-scan
+      
+Also the following branch protection settings need to be enabled in GitHub:
+
+   * Require branches to be up to date before merging
+   * Require pull request reviews before merging
+   * Dismiss stale pull request approvals when new commits are pushed
+       
+They are checked by both `PR` and `CI` pipelines. To configure your repository to pass branch protection settings checks, read our [step by step guide](./docs/github-repository-configuration.md).
 
 ---
 ### Learn more

@@ -121,8 +121,10 @@ spec:
           value: $(params.commit-id)
         - name: state
           value: pending
-        - name: context
-          value: tekton/code-vulnerability-scan
+        - name: task-name
+          value: code-vulnerability-scan
+        - name: step-name
+          value: remediation
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -163,8 +165,10 @@ spec:
           value: $(params.commit-id)
         - name: state
           value: "$(tasks.code-vulnerability-scan.results.status)"
-        - name: context
-          value: tekton/code-vulnerability-scan
+        - name: task-name
+          value: code-vulnerability-scan
+        - name: step-name
+          value: remediation
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -186,8 +190,10 @@ spec:
           value: $(params.commit-id)
         - name: state
           value: pending
-        - name: context
-          value: tekton/code-cis-check
+        - name: task-name
+          value: code-cis-check
+        - name: step-name
+          value: cis
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -228,8 +234,10 @@ spec:
           value: $(params.commit-id)
         - name: state
           value: "$(tasks.code-cis-check.results.status)"
-        - name: context
-          value: tekton/code-cis-check
+        - name: task-name
+          value: code-cis-check
+        - name: step-name
+          value: cis
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -250,8 +258,10 @@ spec:
           value: $(params.commit-id)
         - name: state
           value: pending
-        - name: context
-          value: tekton/code-unit-tests
+        - name: task-name
+          value: code-unit-tests
+        - name: step-name
+          value: run-script
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -287,8 +297,10 @@ spec:
           value: $(params.commit-id)
         - name: state
           value: $(tasks.code-unit-tests.results.status)
-        - name: context
-          value: tekton/code-unit-tests
+        - name: task-name
+          value: code-unit-tests
+        - name: step-name
+          value: run-script
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -309,8 +321,10 @@ spec:
           value: $(params.commit-id)
         - name: state
           value: pending
-        - name: context
-          value: tekton/code-branch-protection
+        - name: task-name
+          value: code-branch-protection
+        - name: step-name
+          value: check-github-statuses
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -361,8 +375,10 @@ spec:
           value: $(params.commit-id)
         - name: state
           value: $(tasks.code-branch-protection.results.status)
-        - name: context
-          value: tekton/code-branch-protection
+        - name: task-name
+          value: code-branch-protection
+        - name: step-name
+          value: check-github-statuses
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
