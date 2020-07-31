@@ -56,6 +56,8 @@ spec:
       description: cr branch name
     - name: artifactory-dockerconfigjson
       description: dockerconfigjson for pullsecrets
+    - name: slack-notifications
+      description: toggles slack notifications
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -140,4 +142,6 @@ spec:
             value: $(params.issues-repo)
           - name: version
             value: $(params.version)
+          - name: slack-notifications
+            value: $(params.slack-notifications)
         serviceAccountName: sa-pullsecret
