@@ -23,6 +23,8 @@ spec:
       description: PR url
     - name: artifactory-dockerconfigjson
       description: dockerconfigjson for pullsecrets
+    - name: slack-notifications
+      description: toggles slack notifications
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -84,3 +86,5 @@ spec:
             value: $(params.pipeline-debug)
           - name: pr-url
             value: $(params.pr-url)
+          - name: slack-notifications
+            value: $(params.slack-notifications)

@@ -22,6 +22,8 @@ spec:
       description: commit id
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
+    - name: slack-notifications
+      description: toggles slack notifications
     - name: pr-url
       description: pr url
 
@@ -29,6 +31,28 @@ spec:
     - name: artifacts
 
   tasks:
+    - name: code-notify-pipeline-start
+      conditions:
+        - conditionRef: util-is-equal
+          params:
+            - name: left
+              value: $(params.slack-notifications)
+            - name: right
+              value: "1"
+      taskRef:
+        name: slack-post-message
+      workspaces:
+        - name: workspace
+          workspace: artifacts
+      params:
+        - name: message-script
+          value: |
+              #!/usr/bin/env python3
+              import os
+
+              print("PR Pipeline was Triggered By: " + os.getenv("TRIGGERED_BY"))
+              print("<https://cloud.ibm.com/devops/pipelines/tekton/" + os.getenv("PIPELINE_ID") + "/runs/" + os.getenv("PIPELINE_RUN_ID") + "?env_id=ibm:yp:" + os.getenv("TOOLCHAIN_REGION") + "|See the Pipeline Logs>")
+
     - name: code-fetch-credentials
       taskRef:
         name: git-get-credentials
@@ -121,8 +145,10 @@ spec:
           value: $(params.commit-id)
         - name: state
           value: pending
-        - name: context
-          value: tekton/code-vulnerability-scan
+        - name: task-name
+          value: code-vulnerability-scan
+        - name: step-name
+          value: remediation
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -163,8 +189,10 @@ spec:
           value: $(params.commit-id)
         - name: state
           value: "$(tasks.code-vulnerability-scan.results.status)"
-        - name: context
-          value: tekton/code-vulnerability-scan
+        - name: task-name
+          value: code-vulnerability-scan
+        - name: step-name
+          value: remediation
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -186,8 +214,10 @@ spec:
           value: $(params.commit-id)
         - name: state
           value: pending
-        - name: context
-          value: tekton/code-cis-check
+        - name: task-name
+          value: code-cis-check
+        - name: step-name
+          value: cis
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -228,8 +258,10 @@ spec:
           value: $(params.commit-id)
         - name: state
           value: "$(tasks.code-cis-check.results.status)"
-        - name: context
-          value: tekton/code-cis-check
+        - name: task-name
+          value: code-cis-check
+        - name: step-name
+          value: cis
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -250,8 +282,10 @@ spec:
           value: $(params.commit-id)
         - name: state
           value: pending
-        - name: context
-          value: tekton/code-unit-tests
+        - name: task-name
+          value: code-unit-tests
+        - name: step-name
+          value: run-script
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -287,8 +321,10 @@ spec:
           value: $(params.commit-id)
         - name: state
           value: $(tasks.code-unit-tests.results.status)
-        - name: context
-          value: tekton/code-unit-tests
+        - name: task-name
+          value: code-unit-tests
+        - name: step-name
+          value: run-script
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -309,8 +345,10 @@ spec:
           value: $(params.commit-id)
         - name: state
           value: pending
-        - name: context
-          value: tekton/code-branch-protection
+        - name: task-name
+          value: code-branch-protection
+        - name: step-name
+          value: check-github-statuses
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -361,14 +399,71 @@ spec:
           value: $(params.commit-id)
         - name: state
           value: $(tasks.code-branch-protection.results.status)
-        - name: context
-          value: tekton/code-branch-protection
+        - name: task-name
+          value: code-branch-protection
+        - name: step-name
+          value: check-github-statuses
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: code-pipeline-evaluator
+    - name: code-notify-pipeline-end
+      conditions:
+        - conditionRef: util-is-equal
+          params:
+            - name: left
+              value: $(params.slack-notifications)
+            - name: right
+              value: "1"
       runAfter:
         - code-branch-protection-status-finished
+      taskRef:
+        name: slack-post-message
+      workspaces:
+        - name: workspace
+          workspace: artifacts
+      params:
+        - name: message-script
+          value: |
+              #!/usr/bin/env python3
+
+              import json, os
+
+              results = json.loads("""
+                [
+                  {
+                    "name": "code-unit-tests",
+                    "expected": "success",
+                    "actual": "$(tasks.code-unit-tests.results.status)"
+                  },
+                  {
+                    "name": "code-branch-protection",
+                    "expected": "success",
+                    "actual": "$(tasks.code-branch-protection.results.status)"
+                  },
+                  {
+                    "name": "code-vulnerability-scan",
+                    "expected": "success",
+                    "actual": "$(tasks.code-vulnerability-scan.results.status)"
+                  },
+                  {
+                    "name": "code-cis-check",
+                    "expected": "success",
+                    "actual": "$(tasks.code-cis-check.results.status)"
+                  }
+                ]
+              """)
+
+              for result in results:
+                if result["actual"] != result["expected"]:
+                  print(":x: Task `{taskName}` has failed.".format(taskName=result["name"]))
+                else:
+                  print(":white_check_mark: Task `{taskName}` was successful.".format(taskName=result["name"]))
+              print("PR Pipeline finished!")
+              print("<https://cloud.ibm.com/devops/pipelines/tekton/" + os.getenv("PIPELINE_ID") + "/runs/" + os.getenv("PIPELINE_RUN_ID") + "?env_id=ibm:yp:" + os.getenv("TOOLCHAIN_REGION") + "|See the Pipeline Logs>")
+
+    - name: code-pipeline-evaluator
+      runAfter:
+        - code-notify-pipeline-end
       taskRef:
         name: util-evaluate-pipeline-results
       params:
