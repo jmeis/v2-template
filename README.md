@@ -12,13 +12,9 @@ This toolchain is pre-configured with a simple sample app to enable out of the b
 ### To get started, click this button:
 [![Create toolchain](https://cloud.ibm.com/devops/graphics/create_toolchain_button.png)](https://cloud.ibm.com/devops/setup/deploy?repository=https://github.ibm.com/one-pipeline/compliance-ci-toolchain&env_id=ibm:yp:us-south)
 
-For more information about the setup process, check out this guide:
+### Step by Step Guide
 
-[Setup Guide](./docs/compliance-ci-toolchain-setup.md)
-
-If you get stuck or experience a problem during setup, or running your pipelines, check out our [troubleshooting guide](https://github.ibm.com/one-pipeline/docs/blob/master/faq.md) before raising an issue.
-
-It implements the following best practices:
+If this is your first time running the CI template then you should read this [Setup Guide](./docs/compliance-ci-toolchain-setup.md) before running the toolchain. If you experience a problem during setup or running your pipelines, check out our [troubleshooting guide](https://github.ibm.com/one-pipeline/docs/blob/master/faq.md) before raising an issue. It implements the following best practices:
 - sanity check the Dockerfile prior to attempting creating the image
 - apply Docker signature after Docker unit tests, sanity checks and successful build
 - build container image on every Git commit, setting a tag based on build number, timestamp and commit id for traceability
@@ -44,7 +40,7 @@ Also the following branch protection settings need to be enabled in GitHub:
    * Require pull request reviews before merging
    * Dismiss stale pull request approvals when new commits are pushed
        
-They are checked by both `PR` and `CI` pipelines. To configure your repository to pass branch protection settings checks, read our [step by step guide](./docs/github-repository-configuration.md).
+They are checked by both `PR` and `CI` pipelines. To configure your repository to pass the branch protection settings checks, read the [Repository Configuration Guide](./docs/github-repository-configuration.md).
 
 ---
 ### Learn more
