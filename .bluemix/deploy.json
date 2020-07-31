@@ -103,6 +103,9 @@
             },
             "type": "string",
             "pattern": "\\S"
+        },
+        "vault_secret": {
+            "type": "password"
         }
     },
     "required": [
@@ -114,8 +117,7 @@
 	"dev-resource-group",
 	"dev-cluster-name",
 	"dev-cluster-namespace",
-    "vault_name",
-        "validation_signer"
+    "vault_secret"
     ],
     "form": [
         {
@@ -267,20 +269,12 @@
             ]
         },
         {
-            "type": "text",
+            "type": "password",
             "readonly": false,
             "title": {
                 "$ref": "#/messages/deploy.vaultName"
             },
-            "key": "vault_name"
-        },
-        {
-            "type": "text",
-            "readonly": false,
-            "title": {
-                "$ref": "#/messages/deploy.validationSigner"
-            },
-            "key": "validation_signer"
+            "key": "vault_secret"
         },
         {
             "type": "table",

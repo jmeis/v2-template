@@ -8,11 +8,8 @@ spec:
     - name: registry-namespace
       description: The namespace in the container image registry. You can set it up
         with {bx cr namespace-add]. Learn more at https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started#getting-started.
-    - name: vault-name
-      description: Specify the Key Protect instance name, where the image signing keys
-        have been stored. The build and validation signer fields contain default names
-        for these signers. The values must match the values created in the Key-Management-Admin-Template.
-        See https://github.com/open-toolchain/key-management-admin-toolchain
+    - name: vault-secret
+      description: the vault-secret for signing
     - name: repository
       description: The git repo
     - name: app-name
@@ -32,8 +29,6 @@ spec:
       description: Resource Group
     - name: dev-region
       description: target region
-    - name: validation-signer
-      description: VALIDATION_SIGNER
     - name: branch
       description: the branch for the git repo
     - name: imageUrl
@@ -104,8 +99,8 @@ spec:
         params:
           - name: registry-namespace
             value: $(params.registry-namespace)
-          - name: vault-name
-            value: $(params.vault-name)
+          - name: vault-secret
+            value: $(params.vault-secret)
           - name: repository
             value: $(params.repository)
           - name: app-name
@@ -120,8 +115,6 @@ spec:
             value: $(params.dev-region)
           - name: dev-resource-group
             value: $(params.dev-resource-group)
-          - name: validation-signer
-            value: $(params.validation-signer)
           - name: branch
             value: $(params.branch)
           - name: cluster-name

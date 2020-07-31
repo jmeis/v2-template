@@ -11,7 +11,7 @@ template:
   icon: secure-lock-kubernetes.svg
   required:
     - build
-    - init_dct
+    - ci
     - app-repo
     - pipeline-repo
     - tekton-catalog-repo
@@ -21,6 +21,7 @@ template:
     - artifactoryComp
     - privateWorker
     - devops-insights
+    - vault
   info:
     git url: >
       "[" + $env.repository + "]" +
@@ -182,45 +183,13 @@ services:
           DEV_RESOURCE_GROUP: '{{form.pipeline.parameters.dev-resource-group}}'
           DEV_CLUSTER_NAME: '{{form.pipeline.parameters.dev-cluster-name}}'
           DEV_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.dev-cluster-namespace}}'
-          VAULT_INSTANCE: '{{form.pipeline.parameters.vault_name}}'
-          BUILD_SIGNER: '{{form.pipeline.parameters.build_signer}}'
-          VALIDATION_SIGNER: '{{form.pipeline.parameters.validation_signer}}'
           ISSUES_REPO: 'https://github.ibm.com/{{form.issues-repo.parameters.owner_id}}/{{form.issues-repo.parameters.repo_name}}'
           EVIDENCE_REPO: 'https://github.ibm.com/{{form.evidence-repo.parameters.owner_id}}/{{form.evidence-repo.parameters.repo_name}}'
           APP_REPO_FULL: 'https://github.ibm.com/{{form.app-repo.parameters.owner_id}}/{{form.app-repo.parameters.repo_name}}'
           TEKTON_CATALOG_REPO: tekton-catalog-repo
           ARTIFACTORY_DOCKER_CONFIG_JSON: '{{form.artifactoryComp.parameters.docker_config_json}}'
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
-        execute: false
-
-  init_dct:
-    service_id: pipeline
-    parameters:
-      services:
-        - pipeline-repo
-        - tekton-catalog-repo
-      name: 'ci-sign-image-dct-init'
-      ui-pipeline: true
-      type: tekton
-      configuration:
-        content:
-          $text: init_dct_pipeline_tekton.yml
-        env:
-          DCT_PIPELINE_REPO: pipeline-repo
-          TEKTON_CATALOG_REPO: tekton-catalog-repo
-          APP_REPO: app-repo
-          APP_NAME: '{{form.pipeline.parameters.app-name}}'
-          REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
-          REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
-          API_KEY: '{{form.pipeline.parameters.api-key}}'
-          DEV_REGION_ID: '{{form.pipeline.parameters.dev-region}}'
-          DEV_RESOURCE_GROUP: '{{form.pipeline.parameters.dev-resource-group}}'
-          DEV_CLUSTER_NAME: '{{form.pipeline.parameters.dev-cluster-name}}'
-          DEV_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.dev-cluster-namespace}}'
-          VAULT_INSTANCE: '{{form.pipeline.parameters.vault_name}}'
-          BUILD_SIGNER: '{{form.pipeline.parameters.build_signer}}'
-          VALIDATION_SIGNER: '{{form.pipeline.parameters.validation_signer}}'
-          PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
+          VAULT_SECRET: '{{services.pipeline.parameters.vault_secret}}'
         execute: false
 
   devops-insights:
@@ -229,14 +198,16 @@ services:
   webide:
     service_id: orion
 
+  vault:
+    service_id: keyprotect
+    parameters:
+      name: 'ci-compliance-secrets'
+
 form:
   pipeline:
     parameters:
       app-name: hello-compliance-app
       dev-cluster-namespace: default
       build-cluster-namespace: build
-      vault_name: ''
-      build_signer: 'devops-build'
-      validation_signer: 'devops-validation'
     schema:
       $ref: deploy.json

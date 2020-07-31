@@ -15,6 +15,10 @@ inputs:
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
+    path: preview/ciso
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
     path: preview/iks
   - type: git
     branch: master
@@ -71,6 +75,9 @@ properties:
   - name: api-key
     value: ${API_KEY}
     type: SECURE
+  - name: vault-secret
+    value: ${VAULT_SECRET}
+    type: SECURE
   - name: evidence-repo
     value: ${EVIDENCE_REPO}
     type: text
@@ -100,15 +107,6 @@ properties:
     type: text
   - name: dev-resource-group
     value: ${DEV_RESOURCE_GROUP}
-    type: text
-  - name: build-signer
-    value: ${BUILD_SIGNER}
-    type: text
-  - name: validation-signer
-    value: ${VALIDATION_SIGNER}
-    type: text
-  - name: vault-name
-    value: ${VAULT_INSTANCE}
     type: text
   - name: repository-integration
     value: app-repo
