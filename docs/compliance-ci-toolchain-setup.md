@@ -220,7 +220,16 @@ After creating your toolchain, you can toggle sending notifications with the `sl
 | ![Slack Tool Toggle](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/slack-toggle.png) |
 | :--: | 
 
-### 4. Run PR/CI Pipeline
+### 4. Create Toolchain 
+
+ **Create toolchain:**	
+
+  - Click the create button at the bottom of the page, and wait for the toolchain to be created.	
+
+  Note: The individual toolchain integrations can be configured also after the pipeline has been created.	
+
+
+### 5. Run PR/CI Pipeline
 
 Configure your application repository by following these [instructions](https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/github-repository-configuration.md)
  
