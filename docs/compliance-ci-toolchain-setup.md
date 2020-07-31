@@ -20,6 +20,7 @@ Please see:
 
 - ***Portieris Set Up*** <https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/portieris-setup.md>
 
+- ***Migrating an existing DCT signing toolchain to CISO signing*** <https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/docs/update-setup-toolchain/docs/dct-ciso-migrate.md>
 
 The GitHub token that is issued to the IBM Cloud API key holder, needs access to read/set protected branch settings on repos.
 This can be only done by admin level access to the repository.
