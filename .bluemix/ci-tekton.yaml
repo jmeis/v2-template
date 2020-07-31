@@ -56,6 +56,10 @@ inputs:
     branch: master
     service: ${TEKTON_CATALOG_REPO}
     path: preview/devops-insights
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: preview/slack
 triggers:
   - type: git
     name: Git CI Trigger
@@ -114,6 +118,9 @@ properties:
     value: ${APP_REPO_FULL}
     type: text
   - name: pipeline-debug
+    value: "0"
+    type: text
+  - name: slack-notifications
     value: "0"
     type: text
   - name: version
