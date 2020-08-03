@@ -139,6 +139,66 @@ spec:
         - name: commit-id
           value: $(params.commit-id)
 
+    - name: code-detect-secrets-status-pending
+      runAfter:
+        - code-fetch-code
+      taskRef:
+        name: github-set-status
+      workspaces:
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: secret-name
+          value: github-token
+        - name: repo-url
+          value: $(params.repository)
+        - name: commit-sha
+          value: $(params.commit-id)
+        - name: state
+          value: pending
+        - name: task-name
+          value: code-detect-secrets
+        - name: step-name
+          value: detect-secrets
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: code-detect-secrets
+      runAfter:
+        - code-fetch-code
+      taskRef:
+        name: compliance-detect-secrets
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: app-directory
+          value: $(tasks.code-fetch-code.results.directory-name)
+
+    - name: code-detect-secrets-status-finished
+      runAfter:
+        - code-detect-secrets
+      taskRef:
+        name: github-set-status
+      workspaces:
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: secret-name
+          value: github-token
+        - name: repo-url
+          value: $(params.repository)
+        - name: commit-sha
+          value: $(params.commit-id)
+        - name: state
+          value: $(tasks.code-detect-secrets.results.status)
+        - name: task-name
+          value: code-detect-secrets
+        - name: step-name
+          value: detect-secrets
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
     - name: code-vulnerability-scan-status-pending
       runAfter:
         - code-fetch-code
@@ -521,5 +581,10 @@ spec:
                 "name": "code-cis-check",
                 "expected": "success",
                 "actual": "$(tasks.code-cis-check.results.status)"
+              },
+              {
+                "name": "code-detect-secrets",
+                "expected": "success",
+                "actual": "$(tasks.code-detect-secrets.results.status)"
               }
             ]
