@@ -20,14 +20,19 @@ Please see:
 
 - ***Portieris Set Up*** <https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/portieris-setup.md>
 
-- ***Migrating an existing DCT signing toolchain to CISO signing*** <https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/docs/update-setup-toolchain/docs/dct-ciso-migrate.md>
-
 The GitHub token that is issued to the IBM Cloud API key holder, needs access to read/set protected branch settings on repos.
 This can be only done by admin level access to the repository.
 
 - Possible solutions:
     - Use your personal IBM API key and personal repositories.
     - Use an IBM API key what is owned by a user with admin rights to the repository.  
+
+### Migrating an existing DCT signing toolchain to CISO signing 
+If you have an existing pipeline that uses DCT signing, the following link will show how to make the switch to CISO signing.
+<https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/dct-ciso-migrate.md>
+
+Otherwise continue with the setup doc to create a new toolchain.
+
 
 ### 1. Create toolchain:
 
@@ -215,12 +220,12 @@ After creating your toolchain, you can toggle sending notifications with the `sl
 | ![Slack Tool Toggle](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/slack-toggle.png) |
 | :--: | 
 
-### 4. Create Toolchain and Run DCT init Pipeline
+### 4. Create Toolchain
 
  **Create toolchain:**
 
   - Click the create button at the bottom of the page, and wait for the toolchain to be created.
- 
+
   Note: The individual toolchain integrations can be configured also after the pipeline has been created.
 
 
