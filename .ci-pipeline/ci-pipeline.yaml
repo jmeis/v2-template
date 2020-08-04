@@ -1344,7 +1344,7 @@ spec:
 
     - name: build-pipeline-evaluator
       runAfter:
-        - build-notify-pipeline-end
+        - build-deploy-dev
       taskRef:
         name: util-evaluate-pipeline-results
       params:
