@@ -880,6 +880,10 @@ spec:
           value: $(params.version)
         - name: repository
           value: $(params.app-name)
+        - name: repository-url
+          value: $(params.repository)
+        - name: commit-sha
+          value: $(tasks.code-fetch-code.results.git-commit)
 
     - name: build-vulnerability-advisor
       taskRef:
