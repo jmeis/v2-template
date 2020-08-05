@@ -33,7 +33,8 @@ Currently these status checks have to be set required in the repository:
       tekton/code-unit-tests
       tekton/code-cis-check
       tekton/code-vulnerability-scan
-
+      tekton/code-detect-secrets
+      
 Also the following branch protection settings need to be enabled in GitHub:
 
    * Require branches to be up to date before merging

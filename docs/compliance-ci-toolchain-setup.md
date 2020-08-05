@@ -247,13 +247,11 @@ Configure your application repository by following these [instructions](https://
 Currently
 
 
-```tekton/code-branch-protection```
-
-```tekton/code-unit-tests```
-
-```tekton/code-cis-check```
-
-```tekton/code-vulnerability-scan```
+      tekton/code-branch-protection
+      tekton/code-unit-tests
+      tekton/code-cis-check
+      tekton/code-vulnerability-scan
+      tekton/code-detect-secrets
 
 
 - Keep in mind, that at least one run is needed for github to list the status checks in Settings, to be able to mark them as required. Because of this, for the first time, pr pipeline will inevitably fail. Mark the status checks required and rerun the pr pipeline from the UI.
