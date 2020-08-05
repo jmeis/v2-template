@@ -457,7 +457,8 @@ spec:
                   "tekton/code-branch-protection",
                   "tekton/code-unit-tests",
                   "tekton/code-cis-check",
-                  "tekton/code-vulnerability-scan"
+                  "tekton/code-vulnerability-scan",
+                  "tekton/code-detect-secrets"
                 ]
               }
             }]
