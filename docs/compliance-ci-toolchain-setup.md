@@ -9,13 +9,15 @@
 * [**Servide ID**](https://cloud.ibm.com/docs/account?topic=account-serviceids)
 * [**Service ID API Key**](https://cloud.ibm.com/docs/account?topic=account-serviceidapikeys#create_service_key)
 
-There are a number of steps that need to be done prior to creating this toolchain for the first time.
+There are a couple of steps that need to be done prior to creating this toolchain for the first time.
 Please see:
 
 - ***CISO Code Signing Service and Key Setup*** <https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/ciso-setup.md>
 
 - ***Service API Key for TaaS Private Worker*** <https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/taas-setup.md>
 
+Optionally, you can also follow the next two guides. These will help you set up cluster image enforcement with Portieris.
+ 
 - ***Obtain the Public Key Certificate*** Create and instance of the toolchain <https://github.ibm.com/one-pipeline/portieris-config-helper>. Once this pipeline has run, you can retrieve the public certificate from the logs
 
 - ***Portieris Set Up*** <https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/portieris-setup.md>
