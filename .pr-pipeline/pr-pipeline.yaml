@@ -415,7 +415,7 @@ spec:
             - name: right
               value: "1"
       runAfter:
-        - code-branch-protection-status-finished
+        - code-branch-protection
       taskRef:
         name: slack-post-message
       workspaces:
