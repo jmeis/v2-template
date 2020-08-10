@@ -27,6 +27,12 @@ spec:
     - name: ibmcloud-api
       description: the ibmcloud api
       default: https://cloud.ibm.com
+    - name: retry-count
+      description: retry count to pull and push git evidence repo
+      default: "5"
+    - name: retry-delay
+      description: the amount of seconds between the retries
+      default: "10"
     - name: pipeline-debug
       description: Pipeline debug mode
       default: "0"
@@ -34,21 +40,6 @@ spec:
   results:
     - name: file-locations
     - name: test-types
-
-  workspaces:
-    - name: artifacts
-      mountPath: /artifacts
-
-  volumes:
-    - name: cd-config-volume
-      configMap:
-        name: toolchain
-        items:
-          - key: toolchain.json
-            path: toolchain.json
-    - name: secrets
-      secret:
-        secretName: $(params.continuous-delivery-context-secret)
 
   stepTemplate:
     env:
@@ -111,11 +102,34 @@ spec:
 
         IBMCLOUD_API_KEY=$(cat "/secrets/$(params.ibmcloud-api-key-secret-key)")
 
-        ibmcloud login --apikey "${IBMCLOUD_API_KEY}" -a "${IBM_CLOUD_API}" --no-region
+        source /scripts/retry_command.sh
+
+        retry $(params.retry-count) $(params.retry-delay) \
+          ibmcloud login --apikey "${IBMCLOUD_API_KEY}" -a "${IBM_CLOUD_API}" --no-region
+
+        exit_code=$?
+
+        if [ $exit_code -ne 0 ]; then
+          echo "Error logging in with IBMCLOUD_API_KEY"
+          exit $exit_code
+        fi
+
         ibmcloud plugin update doi --force
-        ibmcloud doi policies-update \
-          --file "${DATASET_FILE}" \
-          --toolchainid "${TOOLCHAIN_ID}"
+
+        ibmcloud_doi_update_policy() {
+          ibmcloud doi policies-update \
+            --file "${DATASET_FILE}" \
+            --toolchainid "${TOOLCHAIN_ID}"
+        }
+
+        retry $(params.retry-count) $(params.retry-delay) ibmcloud_doi_update_policy
+
+        exit_code=$?
+
+        if [ $exit_code -ne 0 ]; then
+          echo "Error during the doi policies update"
+          exit $exit_code
+        fi
 
         echo -n "${DATASET_NAME}" > $(results.test-types.path)
 
@@ -124,6 +138,8 @@ spec:
           mountPath: /cd-config
         - name: secrets
           mountPath: /secrets
+        - name: retry-command
+          mountPath: /scripts
 
     - name: transform-data
       image: ibmcom/pipeline-base-image:2.7
@@ -209,3 +225,24 @@ spec:
         echo "$TEST_DATA" > ./testresult.json
         cat ./testresult.json
         echo -n "./testresult.json" > $(results.file-locations.path)
+
+  workspaces:
+    - name: artifacts
+      mountPath: /artifacts
+
+  volumes:
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+          - key: toolchain.json
+            path: toolchain.json
+    - name: secrets
+      secret:
+        secretName: $(params.continuous-delivery-context-secret)
+    - name: retry-command
+      configMap:
+        name: retry-command
+        items:
+          - key: retry_command.sh
+            path: retry_command.sh

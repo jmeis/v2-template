@@ -238,7 +238,6 @@ spec:
         - code-fetch-evidence-locker
       taskRef:
         name: evidence-add
-      retries: 2
       workspaces:
         - name: evidence-locker
           workspace: artifacts
@@ -268,7 +267,6 @@ spec:
         - code-unit-tests
       taskRef:
         name: evidence-to-doi-transformer
-      retries: 2
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -287,7 +285,6 @@ spec:
         - code-unit-tests-create-doi-data
       taskRef:
         name: doi-publish-testrecord
-      retries: 2
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -378,7 +375,6 @@ spec:
         - code-unit-tests-create-evidence
       taskRef:
         name: evidence-add
-      retries: 2
       workspaces:
         - name: evidence-locker
           workspace: artifacts
@@ -408,7 +404,6 @@ spec:
         - code-vulnerability-scan
       taskRef:
         name: evidence-to-doi-transformer
-      retries: 2
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -427,7 +422,6 @@ spec:
         - code-vulnerability-scan-create-doi-data
       taskRef:
         name: doi-publish-testrecord
-      retries: 2
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -502,7 +496,6 @@ spec:
         - code-vulnerability-scan-create-evidence
       taskRef:
         name: evidence-add
-      retries: 2
       workspaces:
         - name: evidence-locker
           workspace: artifacts
@@ -532,7 +525,6 @@ spec:
         - code-cis-check
       taskRef:
         name: evidence-to-doi-transformer
-      retries: 2
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -551,7 +543,6 @@ spec:
         - code-cis-check-create-doi-data
       taskRef:
         name: doi-publish-testrecord
-      retries: 2
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -624,7 +615,6 @@ spec:
         - code-cis-check-create-evidence
       taskRef:
         name: evidence-add
-      retries: 2
       workspaces:
         - name: evidence-locker
           workspace: artifacts
@@ -654,7 +644,6 @@ spec:
         - code-bom-check
       taskRef:
         name: evidence-to-doi-transformer
-      retries: 2
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -673,7 +662,6 @@ spec:
         - code-bom-check-create-doi-data
       taskRef:
         name: doi-publish-testrecord
-      retries: 2
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -751,7 +739,6 @@ spec:
         - code-bom-check-create-evidence
       taskRef:
         name: evidence-add
-      retries: 2
       workspaces:
         - name: evidence-locker
           workspace: artifacts
@@ -783,7 +770,6 @@ spec:
         - code-branch-protection
       taskRef:
         name: evidence-to-doi-transformer
-      retries: 2
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -802,7 +788,6 @@ spec:
         - code-branch-protection-create-doi-data
       taskRef:
         name: doi-publish-testrecord
-      retries: 2
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -962,7 +947,6 @@ spec:
         - code-branch-protection-create-evidence
       taskRef:
         name: evidence-add
-      retries: 2
       params:
         - name: evidence-repo-path
           value: "evidence-locker"
@@ -992,7 +976,6 @@ spec:
         - build-vulnerability-advisor-result-adapter
       taskRef:
         name: evidence-to-doi-transformer
-      retries: 2
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -1011,7 +994,6 @@ spec:
         - build-vulnerability-advisor-create-doi-data
       taskRef:
         name: doi-publish-testrecord
-      retries: 2
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -1216,7 +1198,6 @@ spec:
         - build-vulnerability-advisor-create-evidence
       taskRef:
         name: evidence-add
-      retries: 2
       workspaces:
         - name: evidence-locker
           workspace: artifacts
@@ -1246,7 +1227,6 @@ spec:
         - build-acceptance-tests
       taskRef:
         name: evidence-to-doi-transformer
-      retries: 2
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -1265,7 +1245,6 @@ spec:
         - build-acceptance-tests-create-doi-data
       taskRef:
         name: doi-publish-testrecord
-      retries: 2
       workspaces:
         - name: artifacts
           workspace: artifacts
