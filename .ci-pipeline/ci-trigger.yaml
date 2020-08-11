@@ -14,8 +14,6 @@ spec:
       description: The git repo
     - name: app-name
       description: The name of your app
-    - name: revision
-      description: the branch for the git repo
     - name: registry-region
       description: The IBM Cloud region for image registry
     - name: api-key
@@ -31,8 +29,6 @@ spec:
       description: target region
     - name: branch
       description: the branch for the git repo
-    - name: imageUrl
-      description: The image url in your container registry
     - name: dev-cluster-namespace
       description: namespace dev
     - name: repository-integration
@@ -105,8 +101,6 @@ spec:
             value: $(params.repository)
           - name: app-name
             value: $(params.app-name)
-          - name: revision
-            value: $(params.revision)
           - name: registry-region
             value: $(params.registry-region)
           - name: api-key
