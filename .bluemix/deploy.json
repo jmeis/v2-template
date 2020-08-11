@@ -269,14 +269,6 @@
             ]
         },
         {
-            "type": "password",
-            "readonly": false,
-            "title": {
-                "$ref": "#/messages/deploy.vaultName"
-            },
-            "key": "vault_secret"
-        },
-        {
             "type": "table",
             "columnCount": 1,
             "widths": [
@@ -305,6 +297,14 @@
                     }
                 }
             ]
+        },
+        {
+            "type": "password",
+            "readonly": false,
+            "title": {
+                "$ref": "#/messages/deploy.vaultName"
+            },
+            "key": "vault_secret"
         }
     ]
 }
