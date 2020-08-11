@@ -11,11 +11,6 @@ spec:
       description: branch
     - name: target-branch
       description: target branch
-    - name: api-key
-      description: The IBM Cloud API key is used to access the IBM Cloud Kubernetes
-        Service API and interact with the cluster. You can obtain your API key with
-        'bx iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
-        by clicking **Create API key** (Each API key only can be viewed once).
     - name: repository-integration
       description: the repo integration name
     - name: commit-id
@@ -59,41 +54,54 @@ spec:
       workspaces:
         - name: artifacts
           workspace: artifacts
+        - name: secrets
+          workspace: artifacts
       params:
         - name: repository
           value: $(params.repository)
-        - name: ibmcloud-api-key
-          value: $(params.api-key)
         - name: repository-integration
           value: $(params.repository-integration)
+        - name: ibmcloud-api-key-secret-key
+          value: api-key
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: code-setup-set-status
+    - name: get-org
       runAfter:
         - code-fetch-credentials
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
+      params:
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: repository
+          value: $(params.repository)
       taskSpec:
+        params:
+          - name: pipeline-debug
+            default: "0"
+          - name: repository
+        results:
+          - name: gh-org
+        stepTemplate:
+          env:
+            - name: PIPELINE_DEBUG
+              value: $(params.pipeline-debug)
         steps:
-          - name: save-git-token-to-file
+          - name: get-params
             image: ibmcom/pipeline-base-image:2.6
-            workingDir: "/artifacts"
-            command: ["/bin/bash", "-c"]
-            args:
-              - |
-                #!/bin/bash
-                set -e -o pipefail
+            script: |
+              #!/bin/bash
+
+              set -e -o pipefail
+
+              if [ $PIPELINE_DEBUG == 1 ]; then
                 pwd
                 env
                 trap env EXIT
                 set -x
-                source ./build.properties
-                echo -n $GIT_TOKEN > ./github-token
-        workspaces:
-          - name: artifacts
-            mountPath: /artifacts
+              fi
+
+              OWNER=$(echo "$(params.repository)" | cut -d/ -f4 )
+              echo -n $OWNER | tee $(results.gh-org.path)
 
     - name: code-fetch-code
       runAfter:
@@ -103,11 +111,15 @@ spec:
       workspaces:
         - name: artifacts
           workspace: artifacts
+        - name: secrets
+          workspace: artifacts
       params:
         - name: repository
           value: $(params.repository)
         - name: branch
           value: $(params.branch)
+        - name: git-user
+          value: $(tasks.code-fetch-credentials.results.git-auth-user)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -130,7 +142,6 @@ spec:
     - name: code-vulnerability-scan-status-pending
       runAfter:
         - code-fetch-code
-        - code-setup-set-status
       taskRef:
         name: github-set-status
       workspaces:
@@ -138,7 +149,7 @@ spec:
           workspace: artifacts
       params:
         - name: secret-name
-          value: github-token
+          value: git-token
         - name: repo-url
           value: $(params.repository)
         - name: commit-sha
@@ -167,8 +178,8 @@ spec:
           value: $(params.repository)
         - name: revision
           value: $(params.branch)
-        - name: api-key
-          value: $(params.api-key)
+        - name: ibmcloud-api-key-secret-key
+          value: api-key
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
@@ -184,7 +195,7 @@ spec:
           workspace: artifacts
       params:
         - name: secret-name
-          value: github-token
+          value: git-token
         - name: repo-url
           value: $(params.repository)
         - name: commit-sha
@@ -203,7 +214,6 @@ spec:
     - name: code-cis-check-status-pending
       runAfter:
         - code-fetch-code
-        - code-setup-set-status
       taskRef:
         name: github-set-status
       workspaces:
@@ -211,7 +221,7 @@ spec:
           workspace: artifacts
       params:
         - name: secret-name
-          value: github-token
+          value: git-token
         - name: repo-url
           value: $(params.repository)
         - name: commit-sha
@@ -240,12 +250,12 @@ spec:
           value: $(params.repository)
         - name: revision
           value: $(params.branch)
-        - name: api-key
-          value: $(params.api-key)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
           value: $(params.commit-id)
+        - name: ibmcloud-api-key-secret-key
+          value: api-key
 
     - name: code-cis-check-status-finished
       runAfter:
@@ -257,7 +267,7 @@ spec:
           workspace: artifacts
       params:
         - name: secret-name
-          value: github-token
+          value: git-token
         - name: repo-url
           value: $(params.repository)
         - name: commit-sha
@@ -275,7 +285,7 @@ spec:
 
     - name: code-unit-tests-status-pending
       runAfter:
-        - code-setup-set-status
+        - code-fetch-code
       taskRef:
         name: github-set-status
       workspaces:
@@ -283,7 +293,7 @@ spec:
           workspace: artifacts
       params:
         - name: secret-name
-          value: github-token
+          value: git-token
         - name: repo-url
           value: $(params.repository)
         - name: commit-sha
@@ -324,7 +334,7 @@ spec:
           workspace: artifacts
       params:
         - name: secret-name
-          value: github-token
+          value: git-token
         - name: repo-url
           value: $(params.repository)
         - name: commit-sha
@@ -350,7 +360,7 @@ spec:
           workspace: artifacts
       params:
         - name: secret-name
-          value: github-token
+          value: git-token
         - name: repo-url
           value: $(params.repository)
         - name: commit-sha
@@ -372,7 +382,7 @@ spec:
       taskRef:
         name: compliance-check-github-statuses
       workspaces:
-        - name: artifacts
+        - name: secrets
           workspace: artifacts
       params:
         - name: target-branch
@@ -393,6 +403,12 @@ spec:
             }]
         - name: collect-evidence
           value: "false"
+        - name: gh-org
+          value: $(tasks.get-org.results.gh-org)
+        - name: repository
+          value: $(tasks.code-fetch-credentials.results.repo-name)
+        - name: git-commit
+          value: $(params.commit-id)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -406,7 +422,7 @@ spec:
           workspace: artifacts
       params:
         - name: secret-name
-          value: github-token
+          value: git-token
         - name: repo-url
           value: $(params.repository)
         - name: commit-sha
