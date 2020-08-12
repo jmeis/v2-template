@@ -1099,7 +1099,7 @@ spec:
           value: "api-key"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-    - name: signing
+    - name: build-image-signing
       runAfter:
         - build-vulnerability-advisor
       taskRef:
@@ -1125,7 +1125,7 @@ spec:
 
     - name: build-fetch-iks-cluster-config
       runAfter:
-        - signing
+        - build-image-signing
       taskRef:
         name: iks-fetch-config
       workspaces:
@@ -1171,7 +1171,7 @@ spec:
 
     - name: build-create-namespace
       runAfter:
-        - signing
+        - build-image-signing
       taskRef:
         name: iks-create-namespace
       workspaces:
