@@ -152,6 +152,87 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
+    - name: code-detect-secrets
+      runAfter:
+        - code-fetch-code
+      taskRef:
+        name: compliance-detect-secrets
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: app-directory
+          value: $(tasks.code-fetch-code.results.directory-name)
+
+    - name: code-detect-secrets-create-evidence
+      runAfter:
+        - code-fetch-evidence-locker
+      taskRef:
+        name: evidence-add
+      retries: 2
+      workspaces:
+        - name: evidence-locker
+          workspace: artifacts
+      params:
+        - name: evidence-repo-path
+          value: "evidence-locker"
+        - name: namespace
+          value: "ci"
+        - name: evidence-name
+          value: "detect-secrets"
+        - name: task-step-name
+          value: "detect-secrets"
+        - name: toolchain-crn
+          value: $(tasks.code-extract-toolchain-crn.results.extracted-value)
+        - name: evidence-type
+          value: "com.ibm.detect_secrets"
+        - name: evidence-type-version
+          value: "1.0.0"
+        - name: result
+          value: $(tasks.code-detect-secrets.results.status)
+        - name: issues
+          value: "[]"
+
+    - name: code-detect-secrets-create-doi-data
+      runAfter:
+        - code-detect-secrets
+      taskRef:
+        name: evidence-to-doi-transformer
+      retries: 2
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: title
+          value: "Detect Secrets"
+        - name: task-name
+          value: "code-detect-secrets"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: result-status
+          value: $(tasks.code-detect-secrets.results.status)
+
+    - name: code-detect-secrets-results-to-doi
+      runAfter:
+        - code-detect-secrets-create-doi-data
+      taskRef:
+        name: doi-publish-testrecord
+      retries: 2
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: app-name
+          value: "$(params.app-name)"
+        - name: file-locations
+          value: $(tasks.code-detect-secrets-create-doi-data.results.file-locations)
+        - name: test-types
+          value: $(tasks.code-detect-secrets-create-doi-data.results.test-types)
+        - name: toolchain-apikey-secret-key
+          value: "api-key"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
     - name: build-doi-publish-buildrecord
       taskRef:
         name: doi-publish-buildrecord
@@ -703,7 +784,8 @@ spec:
                   "tekton/code-branch-protection",
                   "tekton/code-unit-tests",
                   "tekton/code-cis-check",
-                  "tekton/code-vulnerability-scan"
+                  "tekton/code-vulnerability-scan",
+                  "tekton/code-detect-secrets"
                 ]
               }
             }]
@@ -1375,5 +1457,10 @@ spec:
                 "name": "vulnerability-advisor",
                 "expected": "OK",
                 "actual": "$(tasks.build-vulnerability-advisor.results.scan-status)"
+              },
+              {
+                "name": "code-detect-secrets",
+                "expected": "success",
+                "actual": "$(tasks.code-detect-secrets.results.status)"
               }
             ]
