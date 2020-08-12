@@ -1,27 +1,34 @@
 # CISO Code Signing Service and Key Setup
 
-
-### Registering a Team
+###  Prerequisites
+#### Registering a Team
 
 The compliance-ci-toolchain leverages the CISO services to sign images.
-A team needs to be registered on CISO.
+A team first needs to be registered with CISO.
 
-Follow the instruction on this page:
+Go to the CISO home page using the link below.
 
 <https://pgawdccosig01.sl.bluecloud.ibm.com>
 
+Click the register for signing link and register a team
+
 ![](https://github.ibm.com/one-pipeline/docs/blob/master/assets/signing-setup/ciso/landingpage.png)
 
+* ##### Team
+Team members can be managed by going to Dashboard->Manage Team
 
+* ##### Certificate Management
+At this point you can request a new certificate or have an existing one
+uploaded to the HSM (Hardware Security Module). Go to Dashboard->Certificates
+or from the home page
+
+![](https://github.ibm.com/one-pipeline/docs/blob/master/assets/signing-setup/ciso/certrequest.png)
 
 ### Downloading the Installer
 
-Once registered visit the page again and log in.
+The Compliance-CI-Template uses the CISO signing client. The Tekton signing task uses a preconfigured image with the CISO client already installed. It only requires the CISO .pfx file to access the CISO signing service.
 
-At this point you can request a certificate or have an existing one
-uploaded to the HSM (Hardware Security Module)
-
-![](https://github.ibm.com/one-pipeline/docs/blob/master/assets/signing-setup/ciso/certrequest.png)
+The .pfx file can be obtained by downloading the CISO client.
 
 Click on the Local Sign button
 
@@ -34,8 +41,27 @@ Select the following options:
 Click Review Parameters and generate your client bundle.
 
 Extract the contents of the generated .tar file and look for the .pfx
-file. This certificate acts as the key to the users partition. 
+file.
 
+The contents will look like the following.
+
+```javascript
+Client_XXXXXXXXXXXXXXXXX.pfx
+client.conf
+config.txt
+ekm-client-2.0.2001.42407-el7+el8.x86_64.rpm
+```
+
+
+The contents for this file needs to be extracted and double base64 encoded.
+
+This can be done with the following command in a terminal
+
+```javascript
+echo $(cat Client_XXXXXXXXXXXXXXXXX.pfx | base64) | base64
+```
+
+Copy the content of this output and save it in Key-Protect
 
 ### Creating Key-Protect instance
 
@@ -49,17 +75,6 @@ Select the region and specify a service name for the instance.
 
 ### Uploading the certificate to the Vault.
 
-The certificate content must be double encoded to a base64 string and the
-output captured.
-
-This can be done with the following command in a terminal
-
-```javascript
-echo $(cat Client_XXXXXXXXXXXXXXXXX.pfx | base64) | base64
-```
-
-Copy the base64 output from the terminal
-
 Go to
 <https://cloud.ibm.com/resources>
 
@@ -71,7 +86,7 @@ Click the Add Key button
 
 On the following dialog, select Import Key and Standard Key.
 
-Set a name for the key and paste the base64 encoded certificate into the
+Set a name for the key and paste the base64 encoded .pfx file into the
 key material field.
 
 Click import key
