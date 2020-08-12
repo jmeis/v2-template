@@ -149,7 +149,7 @@ spec:
           workspace: artifacts
       params:
         - name: secret-name
-          value: github-token
+          value: git-token
         - name: repo-url
           value: $(params.repository)
         - name: commit-sha
@@ -160,6 +160,8 @@ spec:
           value: code-detect-secrets
         - name: step-name
           value: detect-secrets
+        - name: description
+          value: "Tekton PR Pipeline Status"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -185,7 +187,7 @@ spec:
           workspace: artifacts
       params:
         - name: secret-name
-          value: github-token
+          value: git-token
         - name: repo-url
           value: $(params.repository)
         - name: commit-sha
@@ -196,6 +198,8 @@ spec:
           value: code-detect-secrets
         - name: step-name
           value: detect-secrets
+        - name: description
+          value: "Tekton PR Pipeline Status"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
