@@ -15,11 +15,6 @@ spec:
       description: The name of your app
     - name: registry-region
       description: The IBM Cloud region for image registry
-    - name: api-key
-      description: The IBM Cloud API key is used to access the IBM Cloud Kubernetes
-        Service API and interact with the cluster. You can obtain your API key with
-        'bx iam api-key-create' or via the console at https://cloud.ibm.com/iam#/apikeys
-        by clicking **Create API key** (Each API key only can be viewed once).
     - name: branch
       description: the branch for the git repo
       default: "master"
@@ -975,8 +970,8 @@ spec:
           value: $(tasks.build-containerize.results.image-digest)
         - name: scan-report-file
           value: 'app-image-va-report.json'
-        - name: ibmcloud-api-key
-          value: $(params.api-key)
+        - name: ibmcloud-api-key-secret-key
+          value: "api-key"
         # - name: maxIteration
         #   value: '5'
         # - name: sleepTime
@@ -1132,8 +1127,8 @@ spec:
         - name: cluster-configuration
           workspace: artifacts
       params:
-        - name: ibmcloud-api-key
-          value: $(params.api-key)
+        - name: ibmcloud-api-key-secret-key
+          value: "api-key"
         - name: cluster-name
           value: $(params.cluster-name)
         - name: resource-group
