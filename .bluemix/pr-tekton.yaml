@@ -28,6 +28,10 @@ inputs:
     branch: master
     service: ${TEKTON_CATALOG_REPO}
     path: preview/slack
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: preview/toolchain
 triggers:
   - type: git
     name: Git PR Trigger
@@ -40,9 +44,6 @@ properties:
   - name: api-key
     value: ${API_KEY}
     type: SECURE
-  - name: repository
-    value: ${APP_REPO_FULL}
-    type: text
   - name: pipeline-debug
     value: "0"
     type: text

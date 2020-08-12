@@ -5,8 +5,6 @@ metadata:
   name: pr-template
 spec:
   params:
-    - name: repository
-      description: The git repo
     - name: branch
       description: branch
     - name: target-branch
@@ -61,8 +59,6 @@ spec:
               claimName: pipelinerun-$(uid)-pvc
         serviceAccountName: sa-pullsecret
         params:
-          - name: repository
-            value: $(params.repository)
           - name: branch
             value: $(params.branch)
           - name: target-branch
