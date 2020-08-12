@@ -9,8 +9,6 @@ spec:
       description: The namespace in the container image registry. You can set it up
         with {bx cr namespace-add]. Learn more at
         https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started#getting-started.
-    - name: repository
-      description: The git repo
     - name: app-name
       description: The name of your app
     - name: registry-region
@@ -32,10 +30,6 @@ spec:
       description: target region
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
-    - name: evidence-repo
-      description: evidence repo
-    - name: issues-repo
-      description: incident issues repo
     - name: commit-id
       description: commit id
     - name: pr-url
@@ -83,9 +77,38 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
+    - name: code-extract-repository-url
+      taskRef:
+        name: toolchain-extract-value
+      params:
+        - name: expression
+          value: '.services[] | select(.toolchain_binding.name=="app-repo") | .dashboard_url'
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: code-extract-evidence-repo-url
+      taskRef:
+        name: toolchain-extract-value
+      params:
+        - name: expression
+          value: '.services[] | select(.toolchain_binding.name=="evidence-repo") | .dashboard_url'
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: code-extract-issues-repo-url
+      taskRef:
+        name: toolchain-extract-value
+      params:
+        - name: expression
+          value: '.services[] | select(.toolchain_binding.name=="issues-repo") | .dashboard_url'
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
     - name: code-fetch-credentials
       runAfter:
         - code-extract-toolchain-crn
+        - code-extract-evidence-repo-url
+        - code-extract-issues-repo-url
       taskRef:
         name: git-get-credentials
       workspaces:
@@ -97,7 +120,7 @@ spec:
         - name: ibmcloud-api-key-secret-key
           value: api-key
         - name: repository
-          value: $(params.repository)
+          value: $(tasks.code-extract-repository-url.results.extracted-value)
         - name: repository-integration
           value: $(params.repository-integration)
         - name: pipeline-debug
@@ -115,7 +138,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(params.evidence-repo)
+          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
         - name: git-user
           value: $(tasks.code-fetch-credentials.results.git-auth-user)
         - name: branch
@@ -137,7 +160,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(params.repository)
+          value: $(tasks.code-extract-repository-url.results.extracted-value)
         - name: git-user
           value: $(tasks.code-fetch-credentials.results.git-auth-user)
         - name: branch
@@ -237,7 +260,7 @@ spec:
         - name: toolchain-apikey-secret-key
           value: "api-key"
         - name: git-repository
-          value: $(params.repository)
+          value: $(tasks.code-extract-repository-url.results.extracted-value)
         - name: git-branch
           value: $(params.branch)
         - name: git-commit
@@ -255,7 +278,11 @@ spec:
           workspace: artifacts
       params:
         - name: script
-          value: . /root/.nvm/nvm.sh && cd /scripts/$(echo $(params.repository) | sed -E "s/(.*)(\/)//") && npm ci -q && npm run test
+          value: |
+            set -e -o pipefail
+            . /root/.nvm/nvm.sh
+            cd /scripts/$(echo $(tasks.code-extract-repository-url.results.extracted-value) | sed -E "s/(.*)(\/)//")
+            npm ci -q && npm run test
 
     - name: code-unit-tests-create-issue
       runAfter:
@@ -269,9 +296,9 @@ spec:
         - name: secret-name
           value: git-token
         - name: repository
-          value: $(params.repository)
+          value: $(tasks.code-extract-repository-url.results.extracted-value)
         - name: incident-issue-repo
-          value: $(params.issues-repo)
+          value: $(tasks.code-extract-issues-repo-url.results.extracted-value)
         - name: task-name
           value: "code-unit-tests"
         - name: result-status
@@ -356,7 +383,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(params.repository)
+          value: $(tasks.code-extract-repository-url.results.extracted-value)
         - name: revision
           value: $(params.branch)
         - name: commit-id
@@ -372,7 +399,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(params.repository)
+          value: $(tasks.code-extract-repository-url.results.extracted-value)
         - name: revision
           value: $(params.branch)
         - name: ibmcloud-api-key-secret-key
@@ -406,9 +433,9 @@ spec:
         - name: secret-name
           value: git-token
         - name: repository
-          value: $(params.repository)
+          value: $(tasks.code-extract-repository-url.results.extracted-value)
         - name: incident-issue-repo
-          value: $(params.issues-repo)
+          value: $(tasks.code-extract-issues-repo-url.results.extracted-value)
         - name: task-name
           value: "code-vulnerability-scan"
         - name: result-status
@@ -493,7 +520,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(params.repository)
+          value: $(tasks.code-extract-repository-url.results.extracted-value)
         - name: revision
           value: $(params.branch)
         - name: pr-url
@@ -525,9 +552,9 @@ spec:
         - name: secret-name
           value: git-token
         - name: repository
-          value: $(params.repository)
+          value: $(tasks.code-extract-repository-url.results.extracted-value)
         - name: incident-issue-repo
-          value: $(params.issues-repo)
+          value: $(tasks.code-extract-issues-repo-url.results.extracted-value)
         - name: task-name
           value: "code-cis-check"
         - name: result-status
@@ -612,7 +639,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(params.repository)
+          value: $(tasks.code-extract-repository-url.results.extracted-value)
         - name: revision
           value: $(params.branch)
         - name: ibmcloud-api-key-secret-key
@@ -644,9 +671,9 @@ spec:
         - name: secret-name
           value: git-token
         - name: repository
-          value: $(params.repository)
+          value: $(tasks.code-extract-repository-url.results.extracted-value)
         - name: incident-issue-repo
-          value: $(params.issues-repo)
+          value: $(tasks.code-extract-issues-repo-url.results.extracted-value)
         - name: task-name
           value: "code-bom-check"
         - name: result-status
@@ -728,7 +755,7 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: repository
-          value: $(params.repository)
+          value: $(tasks.code-extract-repository-url.results.extracted-value)
       taskSpec:
         params:
           - name: pipeline-debug
@@ -807,9 +834,9 @@ spec:
         - name: secret-name
           value: git-token
         - name: repository
-          value: $(params.repository)
+          value: $(tasks.code-extract-repository-url.results.extracted-value)
         - name: incident-issue-repo
-          value: $(params.issues-repo)
+          value: $(tasks.code-extract-issues-repo-url.results.extracted-value)
         - name: task-name
           value: code-branch-protection
         - name: result-status
@@ -953,7 +980,7 @@ spec:
         - name: repository
           value: $(params.app-name)
         - name: repository-url
-          value: $(params.repository)
+          value: $(tasks.code-extract-repository-url.results.extracted-value)
         - name: commit-sha
           value: $(tasks.code-fetch-code.results.git-commit)
 
@@ -1020,9 +1047,9 @@ spec:
         - name: commit-hash
           value: $(tasks.code-fetch-code.results.git-commit)
         - name: repository
-          value: $(params.repository)
+          value: $(tasks.code-extract-repository-url.results.extracted-value)
         - name: incident-issue-repo
-          value: $(params.issues-repo)
+          value: $(tasks.code-extract-issues-repo-url.results.extracted-value)
         - name: secret-name
           value: git-token
 
@@ -1267,9 +1294,9 @@ spec:
         - name: secret-name
           value: git-token
         - name: repository
-          value: $(params.repository)
+          value: $(tasks.code-extract-repository-url.results.extracted-value)
         - name: incident-issue-repo
-          value: $(params.issues-repo)
+          value: $(tasks.code-extract-issues-repo-url.results.extracted-value)
         - name: task-name
           value: "build-acceptance-tests"
         - name: result-status
