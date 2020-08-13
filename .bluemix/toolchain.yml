@@ -20,7 +20,6 @@ template:
     - inventory-repo
     - artifactoryComp
     - privateWorker
-    - devops-insights
     - vault
   info:
     git url: >
@@ -191,9 +190,6 @@ services:
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
           VAULT_SECRET: '{{services.pipeline.parameters.vault_secret}}'
         execute: false
-
-  devops-insights:
-    service_id: draservicebroker
 
   webide:
     service_id: orion
