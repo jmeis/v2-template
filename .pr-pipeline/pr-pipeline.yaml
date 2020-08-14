@@ -558,6 +558,11 @@ spec:
                     "name": "code-cis-check",
                     "expected": "success",
                     "actual": "$(tasks.code-cis-check.results.status)"
+                  },
+                  {
+                    "name": "code-detect-secrets",
+                    "expected": "success",
+                    "actual": "$(tasks.code-detect-secrets.results.status)"
                   }
                 ]
               """)
