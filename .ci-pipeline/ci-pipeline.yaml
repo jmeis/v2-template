@@ -1430,6 +1430,11 @@ spec:
                     "name": "code-detect-secrets",
                     "expected": "success",
                     "actual": "$(tasks.code-detect-secrets.results.status)"
+                  },
+                  {
+                    "name": "build-image-signing",
+                    "expected": "success",
+                    "actual": "$(tasks.build-image-signing.results.status)"
                   }
                 ]
               """)
@@ -1490,5 +1495,10 @@ spec:
                 "name": "code-detect-secrets",
                 "expected": "success",
                 "actual": "$(tasks.code-detect-secrets.results.status)"
+              },
+              {
+                "name": "build-image-signing",
+                "expected": "success",
+                "actual": "$(tasks.build-image-signing.results.status)"
               }
             ]
