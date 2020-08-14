@@ -154,7 +154,6 @@ services:
           PIPELINE_REPO: pipeline-repo
           APP_REPO: app-repo
           API_KEY: '{{form.pipeline.parameters.api-key}}'
-          APP_REPO_FULL: 'https://github.ibm.com/{{form.app-repo.parameters.owner_id}}/{{form.app-repo.parameters.repo_name}}'
           TEKTON_CATALOG_REPO: tekton-catalog-repo
           ARTIFACTORY_DOCKER_CONFIG_JSON: '{{form.artifactoryComp.parameters.docker_config_json}}'
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
