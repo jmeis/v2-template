@@ -1392,9 +1392,14 @@ spec:
               results = json.loads("""
                 [
                   {
-                    "name": "run-unit-tests",
+                    "name": "code-unit-tests",
                     "expected": "success",
                     "actual": "$(tasks.code-unit-tests.results.status)"
+                  },
+                  {
+                    "name": "build-acceptance-tests",
+                    "expected": "success",
+                    "actual": "$(tasks.build-acceptance-tests.results.status)"
                   },
                   {
                     "name": "code-vulnerability-scan",
@@ -1412,14 +1417,24 @@ spec:
                     "actual": "$(tasks.code-bom-check.results.status)"
                   },
                   {
-                    "name": "check-github-statuses",
+                    "name": "code-branch-protection",
                     "expected": "success",
                     "actual": "$(tasks.code-branch-protection.results.status)"
                   },
                   {
-                    "name": "vulnerability-advisor",
+                    "name": "build-vulnerability-advisor",
                     "expected": "OK",
                     "actual": "$(tasks.build-vulnerability-advisor.results.scan-status)"
+                  },
+                  {
+                    "name": "code-detect-secrets",
+                    "expected": "success",
+                    "actual": "$(tasks.code-detect-secrets.results.status)"
+                  },
+                  {
+                    "name": "build-image-signing",
+                    "expected": "success",
+                    "actual": "$(tasks.build-image-signing.results.status)"
                   }
                 ]
               """)
@@ -1442,12 +1457,12 @@ spec:
           value: |
             [
               {
-                "name": "run-unit-tests",
+                "name": "code-unit-tests",
                 "expected": "success",
                 "actual": "$(tasks.code-unit-tests.results.status)"
               },
               {
-                "name": "run-acceptance-test",
+                "name": "build-acceptance-tests",
                 "expected": "success",
                 "actual": "$(tasks.build-acceptance-tests.results.status)"
               },
@@ -1467,12 +1482,12 @@ spec:
                 "actual": "$(tasks.code-bom-check.results.status)"
               },
               {
-                "name": "check-github-statuses",
+                "name": "code-branch-protection",
                 "expected": "success",
                 "actual": "$(tasks.code-branch-protection.results.status)"
               },
               {
-                "name": "vulnerability-advisor",
+                "name": "build-vulnerability-advisor",
                 "expected": "OK",
                 "actual": "$(tasks.build-vulnerability-advisor.results.scan-status)"
               },
@@ -1480,5 +1495,10 @@ spec:
                 "name": "code-detect-secrets",
                 "expected": "success",
                 "actual": "$(tasks.code-detect-secrets.results.status)"
+              },
+              {
+                "name": "build-image-signing",
+                "expected": "success",
+                "actual": "$(tasks.build-image-signing.results.status)"
               }
             ]
