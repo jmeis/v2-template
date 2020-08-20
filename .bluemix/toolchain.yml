@@ -153,7 +153,6 @@ services:
           PIPELINE_REPO: pipeline-repo
           APP_REPO: app-repo
           API_KEY: '{{form.pipeline.parameters.api-key}}'
-          APP_REPO_FULL: 'https://github.ibm.com/{{form.app-repo.parameters.owner_id}}/{{form.app-repo.parameters.repo_name}}'
           TEKTON_CATALOG_REPO: tekton-catalog-repo
           ARTIFACTORY_DOCKER_CONFIG_JSON: '{{form.artifactoryComp.parameters.docker_config_json}}'
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
@@ -182,9 +181,6 @@ services:
           DEV_RESOURCE_GROUP: '{{form.pipeline.parameters.dev-resource-group}}'
           DEV_CLUSTER_NAME: '{{form.pipeline.parameters.dev-cluster-name}}'
           DEV_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.dev-cluster-namespace}}'
-          ISSUES_REPO: 'https://github.ibm.com/{{form.issues-repo.parameters.owner_id}}/{{form.issues-repo.parameters.repo_name}}'
-          EVIDENCE_REPO: 'https://github.ibm.com/{{form.evidence-repo.parameters.owner_id}}/{{form.evidence-repo.parameters.repo_name}}'
-          APP_REPO_FULL: 'https://github.ibm.com/{{form.app-repo.parameters.owner_id}}/{{form.app-repo.parameters.repo_name}}'
           TEKTON_CATALOG_REPO: tekton-catalog-repo
           ARTIFACTORY_DOCKER_CONFIG_JSON: '{{form.artifactoryComp.parameters.docker_config_json}}'
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'

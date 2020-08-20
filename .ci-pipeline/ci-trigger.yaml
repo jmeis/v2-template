@@ -8,10 +8,6 @@ spec:
     - name: registry-namespace
       description: The namespace in the container image registry. You can set it up
         with {bx cr namespace-add]. Learn more at https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started#getting-started.
-    - name: vault-secret
-      description: the vault-secret for signing
-    - name: repository
-      description: The git repo
     - name: app-name
       description: The name of your app
     - name: registry-region
@@ -28,10 +24,6 @@ spec:
       description: namespace dev
     - name: repository-integration
       description: the repo integration name
-    - name: evidence-repo
-      description: evidence repo
-    - name: issues-repo
-      description: incident issues repo
     - name: commit-id
       description: commit id
     - name: pipeline-debug
@@ -83,10 +75,6 @@ spec:
         params:
           - name: registry-namespace
             value: $(params.registry-namespace)
-          - name: vault-secret
-            value: $(params.vault-secret)
-          - name: repository
-            value: $(params.repository)
           - name: app-name
             value: $(params.app-name)
           - name: registry-region
@@ -107,12 +95,8 @@ spec:
             value: $(params.pipeline-debug)
           - name: commit-id
             value: $(params.commit-id)
-          - name: evidence-repo
-            value: $(params.evidence-repo)
           - name: inventory-repo
             value: $(params.inventory-repo)
-          - name: issues-repo
-            value: $(params.issues-repo)
           - name: version
             value: $(params.version)
           - name: slack-notifications

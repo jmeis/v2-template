@@ -78,12 +78,6 @@ properties:
   - name: vault-secret
     value: ${VAULT_SECRET}
     type: SECURE
-  - name: evidence-repo
-    value: ${EVIDENCE_REPO}
-    type: text
-  - name: issues-repo
-    value: ${ISSUES_REPO}
-    type: text
   - name: revision
     value: master
     type: text
@@ -114,9 +108,6 @@ properties:
   - name: artifactory-dockerconfigjson
     value: ${ARTIFACTORY_DOCKER_CONFIG_JSON}
     type: SECURE
-  - name: repository
-    value: ${APP_REPO_FULL}
-    type: text
   - name: pipeline-debug
     value: "0"
     type: text
