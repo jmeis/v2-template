@@ -87,7 +87,7 @@ Click the Add Key button
 On the following dialog, select Import Key and Standard Key.
 
 Set a name for the key and paste the base64 encoded .pfx file into the
-key material field.
+key material field. Please note there are restrictions on the key name. The name must between 2 and 50 characters long. Use standard English alpha-numeric characters. The only special character permitted is "-" 
 
 Click import key
 
