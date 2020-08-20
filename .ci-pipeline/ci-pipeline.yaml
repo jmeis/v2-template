@@ -1121,8 +1121,6 @@ spec:
       taskRef:
         name: ciso-sign
       params:
-        - name: vault-secret
-          value: 'vault-secret'
         - name: region
           value: $(params.dev-region)
         - name: resource-group
