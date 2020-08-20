@@ -27,10 +27,6 @@ inputs:
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: preview/dct
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
     path: preview/inventory
   - type: git
     branch: master
