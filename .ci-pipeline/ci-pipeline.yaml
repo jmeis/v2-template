@@ -22,8 +22,6 @@ spec:
       description: the namespace
     - name: repository-integration
       description: the repo integration name
-    - name: vault-secret
-      description: the vault secret for CISO
     - name: dev-resource-group
       description: Resource Group
     - name: dev-region
@@ -1124,7 +1122,7 @@ spec:
         name: ciso-sign
       params:
         - name: vault-secret
-          value: $(params.vault-secret)
+          value: 'vault-secret'
         - name: region
           value: $(params.dev-region)
         - name: resource-group
