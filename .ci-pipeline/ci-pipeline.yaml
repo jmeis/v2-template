@@ -641,7 +641,7 @@ spec:
         - name: revision
           value: $(params.branch)
         - name: ibmcloud-api-key-secret-key
-          value: api-key
+          value: "api-key"
         - name: commit-id
           value: $(tasks.code-fetch-code.results.git-commit)
 
