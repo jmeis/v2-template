@@ -189,6 +189,8 @@ spec:
       workspaces:
         - name: evidence-locker
           workspace: artifacts
+        - name: secrets
+          workspace: artifacts
       params:
         - name: evidence-repo-path
           value: "evidence-locker"
@@ -313,6 +315,8 @@ spec:
         name: evidence-add
       workspaces:
         - name: evidence-locker
+          workspace: artifacts
+        - name: secrets
           workspace: artifacts
       params:
         - name: evidence-repo-path
@@ -457,6 +461,8 @@ spec:
       workspaces:
         - name: evidence-locker
           workspace: artifacts
+        - name: secrets
+          workspace: artifacts
       params:
         - name: evidence-repo-path
           value: $(tasks.code-fetch-evidence-locker.results.directory-name)
@@ -582,6 +588,8 @@ spec:
       workspaces:
         - name: evidence-locker
           workspace: artifacts
+        - name: secrets
+          workspace: artifacts
       params:
         - name: evidence-repo-path
           value: $(tasks.code-fetch-evidence-locker.results.directory-name)
@@ -700,6 +708,8 @@ spec:
         name: evidence-add
       workspaces:
         - name: evidence-locker
+          workspace: artifacts
+        - name: secrets
           workspace: artifacts
       params:
         - name: evidence-repo-path
@@ -865,6 +875,8 @@ spec:
         name: evidence-add
       workspaces:
         - name: evidence-locker
+          workspace: artifacts
+        - name: secrets
           workspace: artifacts
       params:
         - name: evidence-repo-path
@@ -1093,6 +1105,8 @@ spec:
       workspaces:
         - name: evidence-locker
           workspace: artifacts
+        - name: secrets
+          workspace: artifacts
 
     - name: build-vulnerability-advisor-create-doi-data
       runAfter:
@@ -1203,6 +1217,8 @@ spec:
           value: $(params.pipeline-debug)
       workspaces:
         - name: evidence-locker
+          workspace: artifacts
+        - name: secrets
           workspace: artifacts
 
     - name: build-image-signing-create-doi-data
@@ -1409,6 +1425,8 @@ spec:
         name: evidence-add
       workspaces:
         - name: evidence-locker
+          workspace: artifacts
+        - name: secrets
           workspace: artifacts
       params:
         - name: evidence-repo-path
