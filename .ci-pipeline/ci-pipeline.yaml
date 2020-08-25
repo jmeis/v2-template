@@ -1149,6 +1149,96 @@ spec:
         - name: artifacts
           workspace: artifacts
 
+    - name: build-image-signing-create-issue
+      taskRef:
+        name: evidence-create-incident-issue
+      runAfter:
+        - build-image-signing
+      workspaces:
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: task-name
+          value: ciso-image-signing
+        - name: result-status
+          value: $(tasks.build-image-signing.results.status)
+        - name: commit-hash
+          value: $(tasks.code-fetch-code.results.git-commit)
+        - name: repository
+          value: $(tasks.code-extract-repository-url.results.extracted-value)
+        - name: incident-issue-repo
+          value: $(tasks.code-extract-issues-repo-url.results.extracted-value)
+        - name: secret-name
+          value: git-token
+
+    - name: build-image-signing-create-evidence
+      runAfter:
+        - build-image-signing-create-issue
+        - build-vulnerability-advisor-create-evidence
+      taskRef:
+        name: evidence-add
+      params:
+        - name: evidence-repo-path
+          value: "evidence-locker"
+        - name: namespace
+          value: "ci"
+        - name: evidence-name
+          value: "build-ciso-image-signing"
+        - name: task-step-name
+          value: "sign-image"
+        - name: evidence-type
+          value: "com.ibm.cloud.icr-ciso-image-signing"
+        - name: evidence-type-version
+          value: "1.0.0"
+        - name: result
+          value: "$(tasks.build-image-signing.results.status)"
+        - name: issues
+          value: |
+            "$(tasks.build-image-signing-create-issue.results.issue-url)"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+      workspaces:
+        - name: evidence-locker
+          workspace: artifacts
+
+    - name: build-image-signing-create-doi-data
+      runAfter:
+        - build-image-signing
+      taskRef:
+        name: evidence-to-doi-transformer
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: title
+          value: "IBM CISO image signing"
+        - name: task-name
+          value: "build-image-signing"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: result-status
+          value: $(tasks.build-image-signing.results.status)
+
+    - name: build-image-signing-results-to-doi
+      runAfter:
+        - build-image-signing-create-doi-data
+      taskRef:
+        name: doi-publish-testrecord
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: app-name
+          value: "$(params.app-name)"
+        - name: file-locations
+          value: $(tasks.build-image-signing-create-doi-data.results.file-locations)
+        - name: test-types
+          value: $(tasks.build-image-signing-create-doi-data.results.test-types)
+        - name: toolchain-apikey-secret-key
+          value: "api-key"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
     - name: build-fetch-iks-cluster-config
       runAfter:
         - build-image-signing
@@ -1310,7 +1400,7 @@ spec:
 
     - name: build-acceptance-tests-create-evidence
       runAfter:
-        - build-vulnerability-advisor-create-evidence
+        - build-image-signing-create-evidence
       taskRef:
         name: evidence-add
       workspaces:
