@@ -208,6 +208,8 @@ spec:
           value: $(tasks.code-detect-secrets.results.status)
         - name: issues
           value: "[]"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
 
     - name: code-detect-secrets-create-doi-data
       runAfter:
@@ -332,6 +334,8 @@ spec:
         - name: issues
           value: |
             "$(tasks.code-unit-tests-create-issue.results.issue-url)"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
 
     - name: code-unit-tests-create-doi-data
       runAfter:
@@ -469,6 +473,8 @@ spec:
         - name: issues
           value: |
             "$(tasks.code-vulnerability-scan-create-issue.results.issue-url)"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
 
     - name: code-vulnerability-scan-create-doi-data
       runAfter:
@@ -588,6 +594,8 @@ spec:
         - name: issues
           value: |
             "$(tasks.code-cis-check-create-issue.results.issue-url)"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
 
     - name: code-cis-check-create-doi-data
       runAfter:
@@ -707,6 +715,8 @@ spec:
         - name: issues
           value: |
             "$(tasks.code-bom-check-create-issue.results.issue-url)"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
 
     - name: code-bom-check-create-doi-data
       runAfter:
@@ -1326,6 +1336,8 @@ spec:
         - name: issues
           value: |
             "$(tasks.build-acceptance-tests-create-issue.results.issue-url)"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
 
     - name: build-acceptance-tests-create-doi-data
       runAfter:
