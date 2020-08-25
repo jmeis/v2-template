@@ -192,8 +192,8 @@ spec:
         - name: secrets
           workspace: artifacts
       params:
-        - name: evidence-repo-path
-          value: "evidence-locker"
+        - name: evidence-repo-url
+          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
         - name: namespace
           value: "ci"
         - name: evidence-name
@@ -319,8 +319,8 @@ spec:
         - name: secrets
           workspace: artifacts
       params:
-        - name: evidence-repo-path
-          value: "evidence-locker"
+        - name: evidence-repo-url
+          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
         - name: namespace
           value: "ci"
         - name: evidence-name
@@ -464,8 +464,8 @@ spec:
         - name: secrets
           workspace: artifacts
       params:
-        - name: evidence-repo-path
-          value: $(tasks.code-fetch-evidence-locker.results.directory-name)
+        - name: evidence-repo-url
+          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
         - name: namespace
           value: "ci"
         - name: evidence-name
@@ -591,8 +591,8 @@ spec:
         - name: secrets
           workspace: artifacts
       params:
-        - name: evidence-repo-path
-          value: $(tasks.code-fetch-evidence-locker.results.directory-name)
+        - name: evidence-repo-url
+          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
         - name: namespace
           value: "ci"
         - name: evidence-name
@@ -712,8 +712,8 @@ spec:
         - name: secrets
           workspace: artifacts
       params:
-        - name: evidence-repo-path
-          value: $(tasks.code-fetch-evidence-locker.results.directory-name)
+        - name: evidence-repo-url
+          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
         - name: namespace
           value: "ci"
         - name: evidence-name
@@ -879,8 +879,8 @@ spec:
         - name: secrets
           workspace: artifacts
       params:
-        - name: evidence-repo-path
-          value: "evidence-locker"
+        - name: evidence-repo-url
+          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
         - name: namespace
           value: "ci"
         - name: evidence-name
@@ -1083,8 +1083,8 @@ spec:
       taskRef:
         name: evidence-add
       params:
-        - name: evidence-repo-path
-          value: "evidence-locker"
+        - name: evidence-repo-url
+          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
         - name: namespace
           value: "ci"
         - name: evidence-name
@@ -1196,8 +1196,8 @@ spec:
       taskRef:
         name: evidence-add
       params:
-        - name: evidence-repo-path
-          value: "evidence-locker"
+        - name: evidence-repo-url
+          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
         - name: namespace
           value: "ci"
         - name: evidence-name
@@ -1429,8 +1429,8 @@ spec:
         - name: secrets
           workspace: artifacts
       params:
-        - name: evidence-repo-path
-          value: "evidence-locker"
+        - name: evidence-repo-url
+          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
         - name: namespace
           value: "ci"
         - name: evidence-name
