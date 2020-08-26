@@ -20,8 +20,6 @@ spec:
       description: toggles slack notifications
     - name: pr-url
       description: pr url
-    - name: target-commit-id
-      description: target branch commit id  
 
   workspaces:
     - name: artifacts
@@ -319,11 +317,11 @@ spec:
       taskRef:
         name: gitsecure-cis-check
       runAfter:
-        - code-vulnerability-scan
+        - code-cis-check-status-pending
       workspaces:
         - name: secrets
           workspace: artifacts
-        - name: secrets
+        - name: artifacts
           workspace: artifacts
       params:
         - name: repository
@@ -394,11 +392,9 @@ spec:
         - code-unit-tests-status-pending
         - code-fetch-code
       taskRef:
-        name: gitsecure-cis-check
-      runAfter:
-        - set-gitsecure-cis-scan-status-pending
+        name: util-run
       workspaces:
-        - name: artifacts
+        - name: scripts
           workspace: artifacts
       params:
         - name: script
@@ -466,23 +462,11 @@ spec:
       runAfter:
         - code-branch-protection-status-pending
       taskRef:
-        name: gitsecure-bom
-      runAfter:
-        - set-gitsecure-bom-scan-status-pending
+        name: compliance-check-github-statuses
       workspaces:
         - name: secrets
           workspace: artifacts
       params:
-        - name: repository
-          value: $(params.repository)
-        - name: revision
-          value: $(params.branch)
-        - name: api-key
-          value: $(params.api-key)
-        - name: pr-url
-          value: $(params.pr-url)
-        - name: commit-id
-          value: $(params.commit-id)
         - name: target-branch
           value: $(params.target-branch)
         - name: required-checks
@@ -556,9 +540,7 @@ spec:
         - name: message-script
           value: |
               #!/usr/bin/env python3
-
               import json, os
-
               results = json.loads("""
                 [
                   {
@@ -583,7 +565,6 @@ spec:
                   }
                 ]
               """)
-
               for result in results:
                 if result["actual"] != result["expected"]:
                   print(":x: Task `{taskName}` has failed.".format(taskName=result["name"]))
@@ -591,7 +572,6 @@ spec:
                   print(":white_check_mark: Task `{taskName}` was successful.".format(taskName=result["name"]))
               print("PR Pipeline finished!")
               print("<https://cloud.ibm.com/devops/pipelines/tekton/" + os.getenv("PIPELINE_ID") + "/runs/" + os.getenv("PIPELINE_RUN_ID") + "?env_id=ibm:yp:" + os.getenv("TOOLCHAIN_REGION") + "|See the Pipeline Logs>")
-
     - name: code-pipeline-evaluator
       runAfter:
         - code-branch-protection-status-finished

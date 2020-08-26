@@ -402,7 +402,7 @@ spec:
         - name: artifacts
           workspace: artifacts
         - name: secrets
-          workspace: artifacts      
+          workspace: artifacts
       params:
         - name: repository
           value: $(tasks.code-extract-repository-url.results.extracted-value)
