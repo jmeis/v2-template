@@ -20,6 +20,8 @@ spec:
       description: toggles slack notifications
     - name: pr-url
       description: pr url
+    - name: target-commit-id
+      description: target branch commit id  
 
   workspaces:
     - name: artifacts
@@ -254,8 +256,6 @@ spec:
           value: $(tasks.code-extract-repository-url.results.extracted-value)
         - name: revision
           value: $(params.branch)
-        - name: ibmcloud-api-key-secret-key
-          value: api-key
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
@@ -321,7 +321,7 @@ spec:
       runAfter:
         - code-vulnerability-scan
       workspaces:
-        - name: artifacts
+        - name: secrets
           workspace: artifacts
         - name: secrets
           workspace: artifacts
@@ -334,8 +334,6 @@ spec:
           value: $(params.pr-url)
         - name: commit-id
           value: $(params.commit-id)
-        - name: ibmcloud-api-key-secret-key
-          value: api-key
         - name: directory-name
           value: $(tasks.code-fetch-code.results.directory-name)
 
@@ -396,9 +394,11 @@ spec:
         - code-unit-tests-status-pending
         - code-fetch-code
       taskRef:
-        name: util-run
+        name: gitsecure-cis-check
+      runAfter:
+        - set-gitsecure-cis-scan-status-pending
       workspaces:
-        - name: scripts
+        - name: artifacts
           workspace: artifacts
       params:
         - name: script
@@ -466,11 +466,23 @@ spec:
       runAfter:
         - code-branch-protection-status-pending
       taskRef:
-        name: compliance-check-github-statuses
+        name: gitsecure-bom
+      runAfter:
+        - set-gitsecure-bom-scan-status-pending
       workspaces:
         - name: secrets
           workspace: artifacts
       params:
+        - name: repository
+          value: $(params.repository)
+        - name: revision
+          value: $(params.branch)
+        - name: api-key
+          value: $(params.api-key)
+        - name: pr-url
+          value: $(params.pr-url)
+        - name: commit-id
+          value: $(params.commit-id)
         - name: target-branch
           value: $(params.target-branch)
         - name: required-checks

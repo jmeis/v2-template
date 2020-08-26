@@ -9,6 +9,8 @@ spec:
       description: branch
     - name: target-branch
       description: target branch
+    - name: target-commit-id
+      description: target commit id      
     - name: repository-integration
       description: the repo integration name
     - name: commit-id

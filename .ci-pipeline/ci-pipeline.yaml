@@ -390,6 +390,8 @@ spec:
           value: $(params.branch)
         - name: commit-id
           value: $(tasks.code-fetch-code.results.git-commit)
+        - name: directory-name
+          value: $(tasks.code-fetch-code.results.directory-name)
 
     - name: code-vulnerability-scan
       runAfter:
@@ -399,17 +401,19 @@ spec:
       workspaces:
         - name: artifacts
           workspace: artifacts
+        - name: secrets
+          workspace: artifacts      
       params:
         - name: repository
           value: $(tasks.code-extract-repository-url.results.extracted-value)
         - name: revision
           value: $(params.branch)
-        - name: ibmcloud-api-key-secret-key
-          value: api-key
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
           value: $(tasks.code-fetch-code.results.git-commit)
+        - name: git-api-token-key
+          value: git-token
 
     - name: code-vulnerability-scan-show-artifact
       runAfter:
@@ -520,6 +524,8 @@ spec:
       runAfter:
         - code-vulnerability-scan-uploader
       workspaces:
+        - name: secrets
+          workspace: artifacts
         - name: artifacts
           workspace: artifacts
       params:
@@ -531,6 +537,8 @@ spec:
           value: $(params.pr-url)
         - name: commit-id
           value: $(tasks.code-fetch-code.results.git-commit)
+        - name: directory-name
+          value: $(tasks.code-fetch-code.results.directory-name)
 
     - name: code-cis-check-show-artifact
       runAfter:
@@ -648,8 +656,6 @@ spec:
           value: $(tasks.code-extract-repository-url.results.extracted-value)
         - name: revision
           value: $(params.branch)
-        - name: ibmcloud-api-key-secret-key
-          value: "api-key"
         - name: commit-id
           value: $(tasks.code-fetch-code.results.git-commit)
 
