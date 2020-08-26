@@ -146,6 +146,8 @@ spec:
           value: $(params.branch)
         - name: commit-id
           value: $(params.commit-id)
+        - name: directory-name
+          value: $(tasks.code-fetch-code.results.directory-name)
 
     - name: code-detect-secrets-status-pending
       runAfter:
@@ -245,6 +247,8 @@ spec:
       workspaces:
         - name: artifacts
           workspace: artifacts
+        - name: secrets
+          workspace: artifacts
       params:
         - name: repository
           value: $(tasks.code-extract-repository-url.results.extracted-value)
@@ -256,6 +260,8 @@ spec:
           value: $(params.pr-url)
         - name: commit-id
           value: $(params.commit-id)
+        - name: git-api-token-key
+          value: git-token
 
     - name: code-vulnerability-scan-status-finished
       runAfter:
@@ -317,6 +323,8 @@ spec:
       workspaces:
         - name: artifacts
           workspace: artifacts
+        - name: secrets
+          workspace: artifacts
       params:
         - name: repository
           value: $(tasks.code-extract-repository-url.results.extracted-value)
@@ -328,6 +336,8 @@ spec:
           value: $(params.commit-id)
         - name: ibmcloud-api-key-secret-key
           value: api-key
+        - name: directory-name
+          value: $(tasks.code-fetch-code.results.directory-name)
 
     - name: code-cis-check-status-finished
       runAfter:
