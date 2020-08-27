@@ -573,6 +573,7 @@ spec:
     - name: code-pipeline-evaluator
       runAfter:
         - code-branch-protection-status-finished
+        - code-notify-pipeline-end
       taskRef:
         name: util-evaluate-pipeline-results
       params:
