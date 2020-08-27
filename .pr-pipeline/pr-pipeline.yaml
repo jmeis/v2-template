@@ -484,8 +484,6 @@ spec:
                 ]
               }
             }]
-        - name: collect-evidence
-          value: "false"
         - name: gh-org
           value: $(tasks.get-org.results.gh-org)
         - name: repository
