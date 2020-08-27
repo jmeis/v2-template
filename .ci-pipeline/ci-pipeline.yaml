@@ -1554,6 +1554,9 @@ spec:
     - name: build-pipeline-evaluator
       runAfter:
         - build-deploy-dev
+        - build-notify-pipeline-end
+        - build-acceptance-tests-create-evidence
+        - build-acceptance-tests-results-to-doi
       taskRef:
         name: util-evaluate-pipeline-results
       params:
