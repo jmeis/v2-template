@@ -25,7 +25,6 @@ spec:
     - name: pipeline-debug
       default: "0"
 
-
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
