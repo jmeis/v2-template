@@ -124,28 +124,6 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: code-fetch-evidence-locker
-      runAfter:
-        - code-fetch-credentials
-      taskRef:
-        name: git-clone
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: repository
-          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
-        - name: git-user
-          value: $(tasks.code-fetch-credentials.results.git-auth-user)
-        - name: branch
-          value: "master"
-        - name: directory-name
-          value: evidence-locker
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
     - name: code-fetch-code
       runAfter:
         - code-fetch-credentials
@@ -181,17 +159,17 @@ spec:
           value: $(tasks.code-fetch-code.results.directory-name)
 
     - name: code-detect-secrets-create-evidence
-      runAfter:
-        - code-fetch-evidence-locker
       taskRef:
         name: evidence-add
       retries: 2
       workspaces:
         - name: evidence-locker
           workspace: artifacts
+        - name: secrets
+          workspace: artifacts
       params:
-        - name: evidence-repo-path
-          value: "evidence-locker"
+        - name: evidence-repo-url
+          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
         - name: namespace
           value: "ci"
         - name: evidence-name
@@ -207,7 +185,7 @@ spec:
         - name: result
           value: $(tasks.code-detect-secrets.results.status)
         - name: issues
-          value: "[]"
+          value: ""
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -307,16 +285,16 @@ spec:
           value: $(tasks.code-fetch-code.results.git-commit)
 
     - name: code-unit-tests-create-evidence
-      runAfter:
-        - code-fetch-evidence-locker
       taskRef:
         name: evidence-add
       workspaces:
         - name: evidence-locker
           workspace: artifacts
+        - name: secrets
+          workspace: artifacts
       params:
-        - name: evidence-repo-path
-          value: "evidence-locker"
+        - name: evidence-repo-url
+          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
         - name: namespace
           value: "ci"
         - name: evidence-name
@@ -457,9 +435,11 @@ spec:
       workspaces:
         - name: evidence-locker
           workspace: artifacts
+        - name: secrets
+          workspace: artifacts
       params:
-        - name: evidence-repo-path
-          value: $(tasks.code-fetch-evidence-locker.results.directory-name)
+        - name: evidence-repo-url
+          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
         - name: namespace
           value: "ci"
         - name: evidence-name
@@ -582,9 +562,11 @@ spec:
       workspaces:
         - name: evidence-locker
           workspace: artifacts
+        - name: secrets
+          workspace: artifacts
       params:
-        - name: evidence-repo-path
-          value: $(tasks.code-fetch-evidence-locker.results.directory-name)
+        - name: evidence-repo-url
+          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
         - name: namespace
           value: "ci"
         - name: evidence-name
@@ -701,9 +683,11 @@ spec:
       workspaces:
         - name: evidence-locker
           workspace: artifacts
+        - name: secrets
+          workspace: artifacts
       params:
-        - name: evidence-repo-path
-          value: $(tasks.code-fetch-evidence-locker.results.directory-name)
+        - name: evidence-repo-url
+          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
         - name: namespace
           value: "ci"
         - name: evidence-name
@@ -866,9 +850,11 @@ spec:
       workspaces:
         - name: evidence-locker
           workspace: artifacts
+        - name: secrets
+          workspace: artifacts
       params:
-        - name: evidence-repo-path
-          value: "evidence-locker"
+        - name: evidence-repo-url
+          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
         - name: namespace
           value: "ci"
         - name: evidence-name
@@ -1071,8 +1057,8 @@ spec:
       taskRef:
         name: evidence-add
       params:
-        - name: evidence-repo-path
-          value: "evidence-locker"
+        - name: evidence-repo-url
+          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
         - name: namespace
           value: "ci"
         - name: evidence-name
@@ -1092,6 +1078,8 @@ spec:
           value: $(params.pipeline-debug)
       workspaces:
         - name: evidence-locker
+          workspace: artifacts
+        - name: secrets
           workspace: artifacts
 
     - name: build-vulnerability-advisor-create-doi-data
@@ -1182,8 +1170,8 @@ spec:
       taskRef:
         name: evidence-add
       params:
-        - name: evidence-repo-path
-          value: "evidence-locker"
+        - name: evidence-repo-url
+          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
         - name: namespace
           value: "ci"
         - name: evidence-name
@@ -1203,6 +1191,8 @@ spec:
           value: $(params.pipeline-debug)
       workspaces:
         - name: evidence-locker
+          workspace: artifacts
+        - name: secrets
           workspace: artifacts
 
     - name: build-image-signing-create-doi-data
@@ -1410,9 +1400,11 @@ spec:
       workspaces:
         - name: evidence-locker
           workspace: artifacts
+        - name: secrets
+          workspace: artifacts
       params:
-        - name: evidence-repo-path
-          value: "evidence-locker"
+        - name: evidence-repo-url
+          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
         - name: namespace
           value: "ci"
         - name: evidence-name
