@@ -428,8 +428,6 @@ spec:
           value: $(tasks.code-fetch-code.results.git-commit)
 
     - name: code-vulnerability-scan-create-evidence
-      runAfter:
-        - code-unit-tests-create-evidence
       taskRef:
         name: evidence-add
       workspaces:
@@ -555,8 +553,6 @@ spec:
           value: $(tasks.code-fetch-code.results.git-commit)
 
     - name: code-cis-check-create-evidence
-      runAfter:
-        - code-vulnerability-scan-create-evidence
       taskRef:
         name: evidence-add
       workspaces:
@@ -676,8 +672,6 @@ spec:
           value: $(tasks.code-fetch-code.results.git-commit)
 
     - name: code-bom-check-create-evidence
-      runAfter:
-        - code-cis-check-create-evidence
       taskRef:
         name: evidence-add
       workspaces:
@@ -843,8 +837,6 @@ spec:
           value: $(params.pipeline-debug)
 
     - name: code-branch-protection-create-evidence
-      runAfter:
-        - code-bom-check-create-evidence
       taskRef:
         name: evidence-add
       workspaces:
@@ -1053,7 +1045,6 @@ spec:
       runAfter:
         - build-vulnerability-advisor-result-adapter
         - build-vulnerability-advisor-create-issue
-        - code-branch-protection-create-evidence
       taskRef:
         name: evidence-add
       params:
@@ -1166,7 +1157,6 @@ spec:
     - name: build-image-signing-create-evidence
       runAfter:
         - build-image-signing-create-issue
-        - build-vulnerability-advisor-create-evidence
       taskRef:
         name: evidence-add
       params:
@@ -1393,8 +1383,6 @@ spec:
           value: $(tasks.code-fetch-code.results.git-commit)
 
     - name: build-acceptance-tests-create-evidence
-      runAfter:
-        - build-image-signing-create-evidence
       taskRef:
         name: evidence-add
       workspaces:
