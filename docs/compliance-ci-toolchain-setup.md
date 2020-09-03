@@ -217,10 +217,6 @@ In order for a Slack channel to receive notifications from your tools, you need 
 | ![Slack Tool](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/slack.png) |
 | :--: | 
 
-After creating your toolchain, you can toggle sending notifications with the `slack-notifications` Environment Property in your PR/CI Pipeline (0 = off, 1 = on):
-
-| ![Slack Tool Toggle](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/slack-toggle.png) |
-| :--: | 
 
 ### 4. Create Toolchain
 

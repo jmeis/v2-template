@@ -26,13 +26,6 @@ spec:
 
   tasks:
     - name: code-notify-pipeline-start
-      conditions:
-        - conditionRef: util-is-equal
-          params:
-            - name: left
-              value: $(params.slack-notifications)
-            - name: right
-              value: "1"
       taskRef:
         name: slack-post-message
       workspaces:
@@ -520,13 +513,6 @@ spec:
           value: $(params.pipeline-debug)
 
     - name: code-notify-pipeline-end
-      conditions:
-        - conditionRef: util-is-equal
-          params:
-            - name: left
-              value: $(params.slack-notifications)
-            - name: right
-              value: "1"
       runAfter:
         - code-branch-protection
       taskRef:
@@ -539,6 +525,7 @@ spec:
           value: |
               #!/usr/bin/env python3
               import json, os
+
               results = json.loads("""
                 [
                   {
