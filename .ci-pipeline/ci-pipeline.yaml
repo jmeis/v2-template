@@ -1216,7 +1216,7 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: build-fetch-iks-cluster-config
+    - name: deploy-fetch-iks-cluster-config
       runAfter:
         - build-image-signing
       taskRef:
@@ -1238,9 +1238,9 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: build-pipeline-1-kubectl-task
+    - name: deploy-pipeline-1-kubectl-task
       runAfter:
-        - build-fetch-iks-cluster-config
+        - deploy-fetch-iks-cluster-config
       taskRef:
         name: iks-contextual-execution
       workspaces:
@@ -1262,7 +1262,7 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: build-create-namespace
+    - name: deploy-create-namespace
       runAfter:
         - build-image-signing
       taskRef:
@@ -1282,9 +1282,9 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: build-create-image-pull-secrets
+    - name: deploy-create-image-pull-secrets
       runAfter:
-        - build-create-namespace
+        - deploy-create-namespace
       taskRef:
         name: iks-create-pull-secrets
       workspaces:
@@ -1304,13 +1304,13 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: build-deploy-dev
+    - name: deploy-dev
       taskRef:
         name: iks-deploy
       runAfter:
-        - build-pipeline-1-kubectl-task
-        - build-create-namespace
-        - build-create-image-pull-secrets
+        - deploy-pipeline-1-kubectl-task
+        - deploy-create-namespace
+        - deploy-create-image-pull-secrets
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -1334,9 +1334,9 @@ spec:
         - name: image-url
           value: $(tasks.build-containerize.results.image-repository)
 
-    - name: build-acceptance-tests
+    - name: deploy-acceptance-tests
       runAfter:
-        - build-deploy-dev
+        - deploy-dev
       taskRef:
         name: util-run
       workspaces:
@@ -1346,16 +1346,16 @@ spec:
         - name: script
           value: |
             #!/bin/bash
-            APP_URL="$(tasks.build-deploy-dev.results.app-url)"
+            APP_URL="$(tasks.deploy-dev.results.app-url)"
             . /root/.nvm/nvm.sh
             cd /scripts/$(tasks.code-fetch-code.results.directory-name) || exit
             npm ci -q
             export APP_URL
             npm run acceptance-test
 
-    - name: build-acceptance-tests-create-issue
+    - name: deploy-acceptance-tests-create-issue
       runAfter:
-        - build-acceptance-tests
+        - deploy-acceptance-tests
       taskRef:
         name: evidence-create-incident-issue
       workspaces:
@@ -1369,13 +1369,13 @@ spec:
         - name: incident-issue-repo
           value: $(tasks.code-extract-issues-repo-url.results.extracted-value)
         - name: task-name
-          value: "build-acceptance-tests"
+          value: "deploy-acceptance-tests"
         - name: result-status
-          value: $(tasks.build-acceptance-tests.results.status)
+          value: $(tasks.deploy-acceptance-tests.results.status)
         - name: commit-hash
           value: $(tasks.code-fetch-code.results.git-commit)
 
-    - name: build-acceptance-tests-create-evidence
+    - name: deploy-acceptance-tests-create-evidence
       taskRef:
         name: evidence-add
       workspaces:
@@ -1399,16 +1399,16 @@ spec:
         - name: evidence-type-version
           value: "1.0.0"
         - name: result
-          value: $(tasks.build-acceptance-tests.results.status)
+          value: $(tasks.deploy-acceptance-tests.results.status)
         - name: issues
           value: |
-            "$(tasks.build-acceptance-tests-create-issue.results.issue-url)"
+            "$(tasks.deploy-acceptance-tests-create-issue.results.issue-url)"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: build-acceptance-tests-create-doi-data
+    - name: deploy-acceptance-tests-create-doi-data
       runAfter:
-        - build-acceptance-tests
+        - deploy-acceptance-tests
       taskRef:
         name: evidence-to-doi-transformer
       workspaces:
@@ -1418,15 +1418,15 @@ spec:
         - name: title
           value: "Acceptance tests"
         - name: task-name
-          value: "build-acceptance-tests"
+          value: "deploy-acceptance-tests"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: result-status
-          value: $(tasks.build-acceptance-tests.results.status)
+          value: $(tasks.deploy-acceptance-tests.results.status)
 
-    - name: build-acceptance-tests-results-to-doi
+    - name: deploy-acceptance-tests-results-to-doi
       runAfter:
-        - build-acceptance-tests-create-doi-data
+        - deploy-acceptance-tests-create-doi-data
       taskRef:
         name: doi-publish-testrecord
       workspaces:
@@ -1436,9 +1436,9 @@ spec:
         - name: app-name
           value: $(params.app-name)
         - name: file-locations
-          value: $(tasks.build-acceptance-tests-create-doi-data.results.file-locations)
+          value: $(tasks.deploy-acceptance-tests-create-doi-data.results.file-locations)
         - name: test-types
-          value: $(tasks.build-acceptance-tests-create-doi-data.results.test-types)
+          value: $(tasks.deploy-acceptance-tests-create-doi-data.results.test-types)
         - name: toolchain-apikey-secret-key
           value: "api-key"
         - name: pipeline-debug
@@ -1446,7 +1446,7 @@ spec:
 
     - name: build-notify-pipeline-end
       runAfter:
-        - build-deploy-dev
+        - deploy-dev
       taskRef:
         name: slack-post-message
       workspaces:
@@ -1466,9 +1466,9 @@ spec:
                     "actual": "$(tasks.code-unit-tests.results.status)"
                   },
                   {
-                    "name": "build-acceptance-tests",
+                    "name": "deploy-acceptance-tests",
                     "expected": "success",
-                    "actual": "$(tasks.build-acceptance-tests.results.status)"
+                    "actual": "$(tasks.deploy-acceptance-tests.results.status)"
                   },
                   {
                     "name": "code-vulnerability-scan",
@@ -1518,10 +1518,10 @@ spec:
 
     - name: build-pipeline-evaluator
       runAfter:
-        - build-deploy-dev
+        - deploy-dev
         - build-notify-pipeline-end
-        - build-acceptance-tests-create-evidence
-        - build-acceptance-tests-results-to-doi
+        - deploy-acceptance-tests-create-evidence
+        - deploy-acceptance-tests-results-to-doi
       taskRef:
         name: util-evaluate-pipeline-results
       params:
@@ -1534,9 +1534,9 @@ spec:
                 "actual": "$(tasks.code-unit-tests.results.status)"
               },
               {
-                "name": "build-acceptance-tests",
+                "name": "deploy-acceptance-tests",
                 "expected": "success",
-                "actual": "$(tasks.build-acceptance-tests.results.status)"
+                "actual": "$(tasks.deploy-acceptance-tests.results.status)"
               },
               {
                 "name": "code-vulnerability-scan",
