@@ -222,9 +222,11 @@ spec:
           TEST_DATA=$(echo $TEST_DATA | jq ".passes += []")
         fi
 
-        echo "$TEST_DATA" > ./testresult.json
-        cat ./testresult.json
-        echo -n "./testresult.json" > $(results.file-locations.path)
+        FILENAME="./$(params.task-name)-evidence.json"
+
+        echo "$TEST_DATA" > "$FILENAME"
+        cat "$FILENAME"
+        echo -n "$FILENAME" > $(results.file-locations.path)
 
   workspaces:
     - name: artifacts
