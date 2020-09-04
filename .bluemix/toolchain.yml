@@ -21,6 +21,7 @@ template:
     - artifactoryComp
     - privateWorker
     - vault
+    - devops-insights
   info:
     git url: >
       "[" + $env.repository + "]" +
@@ -39,7 +40,7 @@ toolchain:
 services:
   slack:
     service_id: slack
-    parametes:
+    parameters:
       channel_name: '{{form.slack.parameters.channel_name}}'
       api_token: '{{form.slack.parameters.api_token}}'
       team_url: '{{form.slack.parameters.team_url}}'
@@ -190,13 +191,13 @@ services:
   webide:
     service_id: orion
 
+  devops-insights:
+    service_id: draservicebroker
+
   vault:
-    service_id: hashicorpvault
+    service_id: keyprotect
     parameters:
       name: 'ci-compliance-secrets'
-      server_url: 'https://vserv-test.sos.ibm.com:8200'
-      dashboard_url: 'https://vserv-test.sos.ibm.com:8200/ui'
-      authentication_method: 'approle'
 
 form:
   pipeline:
