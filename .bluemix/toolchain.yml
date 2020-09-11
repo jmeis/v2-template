@@ -22,6 +22,7 @@ template:
     - privateWorker
     - vault
     - devops-insights
+    - cos-bucket
   info:
     git url: >
       "[" + $env.repository + "]" +
@@ -38,6 +39,19 @@ toolchain:
       $ref: "#/messages/template.gettingStarted"
 
 services:
+  cos-bucket:
+    service_id: customtool
+    parameters:
+      type: cos-bucket
+      lifecyclePhase: "LEARN"
+      imageUrl:
+        $ref: cos-logo.png
+        $refType: image-data-uri
+      documentationUrl: 'https://cloud.ibm.com/catalog/services/cloud-object-storage'
+      name: Cloud Object Storage 
+      dashboard_url: 'https://cloud.ibm.com/catalog/services/cloud-object-storage'
+      description: The information required to connect the toolchain with your Cloud Object Storage instance.
+
   slack:
     service_id: slack
     parameters:
@@ -186,6 +200,9 @@ services:
           ARTIFACTORY_DOCKER_CONFIG_JSON: '{{form.artifactoryComp.parameters.docker_config_json}}'
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
           VAULT_SECRET: '{{services.pipeline.parameters.vault_secret}}'
+          COS_BUCKET_NAME: '{{form.customtool_cos-bucket.parameters.cos-bucket-name}}'
+          COS_ENDPOINT: '{{form.customtool_cos-bucket.parameters.cos-endpoint}}'
+          COS_API_KEY: '{{form.customtool_cos-bucket.parameters.cos-api-key}}'
         execute: false
 
   webide:
@@ -207,3 +224,11 @@ form:
       build-cluster-namespace: build
     schema:
       $ref: deploy.json
+
+  customtool_cos-bucket:
+    parameters:
+      cos-api-key:
+      cos-bucket-name:
+      cos-endpoint:
+    schema:
+      $ref: cos.json
