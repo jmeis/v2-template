@@ -119,7 +119,4 @@ properties:
   - name: cos-bucket-name
     value: ${COS_BUCKET_NAME}
     type: text
-  - name: cos-api-key
-    value: ${COS_API_KEY}
-    type: SECURE
 private_worker: ${PRIVATE_WORKER}
