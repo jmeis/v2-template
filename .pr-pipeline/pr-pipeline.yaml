@@ -20,6 +20,9 @@ spec:
       description: toggles slack notifications
     - name: pr-url
       description: pr url
+    - name: one-pipeline-config
+      description: Configuration file to be used to customize pipeline behavior
+      default: .one-pipeline.yaml
 
   workspaces:
     - name: artifacts
@@ -188,6 +191,34 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
+    - name: code-setup-config
+      runAfter:
+        - code-fetch-code
+      taskRef:
+        name: parse-config
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: file
+          value: $(tasks.code-fetch-code.results.directory-name)/$(params.one-pipeline-config)
+        - name: stage
+          value: setup
+
+    - name: code-setup
+      taskRef:
+        name: run-stage
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: image
+          value: $(tasks.code-setup-config.results.image)
+        - name: script
+          value: $(tasks.code-setup-config.results.script)
+        - name: working-dir
+          value: $(tasks.code-fetch-code.results.directory-name)
+
     - name: code-unit-tests-status-pending
       runAfter:
         - code-fetch-code
@@ -214,24 +245,34 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: code-unit-tests
+    - name: code-unit-tests-config
       runAfter:
         - code-unit-tests-status-pending
-        - code-fetch-code
+        - code-setup
       taskRef:
-        name: util-run
+        name: parse-config
       workspaces:
-        - name: scripts
+        - name: app
           workspace: artifacts
       params:
+        - name: file
+          value: $(tasks.code-fetch-code.results.directory-name)/$(params.one-pipeline-config)
+        - name: stage
+          value: test
+
+    - name: code-unit-tests
+      taskRef:
+        name: run-stage
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: image
+          value: $(tasks.code-unit-tests-config.results.image)
         - name: script
-          value: |
-            set -e -o pipefail
-            . /root/.nvm/nvm.sh
-            cd /scripts/$(echo $(tasks.code-extract-repository-url.results.extracted-value) | sed -E "s/(.*)(\/)//")
-            npm ci -q && npm run test
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
+          value: $(tasks.code-unit-tests-config.results.script)
+        - name: working-dir
+          value: $(tasks.code-fetch-code.results.directory-name)
 
     - name: code-unit-tests-status-finished
       runAfter:

@@ -45,6 +45,9 @@ spec:
     - name: cos-endpoint
       description: Endpoint of your Cloud Object Storage instance, used as an Evidence Locker
       default: ""
+    - name: one-pipeline-config
+      description: Configuration file to be used to customize pipeline behavior
+      default: .one-pipeline.yaml
 
   workspaces:
     - name: artifacts
@@ -174,21 +177,61 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: code-unit-tests
+    - name: code-setup-config
       runAfter:
         - code-fetch-code
       taskRef:
-        name: util-run
+        name: parse-config
       workspaces:
-        - name: scripts
+        - name: app
           workspace: artifacts
       params:
+        - name: file
+          value: $(tasks.code-fetch-code.results.directory-name)/$(params.one-pipeline-config)
+        - name: stage
+          value: setup
+
+    - name: code-setup
+      taskRef:
+        name: run-stage
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: image
+          value: $(tasks.code-setup-config.results.image)
         - name: script
-          value: |
-            set -e -o pipefail
-            . /root/.nvm/nvm.sh
-            cd /scripts/$(echo $(tasks.code-extract-repository-url.results.extracted-value) | sed -E "s/(.*)(\/)//")
-            npm ci -q && npm run test
+          value: $(tasks.code-setup-config.results.script)
+        - name: working-dir
+          value: $(tasks.code-fetch-code.results.directory-name)
+
+    - name: code-unit-tests-config
+      runAfter:
+        - code-setup
+      taskRef:
+        name: parse-config
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: file
+          value: $(tasks.code-fetch-code.results.directory-name)/$(params.one-pipeline-config)
+        - name: stage
+          value: test
+
+    - name: code-unit-tests
+      taskRef:
+        name: run-stage
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: image
+          value: $(tasks.code-unit-tests-config.results.image)
+        - name: script
+          value: $(tasks.code-unit-tests-config.results.script)
+        - name: working-dir
+          value: $(tasks.code-fetch-code.results.directory-name)
 
     - name: code-vulnerability-scan-uploader
       runAfter:
@@ -453,142 +496,64 @@ spec:
         - name: artifacts
           workspace: artifacts
 
-    - name: deploy-fetch-iks-cluster-config
+    - name: deploy-dev-config
       runAfter:
         - build-image-signing
       taskRef:
-        name: iks-fetch-config
+        name: parse-config
       workspaces:
-        - name: cluster-configuration
+        - name: app
           workspace: artifacts
       params:
-        - name: ibmcloud-api-key-secret-key
-          value: "api-key"
-        - name: cluster-name
-          value: $(params.cluster-name)
-        - name: resource-group
-          value: $(params.dev-resource-group)
-        - name: cluster-region
-          value: $(params.dev-region)
-        - name: cluster-pipeline-resources-directory-fallback
-          value: .tekton-clusters
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: deploy-pipeline-1-kubectl-task
-      runAfter:
-        - deploy-fetch-iks-cluster-config
-      taskRef:
-        name: iks-contextual-execution
-      workspaces:
-        - name: cluster-configuration
-          workspace: artifacts
-      params:
-        - name: cluster-name
-          value: $(params.cluster-name)
-        - name: cluster-pipeline-resources-directory
-          value: .tekton-clusters
-        - name: script
-          value: |
-            echo "** Here is the kubectl version:"
-            kubectl version
-            echo "** Here is the kubectl cluster-info:"
-            kubectl cluster-info
-            echo "** Here are the kubectl namespaces:"
-            kubectl get namespaces
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: deploy-create-namespace
-      runAfter:
-        - build-image-signing
-      taskRef:
-        name: iks-create-namespace
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: cluster-name
-          value: $(params.cluster-name)
-        - name: cluster-region
-          value: $(params.dev-region)
-        - name: cluster-namespace
-          value: $(params.dev-cluster-namespace)
-        - name: ibmcloud-api-key-secret-key
-          value: "api-key"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: deploy-create-image-pull-secrets
-      runAfter:
-        - deploy-create-namespace
-      taskRef:
-        name: iks-create-pull-secrets
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: cluster-name
-          value: $(params.cluster-name)
-        - name: cluster-region
-          value: $(params.dev-region)
-        - name: cluster-namespace
-          value: $(params.dev-cluster-namespace)
-        - name: ibmcloud-api-key-secret-key
-          value: "api-key"
-        - name: image-url
-          value: $(tasks.build-containerize.results.image-repository)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
+        - name: file
+          value: $(tasks.code-fetch-code.results.directory-name)/$(params.one-pipeline-config)
+        - name: stage
+          value: deploy
 
     - name: deploy-dev
       taskRef:
-        name: iks-deploy
-      runAfter:
-        - deploy-pipeline-1-kubectl-task
-        - deploy-create-namespace
-        - deploy-create-image-pull-secrets
+        name: run-stage
       workspaces:
-        - name: artifacts
+        - name: app
           workspace: artifacts
       params:
-        - name: cluster-name
-          value: $(params.cluster-name)
-        - name: cluster-namespace
-          value: $(params.dev-cluster-namespace)
-        - name: cluster-region
-          value: $(params.registry-region)
-        - name: ibmcloud-api-key-secret-key
-          value: api-key
-        - name: allow-create-route
-          value: "true"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-        - name: app-directory
+        - name: image
+          value: $(tasks.deploy-dev-config.results.image)
+        - name: script
+          value: $(tasks.deploy-dev-config.results.script)
+        - name: working-dir
           value: $(tasks.code-fetch-code.results.directory-name)
-        - name: image-tag
-          value: $(tasks.build-containerize.results.image-tags)
-        - name: image-url
-          value: $(tasks.build-containerize.results.image-repository)
+        - name: params
+          value: |
+            image: $(tasks.build-containerize.results.image-repository)@$(tasks.build-containerize.results.image-digest)
 
-    - name: deploy-acceptance-tests
+    - name: deploy-acceptance-tests-config
       runAfter:
         - deploy-dev
       taskRef:
-        name: util-run
+        name: parse-config
       workspaces:
-        - name: scripts
+        - name: app
           workspace: artifacts
       params:
+        - name: file
+          value: $(tasks.code-fetch-code.results.directory-name)/$(params.one-pipeline-config)
+        - name: stage
+          value: acceptance-test
+
+    - name: deploy-acceptance-tests
+      taskRef:
+        name: run-stage
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: image
+          value: $(tasks.deploy-acceptance-tests-config.results.image)
         - name: script
-          value: |
-            #!/bin/bash
-            APP_URL="$(tasks.deploy-dev.results.app-url)"
-            . /root/.nvm/nvm.sh
-            cd /scripts/$(tasks.code-fetch-code.results.directory-name) || exit
-            npm ci -q
-            export APP_URL
-            npm run acceptance-test
+          value: $(tasks.deploy-acceptance-tests-config.results.script)
+        - name: working-dir
+          value: $(tasks.code-fetch-code.results.directory-name)
 
     - name: build-compliance-collector
       taskRef:
