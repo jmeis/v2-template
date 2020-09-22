@@ -124,24 +124,6 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: code-vulnerability-scan-uploader
-      runAfter:
-        - code-fetch-code
-      taskRef:
-        name: gitsecure-discovery
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
-        - name: revision
-          value: $(params.branch)
-        - name: commit-id
-          value: $(params.commit-id)
-        - name: directory-name
-          value: $(tasks.code-fetch-code.results.directory-name)
-
     - name: code-detect-secrets-status-pending
       runAfter:
         - code-fetch-code
@@ -205,6 +187,96 @@ spec:
           value: "Tekton PR Pipeline Status"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+
+    - name: code-unit-tests-status-pending
+      runAfter:
+        - code-fetch-code
+      taskRef:
+        name: github-set-status
+      workspaces:
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: secret-name
+          value: git-token
+        - name: repo-url
+          value: $(tasks.code-extract-repository-url.results.extracted-value)
+        - name: commit-sha
+          value: $(params.commit-id)
+        - name: state
+          value: pending
+        - name: task-name
+          value: code-unit-tests
+        - name: step-name
+          value: run-script
+        - name: description
+          value: "Tekton PR Pipeline Status"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: code-unit-tests
+      runAfter:
+        - code-unit-tests-status-pending
+        - code-fetch-code
+      taskRef:
+        name: util-run
+      workspaces:
+        - name: scripts
+          workspace: artifacts
+      params:
+        - name: script
+          value: |
+            set -e -o pipefail
+            . /root/.nvm/nvm.sh
+            cd /scripts/$(echo $(tasks.code-extract-repository-url.results.extracted-value) | sed -E "s/(.*)(\/)//")
+            npm ci -q && npm run test
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: code-unit-tests-status-finished
+      runAfter:
+        - code-unit-tests
+      taskRef:
+        name: github-set-status
+      workspaces:
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: secret-name
+          value: git-token
+        - name: repo-url
+          value: $(tasks.code-extract-repository-url.results.extracted-value)
+        - name: commit-sha
+          value: $(params.commit-id)
+        - name: state
+          value: $(tasks.code-unit-tests.results.status)
+        - name: task-name
+          value: code-unit-tests
+        - name: step-name
+          value: run-script
+        - name: description
+          value: "Tekton PR Pipeline Status"
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: code-vulnerability-scan-uploader
+      runAfter:
+        - code-fetch-code
+        - code-unit-tests
+      taskRef:
+        name: gitsecure-discovery
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: repository
+          value: $(tasks.code-extract-repository-url.results.extracted-value)
+        - name: revision
+          value: $(params.branch)
+        - name: commit-id
+          value: $(params.commit-id)
+        - name: directory-name
+          value: $(tasks.code-fetch-code.results.directory-name)
 
     - name: code-vulnerability-scan-status-pending
       runAfter:
@@ -349,77 +421,6 @@ spec:
           value: code-cis-check
         - name: step-name
           value: cis
-        - name: description
-          value: "Tekton PR Pipeline Status"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: code-unit-tests-status-pending
-      runAfter:
-        - code-fetch-code
-      taskRef:
-        name: github-set-status
-      workspaces:
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: secret-name
-          value: git-token
-        - name: repo-url
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
-        - name: commit-sha
-          value: $(params.commit-id)
-        - name: state
-          value: pending
-        - name: task-name
-          value: code-unit-tests
-        - name: step-name
-          value: run-script
-        - name: description
-          value: "Tekton PR Pipeline Status"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: code-unit-tests
-      runAfter:
-        - code-unit-tests-status-pending
-        - code-fetch-code
-      taskRef:
-        name: util-run
-      workspaces:
-        - name: scripts
-          workspace: artifacts
-      params:
-        - name: script
-          value: |
-           set -e -o pipefail
-           . /root/.nvm/nvm.sh
-           cd /scripts/$(echo $(tasks.code-extract-repository-url.results.extracted-value) | sed -E "s/(.*)(\/)//")
-           npm ci -q && npm run test
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: code-unit-tests-status-finished
-      runAfter:
-        - code-unit-tests
-      taskRef:
-        name: github-set-status
-      workspaces:
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: secret-name
-          value: git-token
-        - name: repo-url
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
-        - name: commit-sha
-          value: $(params.commit-id)
-        - name: state
-          value: $(tasks.code-unit-tests.results.status)
-        - name: task-name
-          value: code-unit-tests
-        - name: step-name
-          value: run-script
         - name: description
           value: "Tekton PR Pipeline Status"
         - name: pipeline-debug
