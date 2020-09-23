@@ -396,6 +396,7 @@ spec:
            . /root/.nvm/nvm.sh
            cd /scripts/$(echo $(tasks.code-extract-repository-url.results.extracted-value) | sed -E "s/(.*)(\/)//")
            npm ci -q && npm run test
+           rm node_modules/workerpool/examples/embeddedWorker/package-lock.json
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
