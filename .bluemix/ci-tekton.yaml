@@ -56,6 +56,10 @@ inputs:
     branch: master
     service: ${TEKTON_CATALOG_REPO}
     path: preview/slack
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: stable/task/github-check-statuses/1.0.0
 triggers:
   - type: git
     name: Git CI Trigger

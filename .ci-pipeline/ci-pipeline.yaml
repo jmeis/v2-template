@@ -772,7 +772,7 @@ spec:
 
     - name: code-branch-protection
       taskRef:
-        name: compliance-check-github-statuses
+        name: github-check-statuses
       runAfter:
         - code-fetch-code
       workspaces:

@@ -456,7 +456,7 @@ spec:
       runAfter:
         - code-branch-protection-status-pending
       taskRef:
-        name: compliance-check-github-statuses
+        name: github-check-statuses
       workspaces:
         - name: secrets
           workspace: artifacts
