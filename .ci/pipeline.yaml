@@ -190,6 +190,7 @@ spec:
             compliance-ci-toolchain/.ci-pipeline/**/*.yaml
             compliance-ci-toolchain/.pr-pipeline/**/*.yaml
             common-tekton-tasks/preview/*/*.yaml
+            common-tekton-tasks/stable/task/*/*/*.yaml
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
