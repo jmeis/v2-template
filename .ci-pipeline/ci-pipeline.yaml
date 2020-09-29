@@ -39,6 +39,12 @@ spec:
       description: cr branch name
     - name: slack-notifications
       description: toggles slack notifications
+    - name: cos-bucket-name
+      description: Bucket name in your Cloud Object Storage instance, used as an Evidence Locker
+      default: ""
+    - name: cos-endpoint
+      description: Endpoint of your Cloud Object Storage instance, used as an Evidence Locker
+      default: ""
 
   workspaces:
     - name: artifacts
@@ -151,77 +157,6 @@ spec:
         - name: app-directory
           value: $(tasks.code-fetch-code.results.directory-name)
 
-    - name: code-detect-secrets-create-evidence
-      taskRef:
-        name: evidence-add
-      retries: 2
-      workspaces:
-        - name: evidence-locker
-          workspace: artifacts
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: evidence-repo-url
-          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
-        - name: namespace
-          value: "ci"
-        - name: evidence-name
-          value: "detect-secrets"
-        - name: task-step-name
-          value: "detect-secrets"
-        - name: toolchain-crn
-          value: $(tasks.code-extract-toolchain-crn.results.extracted-value)
-        - name: evidence-type
-          value: "com.ibm.detect_secrets"
-        - name: evidence-type-version
-          value: "1.0.0"
-        - name: result
-          value: $(tasks.code-detect-secrets.results.status)
-        - name: issues
-          value: ""
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: code-detect-secrets-create-doi-data
-      runAfter:
-        - code-detect-secrets
-      taskRef:
-        name: evidence-to-doi-transformer
-      retries: 2
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: title
-          value: "Detect Secrets"
-        - name: task-name
-          value: "code-detect-secrets"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-        - name: result-status
-          value: $(tasks.code-detect-secrets.results.status)
-
-    - name: code-detect-secrets-results-to-doi
-      runAfter:
-        - code-detect-secrets-create-doi-data
-      taskRef:
-        name: doi-publish-testrecord
-      retries: 2
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: app-name
-          value: "$(params.app-name)"
-        - name: file-locations
-          value: $(tasks.code-detect-secrets-create-doi-data.results.file-locations)
-        - name: test-types
-          value: $(tasks.code-detect-secrets-create-doi-data.results.test-types)
-        - name: toolchain-apikey-secret-key
-          value: "api-key"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
     - name: build-doi-publish-buildrecord
       taskRef:
         name: doi-publish-buildrecord
@@ -254,97 +189,7 @@ spec:
             . /root/.nvm/nvm.sh
             cd /scripts/$(echo $(tasks.code-extract-repository-url.results.extracted-value) | sed -E "s/(.*)(\/)//")
             npm ci -q && npm run test
-
-    - name: code-unit-tests-create-issue
-      runAfter:
-        - code-unit-tests
-      taskRef:
-        name: evidence-create-incident-issue
-      workspaces:
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: secret-name
-          value: git-token
-        - name: repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
-        - name: incident-issue-repo
-          value: $(tasks.code-extract-issues-repo-url.results.extracted-value)
-        - name: task-name
-          value: "code-unit-tests"
-        - name: result-status
-          value: $(tasks.code-unit-tests.results.status)
-        - name: commit-hash
-          value: $(tasks.code-fetch-code.results.git-commit)
-
-    - name: code-unit-tests-create-evidence
-      taskRef:
-        name: evidence-add
-      workspaces:
-        - name: evidence-locker
-          workspace: artifacts
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: evidence-repo-url
-          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
-        - name: namespace
-          value: "ci"
-        - name: evidence-name
-          value: "unit-test"
-        - name: task-step-name
-          value: "run-script"
-        - name: toolchain-crn
-          value: $(tasks.code-extract-toolchain-crn.results.extracted-value)
-        - name: evidence-type
-          value: "com.ibm.unit_test"
-        - name: evidence-type-version
-          value: "1.0.0"
-        - name: result
-          value: $(tasks.code-unit-tests.results.status)
-        - name: issues
-          value: |
-            "$(tasks.code-unit-tests-create-issue.results.issue-url)"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: code-unit-tests-create-doi-data
-      runAfter:
-        - code-unit-tests
-      taskRef:
-        name: evidence-to-doi-transformer
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: title
-          value: "Unit tests"
-        - name: task-name
-          value: "code-unit-tests"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-        - name: result-status
-          value: $(tasks.code-unit-tests.results.status)
-
-    - name: code-unit-tests-results-to-doi
-      runAfter:
-        - code-unit-tests-create-doi-data
-      taskRef:
-        name: doi-publish-testrecord
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: app-name
-          value: "$(params.app-name)"
-        - name: file-locations
-          value: $(tasks.code-unit-tests-create-doi-data.results.file-locations)
-        - name: test-types
-          value: $(tasks.code-unit-tests-create-doi-data.results.test-types)
-        - name: toolchain-apikey-secret-key
-          value: "api-key"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
+            rm node_modules/workerpool/examples/embeddedWorker/package-lock.json
 
     - name: code-vulnerability-scan-uploader
       runAfter:
@@ -386,109 +231,6 @@ spec:
         - name: git-api-token-key
           value: git-token
 
-    - name: code-vulnerability-scan-show-artifact
-      runAfter:
-        - code-vulnerability-scan
-      taskRef:
-        name: log-artifact
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: artifact-path
-          value: $(tasks.code-vulnerability-scan.results.evidence-store)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: code-vulnerability-scan-create-issue
-      taskRef:
-        name: evidence-create-incident-issue
-      workspaces:
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: secret-name
-          value: git-token
-        - name: repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
-        - name: incident-issue-repo
-          value: $(tasks.code-extract-issues-repo-url.results.extracted-value)
-        - name: task-name
-          value: "code-vulnerability-scan"
-        - name: result-status
-          value: $(tasks.code-vulnerability-scan.results.status)
-        - name: commit-hash
-          value: $(tasks.code-fetch-code.results.git-commit)
-
-    - name: code-vulnerability-scan-create-evidence
-      taskRef:
-        name: evidence-add
-      workspaces:
-        - name: evidence-locker
-          workspace: artifacts
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: evidence-repo-url
-          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
-        - name: namespace
-          value: "ci"
-        - name: evidence-name
-          value: "code-vulnerability-scan"
-        - name: task-step-name
-          value: "remediation"
-        - name: toolchain-crn
-          value: $(tasks.code-extract-toolchain-crn.results.extracted-value)
-        - name: evidence-type
-          value: "com.ibm.code-vulnerability-scan"
-        - name: evidence-type-version
-          value: "1.0.0"
-        - name: result
-          value: $(tasks.code-vulnerability-scan.results.status)
-        - name: issues
-          value: |
-            "$(tasks.code-vulnerability-scan-create-issue.results.issue-url)"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: code-vulnerability-scan-create-doi-data
-      runAfter:
-        - code-vulnerability-scan
-      taskRef:
-        name: evidence-to-doi-transformer
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: title
-          value: "GitSecure vulnerability scan"
-        - name: task-name
-          value: "code-vulnerability-scan"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-        - name: result-status
-          value: $(tasks.code-vulnerability-scan.results.status)
-
-    - name: code-vulnerability-scan-results-to-doi
-      runAfter:
-        - code-vulnerability-scan-create-doi-data
-      taskRef:
-        name: doi-publish-testrecord
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: app-name
-          value: "$(params.app-name)"
-        - name: file-locations
-          value: $(tasks.code-vulnerability-scan-create-doi-data.results.file-locations)
-        - name: test-types
-          value: $(tasks.code-vulnerability-scan-create-doi-data.results.test-types)
-        - name: toolchain-apikey-secret-key
-          value: "api-key"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
     - name: code-cis-check
       taskRef:
         name: gitsecure-cis-check
@@ -511,109 +253,6 @@ spec:
         - name: directory-name
           value: $(tasks.code-fetch-code.results.directory-name)
 
-    - name: code-cis-check-show-artifact
-      runAfter:
-        - code-cis-check
-      taskRef:
-        name: log-artifact
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: artifact-path
-          value: $(tasks.code-cis-check.results.evidence-store)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: code-cis-check-create-issue
-      taskRef:
-        name: evidence-create-incident-issue
-      workspaces:
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: secret-name
-          value: git-token
-        - name: repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
-        - name: incident-issue-repo
-          value: $(tasks.code-extract-issues-repo-url.results.extracted-value)
-        - name: task-name
-          value: "code-cis-check"
-        - name: result-status
-          value: $(tasks.code-cis-check.results.status)
-        - name: commit-hash
-          value: $(tasks.code-fetch-code.results.git-commit)
-
-    - name: code-cis-check-create-evidence
-      taskRef:
-        name: evidence-add
-      workspaces:
-        - name: evidence-locker
-          workspace: artifacts
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: evidence-repo-url
-          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
-        - name: namespace
-          value: "ci"
-        - name: evidence-name
-          value: "code-cis-check"
-        - name: task-step-name
-          value: "cis"
-        - name: toolchain-crn
-          value: $(tasks.code-extract-toolchain-crn.results.extracted-value)
-        - name: evidence-type
-          value: "com.ibm.code-cis-check"
-        - name: evidence-type-version
-          value: "1.0.0"
-        - name: result
-          value: $(tasks.code-cis-check.results.status)
-        - name: issues
-          value: |
-            "$(tasks.code-cis-check-create-issue.results.issue-url)"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: code-cis-check-create-doi-data
-      runAfter:
-        - code-cis-check
-      taskRef:
-        name: evidence-to-doi-transformer
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: title
-          value: "GitSecure CIS check"
-        - name: task-name
-          value: "code-cis-check"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-        - name: result-status
-          value: $(tasks.code-cis-check.results.status)
-
-    - name: code-cis-check-results-to-doi
-      runAfter:
-        - code-cis-check-create-doi-data
-      taskRef:
-        name: doi-publish-testrecord
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: app-name
-          value: "$(params.app-name)"
-        - name: file-locations
-          value: $(tasks.code-cis-check-create-doi-data.results.file-locations)
-        - name: test-types
-          value: $(tasks.code-cis-check-create-doi-data.results.test-types)
-        - name: toolchain-apikey-secret-key
-          value: "api-key"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
     - name: code-bom-check
       runAfter:
         - code-vulnerability-scan-uploader
@@ -629,109 +268,6 @@ spec:
           value: $(params.branch)
         - name: commit-id
           value: $(tasks.code-fetch-code.results.git-commit)
-
-    - name: code-bom-check-show-artifact
-      runAfter:
-        - code-bom-check
-      taskRef:
-        name: log-artifact
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: artifact-path
-          value: $(tasks.code-bom-check.results.evidence-store)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: code-bom-check-create-issue
-      taskRef:
-        name: evidence-create-incident-issue
-      workspaces:
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: secret-name
-          value: git-token
-        - name: repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
-        - name: incident-issue-repo
-          value: $(tasks.code-extract-issues-repo-url.results.extracted-value)
-        - name: task-name
-          value: "code-bom-check"
-        - name: result-status
-          value: $(tasks.code-bom-check.results.status)
-        - name: commit-hash
-          value: $(tasks.code-fetch-code.results.git-commit)
-
-    - name: code-bom-check-create-evidence
-      taskRef:
-        name: evidence-add
-      workspaces:
-        - name: evidence-locker
-          workspace: artifacts
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: evidence-repo-url
-          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
-        - name: namespace
-          value: "ci"
-        - name: evidence-name
-          value: "code-bom-check"
-        - name: task-step-name
-          value: "bom"
-        - name: toolchain-crn
-          value: $(tasks.code-extract-toolchain-crn.results.extracted-value)
-        - name: evidence-type
-          value: "com.ibm.code-bom-check"
-        - name: evidence-type-version
-          value: "1.0.0"
-        - name: result
-          value: $(tasks.code-bom-check.results.status)
-        - name: issues
-          value: |
-            "$(tasks.code-bom-check-create-issue.results.issue-url)"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: code-bom-check-create-doi-data
-      runAfter:
-        - code-bom-check
-      taskRef:
-        name: evidence-to-doi-transformer
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: title
-          value: "GitSecure BOM check"
-        - name: task-name
-          value: "code-bom-check"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-        - name: result-status
-          value: $(tasks.code-bom-check.results.status)
-
-    - name: code-bom-check-results-to-doi
-      runAfter:
-        - code-bom-check-create-doi-data
-      taskRef:
-        name: doi-publish-testrecord
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: app-name
-          value: "$(params.app-name)"
-        - name: file-locations
-          value: $(tasks.code-bom-check-create-doi-data.results.file-locations)
-        - name: test-types
-          value: $(tasks.code-bom-check-create-doi-data.results.test-types)
-        - name: toolchain-apikey-secret-key
-          value: "api-key"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
 
     - name: get-org
       runAfter:
@@ -802,99 +338,6 @@ spec:
           value: $(tasks.code-fetch-credentials.results.repo-name)
         - name: git-commit
           value: $(tasks.code-fetch-code.results.git-commit)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: code-branch-protection-create-issue
-      runAfter:
-        - code-branch-protection
-      taskRef:
-        name: evidence-create-incident-issue
-      workspaces:
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: secret-name
-          value: git-token
-        - name: repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
-        - name: incident-issue-repo
-          value: $(tasks.code-extract-issues-repo-url.results.extracted-value)
-        - name: task-name
-          value: code-branch-protection
-        - name: result-status
-          value: $(tasks.code-branch-protection.results.status)
-        - name: commit-hash
-          value: $(tasks.code-fetch-code.results.git-commit)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: code-branch-protection-create-evidence
-      taskRef:
-        name: evidence-add
-      workspaces:
-        - name: evidence-locker
-          workspace: artifacts
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: evidence-repo-url
-          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
-        - name: namespace
-          value: "ci"
-        - name: evidence-name
-          value: "github-status-checks"
-        - name: task-step-name
-          value: "check-github-statuses"
-        - name: evidence-type
-          value: "com.ibm.branch_protection"
-        - name: evidence-type-version
-          value: "1.0.0"
-        - name: result
-          value: $(tasks.code-branch-protection.results.status)
-        - name: issues
-          value: |
-            "$(tasks.code-branch-protection-create-issue.results.issue-url)"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-        - name: toolchain-crn
-          value: $(tasks.code-extract-toolchain-crn.results.extracted-value)
-
-    - name: code-branch-protection-create-doi-data
-      runAfter:
-        - code-branch-protection
-      taskRef:
-        name: evidence-to-doi-transformer
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: title
-          value: "Branch protection check"
-        - name: task-name
-          value: "code-branch-protection"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-        - name: result-status
-          value: $(tasks.code-branch-protection.results.status)
-
-    - name: code-branch-protection-results-to-doi
-      runAfter:
-        - code-branch-protection-create-doi-data
-      taskRef:
-        name: doi-publish-testrecord
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: app-name
-          value: "$(params.app-name)"
-        - name: file-locations
-          value: $(tasks.code-branch-protection-create-doi-data.results.file-locations)
-        - name: test-types
-          value: $(tasks.code-branch-protection-create-doi-data.results.test-types)
-        - name: toolchain-apikey-secret-key
-          value: "api-key"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -989,120 +432,6 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: build-vulnerability-advisor-show-artifact
-      runAfter:
-        - build-vulnerability-advisor
-      taskRef:
-        name: log-artifact
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: artifact-path
-          value: $(tasks.build-vulnerability-advisor.results.scan-report-file)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: build-vulnerability-advisor-result-adapter
-      runAfter:
-        - build-vulnerability-advisor
-      taskRef:
-        name: va-scan-result-adapter
-      params:
-        - name: scan-status
-          value: $(tasks.build-vulnerability-advisor.results.scan-status)
-
-    - name: build-vulnerability-advisor-create-issue
-      taskRef:
-        name: evidence-create-incident-issue
-      runAfter:
-        - build-vulnerability-advisor-result-adapter
-      workspaces:
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: task-name
-          value: icr-check-va-scan
-        - name: result-status
-          value: $(tasks.build-vulnerability-advisor-result-adapter.results.status)
-        - name: commit-hash
-          value: $(tasks.code-fetch-code.results.git-commit)
-        - name: repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
-        - name: incident-issue-repo
-          value: $(tasks.code-extract-issues-repo-url.results.extracted-value)
-        - name: secret-name
-          value: git-token
-
-    - name: build-vulnerability-advisor-create-evidence
-      runAfter:
-        - build-vulnerability-advisor-result-adapter
-        - build-vulnerability-advisor-create-issue
-      taskRef:
-        name: evidence-add
-      params:
-        - name: evidence-repo-url
-          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
-        - name: namespace
-          value: "ci"
-        - name: evidence-name
-          value: "build-vulnerability-advisor"
-        - name: task-step-name
-          value: "run-vulnerability-advisor-scan"
-        - name: evidence-type
-          value: "com.ibm.cloud.icr-check-va-scan"
-        - name: evidence-type-version
-          value: "1.0.0"
-        - name: result
-          value: "$(tasks.build-vulnerability-advisor-result-adapter.results.status)"
-        - name: issues
-          value: |
-            "$(tasks.build-vulnerability-advisor-create-issue.results.issue-url)"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-      workspaces:
-        - name: evidence-locker
-          workspace: artifacts
-        - name: secrets
-          workspace: artifacts
-
-    - name: build-vulnerability-advisor-create-doi-data
-      runAfter:
-        - build-vulnerability-advisor-result-adapter
-      taskRef:
-        name: evidence-to-doi-transformer
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: title
-          value: "IBM CR VA scan"
-        - name: task-name
-          value: "build-vulnerability-advisor"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-        - name: result-status
-          value: $(tasks.build-vulnerability-advisor-result-adapter.results.status)
-
-    - name: build-vulnerability-advisor-results-to-doi
-      runAfter:
-        - build-vulnerability-advisor-create-doi-data
-      taskRef:
-        name: doi-publish-testrecord
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: app-name
-          value: "$(params.app-name)"
-        - name: file-locations
-          value: $(tasks.build-vulnerability-advisor-create-doi-data.results.file-locations)
-        - name: test-types
-          value: $(tasks.build-vulnerability-advisor-create-doi-data.results.test-types)
-        - name: toolchain-apikey-secret-key
-          value: "api-key"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
     - name: build-image-signing
       runAfter:
         - build-vulnerability-advisor
@@ -1124,97 +453,6 @@ spec:
       workspaces:
         - name: artifacts
           workspace: artifacts
-
-    - name: build-image-signing-create-issue
-      taskRef:
-        name: evidence-create-incident-issue
-      runAfter:
-        - build-image-signing
-      workspaces:
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: task-name
-          value: ciso-image-signing
-        - name: result-status
-          value: $(tasks.build-image-signing.results.status)
-        - name: commit-hash
-          value: $(tasks.code-fetch-code.results.git-commit)
-        - name: repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
-        - name: incident-issue-repo
-          value: $(tasks.code-extract-issues-repo-url.results.extracted-value)
-        - name: secret-name
-          value: git-token
-
-    - name: build-image-signing-create-evidence
-      runAfter:
-        - build-image-signing-create-issue
-      taskRef:
-        name: evidence-add
-      params:
-        - name: evidence-repo-url
-          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
-        - name: namespace
-          value: "ci"
-        - name: evidence-name
-          value: "build-ciso-image-signing"
-        - name: task-step-name
-          value: "sign-image"
-        - name: evidence-type
-          value: "com.ibm.cloud.icr-ciso-image-signing"
-        - name: evidence-type-version
-          value: "1.0.0"
-        - name: result
-          value: "$(tasks.build-image-signing.results.status)"
-        - name: issues
-          value: |
-            "$(tasks.build-image-signing-create-issue.results.issue-url)"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-      workspaces:
-        - name: evidence-locker
-          workspace: artifacts
-        - name: secrets
-          workspace: artifacts
-
-    - name: build-image-signing-create-doi-data
-      runAfter:
-        - build-image-signing
-      taskRef:
-        name: evidence-to-doi-transformer
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: title
-          value: "IBM CISO image signing"
-        - name: task-name
-          value: "build-image-signing"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-        - name: result-status
-          value: $(tasks.build-image-signing.results.status)
-
-    - name: build-image-signing-results-to-doi
-      runAfter:
-        - build-image-signing-create-doi-data
-      taskRef:
-        name: doi-publish-testrecord
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: app-name
-          value: "$(params.app-name)"
-        - name: file-locations
-          value: $(tasks.build-image-signing-create-doi-data.results.file-locations)
-        - name: test-types
-          value: $(tasks.build-image-signing-create-doi-data.results.test-types)
-        - name: toolchain-apikey-secret-key
-          value: "api-key"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
 
     - name: deploy-fetch-iks-cluster-config
       runAfter:
@@ -1353,100 +591,218 @@ spec:
             export APP_URL
             npm run acceptance-test
 
-    - name: deploy-acceptance-tests-create-issue
-      runAfter:
-        - deploy-acceptance-tests
+    - name: build-compliance-collector
       taskRef:
-        name: evidence-create-incident-issue
-      workspaces:
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: secret-name
-          value: git-token
-        - name: repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
-        - name: incident-issue-repo
-          value: $(tasks.code-extract-issues-repo-url.results.extracted-value)
-        - name: task-name
-          value: "deploy-acceptance-tests"
-        - name: result-status
-          value: $(tasks.deploy-acceptance-tests.results.status)
-        - name: commit-hash
-          value: $(tasks.code-fetch-code.results.git-commit)
-
-    - name: deploy-acceptance-tests-create-evidence
-      taskRef:
-        name: evidence-add
-      workspaces:
-        - name: evidence-locker
-          workspace: artifacts
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: evidence-repo-url
-          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
-        - name: namespace
-          value: "ci"
-        - name: evidence-name
-          value: "acceptance-test"
-        - name: task-step-name
-          value: "run-script"
-        - name: toolchain-crn
-          value: $(tasks.code-extract-toolchain-crn.results.extracted-value)
-        - name: evidence-type
-          value: "com.ibm.acceptance_test"
-        - name: evidence-type-version
-          value: "1.0.0"
-        - name: result
-          value: $(tasks.deploy-acceptance-tests.results.status)
-        - name: issues
-          value: |
-            "$(tasks.deploy-acceptance-tests-create-issue.results.issue-url)"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: deploy-acceptance-tests-create-doi-data
-      runAfter:
-        - deploy-acceptance-tests
-      taskRef:
-        name: evidence-to-doi-transformer
+        name: compliance-collector
       workspaces:
         - name: artifacts
           workspace: artifacts
+        - name: secrets
+          workspace: artifacts
       params:
-        - name: title
-          value: "Acceptance tests"
-        - name: task-name
-          value: "deploy-acceptance-tests"
+        - name: namespace
+          value: ci
+        - name: incident-issue-repo
+          value: $(tasks.code-extract-issues-repo-url.results.extracted-value)
+        - name: evidence-repo-url
+          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
+        - name: commit-hash
+          value: $(tasks.code-fetch-code.results.git-commit)
+        - name: toolchain-crn
+          value: $(tasks.code-extract-toolchain-crn.results.extracted-value)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-        - name: result-status
-          value: $(tasks.deploy-acceptance-tests.results.status)
+        - name: toolchain-apikey-secret-key
+          value: "api-key"
+        - name: cos-bucket-name
+          value: "$(params.cos-bucket-name)"
+        - name: cos-endpoint
+          value: "$(params.cos-endpoint)"
+        - name: data
+          value: |
+            [
+              {
+                "name": "code-detect-secrets",
+                "step": "detect-secrets",
+                "evidence_type": "com.ibm.detect_secrets",
+                "evidence_type_version": "1.0.0",
+                "expected": "success",
+                "actual": "$(tasks.code-detect-secrets.results.status)",
+                "artifacts": [
+                ]
+              },
+              {
+                "name": "code-unit-tests",
+                "step": "run-script",
+                "evidence_type": "com.ibm.unit_test",
+                "evidence_type_version": "1.0.0",
+                "expected": "success",
+                "actual": "$(tasks.code-unit-tests.results.status)",
+                "artifacts": [
+                ]
+              },
+              {
+                "name": "code-vulnerability-scan",
+                "step": "remediation",
+                "evidence_type": "com.ibm.code_vulnerability_scan",
+                "evidence_type_version": "1.0.0",
+                "expected": "success",
+                "actual": "$(tasks.code-vulnerability-scan.results.status)",
+                "artifacts": [
+                  "$(tasks.code-vulnerability-scan.results.evidence-store)"
+                ]
+              },
+              {
+                "name": "code-cis-check",
+                "step": "cis",
+                "evidence_type": "com.ibm.code_cis_check",
+                "evidence_type_version": "1.0.0",
+                "expected": "success",
+                "actual": "$(tasks.code-cis-check.results.status)",
+                "artifacts": [
+                  "$(tasks.code-cis-check.results.evidence-store)"
+                ]
+              },
+              {
+                "name": "code-bom-check",
+                "step": "bom",
+                "evidence_type": "com.ibm.code_bom_check",
+                "evidence_type_version": "1.0.0",
+                "expected": "success",
+                "actual": "$(tasks.code-bom-check.results.status)",
+                "artifacts": [
+                  "$(tasks.code-bom-check.results.evidence-store)"
+                ]
+              },
+              {
+                "name": "code-branch-protection",
+                "step": "check-github-statuses",
+                "evidence_type": "com.ibm.branch_protection",
+                "evidence_type_version": "1.0.0",
+                "expected": "success",
+                "actual": "$(tasks.code-branch-protection.results.status)",
+                "artifacts": [
+                ]
+              },
+              {
+                "name": "build-vulnerability-advisor",
+                "step": "run-vulnerability-advisor-scan",
+                "evidence_type": "com.ibm.cloud.icr_check_va_scan",
+                "evidence_type_version": "1.0.0",
+                "expected": "OK",
+                "actual": "$(tasks.build-vulnerability-advisor.results.scan-status)",
+                "artifacts": [
+                  "$(tasks.build-vulnerability-advisor.results.scan-report-file)"
+                ]
+              },
+              {
+                "name": "build-image-signing",
+                "step": "sign-image",
+                "evidence_type": "com.ibm.cloud.icr_ciso_image_signing",
+                "evidence_type_version": "1.0.0",
+                "expected": "success",
+                "actual": "$(tasks.build-image-signing.results.status)",
+                "artifacts": [
+                  "$(tasks.build-image-signing.results.signature)"
+                ]
+              },
+              {
+                "name": "deploy-acceptance-tests",
+                "step": "run-script",
+                "evidence_type": "com.ibm.acceptance_test",
+                "evidence_type_version": "1.0.0",
+                "expected": "success",
+                "actual": "$(tasks.deploy-acceptance-tests.results.status)",
+                "artifacts": [
+                ]
+              }
+            ]
 
-    - name: deploy-acceptance-tests-results-to-doi
-      runAfter:
-        - deploy-acceptance-tests-create-doi-data
+    - name: build-compliance-doi-reporter
       taskRef:
-        name: doi-publish-testrecord
+        name: compliance-doi-reporter
       workspaces:
         - name: artifacts
           workspace: artifacts
       params:
         - name: app-name
-          value: $(params.app-name)
-        - name: file-locations
-          value: $(tasks.deploy-acceptance-tests-create-doi-data.results.file-locations)
-        - name: test-types
-          value: $(tasks.deploy-acceptance-tests-create-doi-data.results.test-types)
-        - name: toolchain-apikey-secret-key
-          value: "api-key"
+          value: "$(params.app-name)"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: ibmcloud-api-key-secret-key
+          value: "api-key"
+        - name: data
+          value: |
+            [
+              {
+                "name": "code-detect-secrets",
+                "step": "detect-secrets",
+                "evidence_type": "com.ibm.detect_secrets",
+                "expected": "success",
+                "actual": "$(tasks.code-detect-secrets.results.status)"
+              },
+              {
+                "name": "code-unit-tests",
+                "step": "run-script",
+                "evidence_type": "com.ibm.unit_test",
+                "expected": "success",
+                "actual": "$(tasks.code-unit-tests.results.status)"
+              },
+              {
+                "name": "code-vulnerability-scan",
+                "step": "remediation",
+                "evidence_type": "com.ibm.code_vulnerability_scan",
+                "expected": "success",
+                "actual": "$(tasks.code-vulnerability-scan.results.status)"
+              },
+              {
+                "name": "code-cis-check",
+                "step": "cis",
+                "evidence_type": "com.ibm.code_cis_check",
+                "expected": "success",
+                "actual": "$(tasks.code-cis-check.results.status)"
+              },
+              {
+                "name": "code-bom-check",
+                "step": "bom",
+                "evidence_type": "com.ibm.code_bom_check",
+                "expected": "success",
+                "actual": "$(tasks.code-bom-check.results.status)"
+              },
+              {
+                "name": "code-branch-protection",
+                "step": "check-github-statuses",
+                "evidence_type": "com.ibm.branch_protection",
+                "expected": "success",
+                "actual": "$(tasks.code-branch-protection.results.status)"
+              },
+              {
+                "name": "build-vulnerability-advisor",
+                "step": "run-vulnerability-advisor-scan",
+                "evidence_type": "com.ibm.cloud.icr_check_va_scan",
+                "expected": "OK",
+                "actual": "$(tasks.build-vulnerability-advisor.results.scan-status)"
+              },
+              {
+                "name": "build-image-signing",
+                "step": "sign-image",
+                "evidence_type": "com.ibm.cloud.icr_ciso_image_signing",
+                "expected": "success",
+                "actual": "$(tasks.build-image-signing.results.status)"
+              },
+              {
+                "name": "deploy-acceptance-tests",
+                "step": "run-script",
+                "evidence_type": "com.ibm.acceptance_test",
+                "expected": "success",
+                "actual": "$(tasks.deploy-acceptance-tests.results.status)"
+              }
+            ]
 
     - name: build-notify-pipeline-end
       runAfter:
-        - deploy-dev
+        - build-compliance-collector
+        - build-compliance-doi-reporter
       taskRef:
         name: slack-post-message
       workspaces:
@@ -1518,10 +874,9 @@ spec:
 
     - name: build-pipeline-evaluator
       runAfter:
-        - deploy-dev
+        - build-compliance-doi-reporter
+        - build-compliance-collector
         - build-notify-pipeline-end
-        - deploy-acceptance-tests-create-evidence
-        - deploy-acceptance-tests-results-to-doi
       taskRef:
         name: util-evaluate-pipeline-results
       params:
