@@ -48,6 +48,8 @@ spec:
     - name: one-pipeline-config
       description: Configuration file to be used to customize pipeline behavior
       default: .one-pipeline.yaml
+    - name: doi-toolchain-id
+      description: DevOps Toolchain ID
 
   workspaces:
     - name: artifacts
@@ -176,6 +178,8 @@ spec:
           value: $(tasks.code-fetch-code.results.git-commit)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: toolchain-id
+          value: $(params.doi-toolchain-id)
 
     - name: code-setup-config
       runAfter:
@@ -695,6 +699,8 @@ spec:
           value: $(params.pipeline-debug)
         - name: ibmcloud-api-key-secret-key
           value: "api-key"
+        - name: toolchain-id
+          value: "$(params.doi-toolchain-id)"
         - name: data
           value: |
             [

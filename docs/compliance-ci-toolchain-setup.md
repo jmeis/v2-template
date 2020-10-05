@@ -185,6 +185,21 @@ To get the **Cloud Object Storage Endpoint**, please visit your COS Instance's p
 
 If You decide not to use Cloud Object Storage as an evidence locker, You can also set the required values after the creation of the toolchain by setting the `cos-bucket-name`, `cos-endpoint` environment variables in the CI Pipeline. 
 
+#### Link DOI toolchain (optional)
+
+CI toolchain needs a toolchain ID with an existing DevOps Insights instance, so that it is able to publish the deployment records to insights. If toolchain ID is not present, the local DevOps Insights integration is used if present.
+
+| ![DOI Toolchain ID](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-cd-toolchain/doi-toolchain-optional.png) |
+| :--: |
+
+You can copy the Toolchain ID from the URL of your toolchain.
+A toolchain's URL follows this pattern: `https://cloud.ibm.com/devops/toolchains/<toolchain-ID-comes-here>?env_id=ibm:yp:us-south`
+
+For example, if the URL is: `https://cloud.ibm.com/devops/toolchains/aaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee?env_id=ibm:yp:us-south` then the toolchain's ID is: `aaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee`.
+
+Note: Make sure to only include the ID here, not the full URL.
+
+
 #### Artifactory
 
 The template comes with an artifactory integration to enable using cocoa compliance custom base image in the tekton tasks.  
