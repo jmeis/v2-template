@@ -50,6 +50,7 @@ spec:
       default: .one-pipeline.yaml
     - name: doi-toolchain-id
       description: DevOps Toolchain ID
+      default: ""
 
   workspaces:
     - name: artifacts
