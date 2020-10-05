@@ -20,7 +20,6 @@ template:
     - inventory-repo
     - artifactoryComp
     - privateWorker
-    - devops-insights
   info:
     git url: >
       "[" + $env.repository + "]" +
@@ -49,6 +48,19 @@ services:
       name: Cloud Object Storage
       dashboard_url: 'https://cloud.ibm.com/catalog/services/cloud-object-storage'
       description: The information required to connect the toolchain with your Cloud Object Storage instance.
+
+  doi-toolchain:
+    service_id: customtool
+    parameters:
+      type: doi-toolchain
+      lifecyclePhase: "LEARN"
+      imageUrl:
+        $ref: devops-insights.png
+        $refType: image-data-uri
+      documentationUrl: 'https://cloud.ibm.com/devops/insights/overviewNew?toolchainId={{form.customtool_doi-toolchain.parameters.doi-toolchain-id}}'
+      name: Link existing DOI Toolchain
+      dashboard_url: 'https://cloud.ibm.com/devops/insights/overviewNew?toolchainId={{form.customtool_doi-toolchain.parameters.doi-toolchain-id}}'
+      description: The toolchain that contains the Devops Insights instance CD interacts with.
 
   slack:
     service_id: slack
@@ -177,6 +189,7 @@ services:
         - app-repo
         - pipeline-repo
         - tekton-catalog-repo
+        - customtool_doi-toolchain
       name: 'ci-pipeline'
       ui-pipeline: true
       type: tekton
@@ -198,6 +211,7 @@ services:
           ARTIFACTORY_DOCKER_CONFIG_JSON: '{{form.artifactoryComp.parameters.docker_config_json}}'
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
           VAULT_SECRET: '{{services.pipeline.parameters.vault_secret}}'
+          DOI_TOOLCHAIN_ID: '{{form.customtool_doi-toolchain.parameters.doi-toolchain-id}}'
           COS_BUCKET_NAME: '{{form.customtool_cos-bucket.parameters.cos-bucket-name}}'
           COS_ENDPOINT: '{{form.customtool_cos-bucket.parameters.cos-endpoint}}'
         execute: false
@@ -236,3 +250,9 @@ form:
       cos-endpoint: ''
     schema:
       $ref: cos.json
+
+  customtool_doi-toolchain:
+    parameters:
+      doi-toolchain-id:
+    schema:
+      $ref: doi-toolchain.json

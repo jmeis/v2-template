@@ -42,6 +42,8 @@ spec:
     - name: cos-endpoint
       description: Endpoint of your Cloud Object Storage instance, used as an Evidence Locker
       default: ""
+    - name: doi-toolchain-id
+      description: toolchain ID
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -111,4 +113,6 @@ spec:
             value: "$(params.cos-bucket-name)"
           - name: cos-endpoint
             value: "$(params.cos-endpoint)"
+          - name: doi-toolchain-id
+            value: $(params.doi-toolchain-id)
         serviceAccountName: sa-pullsecret
