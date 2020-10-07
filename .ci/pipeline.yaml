@@ -191,6 +191,8 @@ spec:
             compliance-ci-toolchain/.pr-pipeline/**/*.yaml
             common-tekton-tasks/preview/*/*.yaml
             common-tekton-tasks/stable/task/*/*/*.yaml
+        - name: working-dir
+          value: /artifacts/compliance-ci-toolchain
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 

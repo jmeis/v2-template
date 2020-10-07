@@ -1,0 +1,4 @@
+---
+rules:
+  no-resource-redefine: "off"
+  no-duplicate-resource: "off"
