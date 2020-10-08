@@ -404,7 +404,7 @@ spec:
 
     - name: build-containerize
       taskRef:
-        name: icr-cr-build
+        name: icr-containerize
       runAfter:
         - code-check-dockerfile
       workspaces:
