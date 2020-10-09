@@ -323,7 +323,7 @@ If you want to trigger the CI pipeline manually select the Delivery Pipeline car
 
 **Configure Pipeline**
 
-You must add a `commitid` text property (click `Add property` button and select `"Text property"`), if you trigger the pipeline manually.
+You can add a `commitid` text property (click `Add property` button and select `"Text property"`), if you trigger the pipeline manually. If no commit ID is supplied, the Pipeline will take the latest commit ID from the master branch of your app.
 
 <!-- TBD: Readme needed after implementing the automated versioning -->
 
