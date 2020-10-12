@@ -15,12 +15,39 @@ spec:
       description: Docker image to be used in the specified stage.
     - name: script
       description: Location of the script that's going to be used to run the specified stage.
+    - name: configmap-0
+      description: "Name of the `ConfigMap` that's going to be mounted in `run-stage`"
+    - name: configmap-1
+      description: "Name of the `ConfigMap` that's going to be mounted in `run-stage`"
+    - name: configmap-2
+      description: "Name of the `ConfigMap` that's going to be mounted in `run-stage`"
+    - name: configmap-3
+      description: "Name of the `ConfigMap` that's going to be mounted in `run-stage`"
+    - name: configmap-4
+      description: "Name of the `ConfigMap` that's going to be mounted in `run-stage`"
+    - name: secret-0
+      description: "Name of the `Secret` that's going to be mounted in `run-stage`"
+    - name: secret-1
+      description: "Name of the `Secret` that's going to be mounted in `run-stage`"
+    - name: secret-2
+      description: "Name of the `Secret` that's going to be mounted in `run-stage`"
+    - name: secret-3
+      description: "Name of the `Secret` that's going to be mounted in `run-stage`"
+    - name: secret-4
+      description: "Name of the `Secret` that's going to be mounted in `run-stage`"
   workspaces:
     - name: app
       description: Workspace where the application is checked out.
+  volumes:
+    - name: environment-properties
+      configMap:
+        name: environment-properties
   steps:
     - name: parse-config
       image: ibmcom/pipeline-base-image:2.7
+      volumeMounts:
+        - name: environment-properties
+          mountPath: /config
       script: |
         #!/bin/bash
 
@@ -31,13 +58,49 @@ spec:
         config_file='$(workspaces.app.path)/$(params.file)'
         stage='$(params.stage)'
 
-        # extract script
         tmp_pattern="$(workspaces.app.path)/stage-$(params.stage)-XXXX"
         script_file=$(mktemp $tmp_pattern)
-        yq r "$config_file" "${stage}.script" > "$script_file"
-        chmod +x "$script_file"
-        echo -n "$(basename $script_file)" > '$(results.script.path)'
 
-        # extract image
-        image=$(yq r "$config_file" "${stage}.image")
-        echo -n "$image" > '$(results.image.path)'
+        if [[ "$(yq r "$config_file" "${stage}")" == "null" ]]; then
+          echo "Stage '${stage}' is not defined in '${config_file}'"
+          echo -n "registry.access.redhat.com/ubi8/ubi-minimal" > '$(results.image.path)'
+          cat > "$script_file" <<EOF
+        #!/bin/sh
+        echo "Skipping stage..."
+        EOF
+        else
+          if [[ "$(yq r "$config_file" "${stage}.image")" == "null" ]]; then
+            echo "Stage '${stage}' has no image!"
+            exit 1
+          else
+            image=$(yq r "$config_file" "${stage}.image")
+            echo -n "$image" > '$(results.image.path)'
+          fi
+
+          if [[ "$(yq r "$config_file" "${stage}.script")" == "null" ]]; then
+            echo "Stage '${stage}' has no script!"
+            exit 1
+          else
+            yq r "$config_file" "${stage}.script" > "$script_file"
+          fi
+
+        fi
+
+        for i in {0..4}; do
+          name="$(yq r -j "$config_file" | jq -r ".${stage}.configmaps[${i}] // \"not-provided-configmap-${i}\"")"
+          if [[ "$name" =~ ^\$ ]]; then
+            name="$(cat "/config/$(tr -d $ <<<$name)")"
+          fi
+          echo -n "$name" > "/tekton/results/configmap-${i}"
+        done
+
+        for i in {0..4}; do
+          name="$(yq r -j "$config_file" | jq -r ".${stage}.secrets[${i}] // \"not-provided-secret-${i}\"")"
+          if [[ "$name" =~ ^\$ ]]; then
+            name="$(cat "/config/$(tr -d $ <<<$name)")"
+          fi
+          echo -n "$name" > "/tekton/results/secret-${i}"
+        done
+
+        echo -n "$(basename $script_file)" > '$(results.script.path)'
+        chmod +x "$script_file"

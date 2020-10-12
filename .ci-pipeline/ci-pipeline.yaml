@@ -209,6 +209,26 @@ spec:
           value: $(tasks.code-setup-config.results.script)
         - name: working-dir
           value: $(tasks.code-fetch-code.results.directory-name)
+        - name: configmap-0
+          value: $(tasks.code-setup-config.results.configmap-0)
+        - name: configmap-1
+          value: $(tasks.code-setup-config.results.configmap-1)
+        - name: configmap-2
+          value: $(tasks.code-setup-config.results.configmap-2)
+        - name: configmap-3
+          value: $(tasks.code-setup-config.results.configmap-3)
+        - name: configmap-4
+          value: $(tasks.code-setup-config.results.configmap-4)
+        - name: secret-0
+          value: $(tasks.code-setup-config.results.secret-0)
+        - name: secret-1
+          value: $(tasks.code-setup-config.results.secret-1)
+        - name: secret-2
+          value: $(tasks.code-setup-config.results.secret-2)
+        - name: secret-3
+          value: $(tasks.code-setup-config.results.secret-3)
+        - name: secret-4
+          value: $(tasks.code-setup-config.results.secret-4)
 
     - name: code-unit-tests-config
       runAfter:
@@ -237,6 +257,26 @@ spec:
           value: $(tasks.code-unit-tests-config.results.script)
         - name: working-dir
           value: $(tasks.code-fetch-code.results.directory-name)
+        - name: configmap-0
+          value: $(tasks.code-unit-tests-config.results.configmap-0)
+        - name: configmap-1
+          value: $(tasks.code-unit-tests-config.results.configmap-1)
+        - name: configmap-2
+          value: $(tasks.code-unit-tests-config.results.configmap-2)
+        - name: configmap-3
+          value: $(tasks.code-unit-tests-config.results.configmap-3)
+        - name: configmap-4
+          value: $(tasks.code-unit-tests-config.results.configmap-4)
+        - name: secret-0
+          value: $(tasks.code-unit-tests-config.results.secret-0)
+        - name: secret-1
+          value: $(tasks.code-unit-tests-config.results.secret-1)
+        - name: secret-2
+          value: $(tasks.code-unit-tests-config.results.secret-2)
+        - name: secret-3
+          value: $(tasks.code-unit-tests-config.results.secret-3)
+        - name: secret-4
+          value: $(tasks.code-unit-tests-config.results.secret-4)
 
     - name: code-vulnerability-scan-uploader
       runAfter:
@@ -531,6 +571,26 @@ spec:
         - name: params
           value: |
             image: $(tasks.build-containerize.results.image-repository)@$(tasks.build-containerize.results.image-digest)
+        - name: configmap-0
+          value: $(tasks.deploy-dev-config.results.configmap-0)
+        - name: configmap-1
+          value: $(tasks.deploy-dev-config.results.configmap-1)
+        - name: configmap-2
+          value: $(tasks.deploy-dev-config.results.configmap-2)
+        - name: configmap-3
+          value: $(tasks.deploy-dev-config.results.configmap-3)
+        - name: configmap-4
+          value: $(tasks.deploy-dev-config.results.configmap-4)
+        - name: secret-0
+          value: $(tasks.deploy-dev-config.results.secret-0)
+        - name: secret-1
+          value: $(tasks.deploy-dev-config.results.secret-1)
+        - name: secret-2
+          value: $(tasks.deploy-dev-config.results.secret-2)
+        - name: secret-3
+          value: $(tasks.deploy-dev-config.results.secret-3)
+        - name: secret-4
+          value: $(tasks.deploy-dev-config.results.secret-4)
 
     - name: deploy-acceptance-tests-config
       runAfter:
@@ -559,6 +619,26 @@ spec:
           value: $(tasks.deploy-acceptance-tests-config.results.script)
         - name: working-dir
           value: $(tasks.code-fetch-code.results.directory-name)
+        - name: configmap-0
+          value: $(tasks.deploy-acceptance-tests-config.results.configmap-0)
+        - name: configmap-1
+          value: $(tasks.deploy-acceptance-tests-config.results.configmap-1)
+        - name: configmap-2
+          value: $(tasks.deploy-acceptance-tests-config.results.configmap-2)
+        - name: configmap-3
+          value: $(tasks.deploy-acceptance-tests-config.results.configmap-3)
+        - name: configmap-4
+          value: $(tasks.deploy-acceptance-tests-config.results.configmap-4)
+        - name: secret-0
+          value: $(tasks.deploy-acceptance-tests-config.results.secret-0)
+        - name: secret-1
+          value: $(tasks.deploy-acceptance-tests-config.results.secret-1)
+        - name: secret-2
+          value: $(tasks.deploy-acceptance-tests-config.results.secret-2)
+        - name: secret-3
+          value: $(tasks.deploy-acceptance-tests-config.results.secret-3)
+        - name: secret-4
+          value: $(tasks.deploy-acceptance-tests-config.results.secret-4)
 
     - name: build-compliance-collector
       taskRef:
