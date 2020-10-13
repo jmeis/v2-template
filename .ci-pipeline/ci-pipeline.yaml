@@ -492,7 +492,7 @@ spec:
           value: $(params.version)
         - name: artifact
           value: "$(tasks.build-containerize.results.image-repository)@$(tasks.build-containerize.results.image-digest)"
-        - name: repository
+        - name: app-name
           value: $(params.app-name)
         - name: repository-url
           value: $(tasks.code-extract-repository-url.results.extracted-value)

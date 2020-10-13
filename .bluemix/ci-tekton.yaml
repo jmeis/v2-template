@@ -27,10 +27,6 @@ inputs:
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: preview/inventory
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
     path: preview/gitsecure
   - type: git
     branch: master
@@ -60,6 +56,10 @@ inputs:
     branch: master
     service: ${TEKTON_CATALOG_REPO}
     path: stable/task/github-check-statuses/1.0.0
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: stable/task/inventory-update-version/1.0.0
 triggers:
   - type: git
     name: Git CI Trigger
