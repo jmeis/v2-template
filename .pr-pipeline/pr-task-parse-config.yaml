@@ -61,7 +61,7 @@ spec:
         tmp_pattern="$(workspaces.app.path)/stage-$(params.stage)-XXXX"
         script_file=$(mktemp $tmp_pattern)
 
-        if [[ "$(yq r "$config_file" "${stage}")" == "null" ]]; then
+        if [[ "$(yq r "$config_file" ".[\"${stage}\"]")" == "null" ]]; then
           echo "Stage '${stage}' is not defined in '${config_file}'"
           echo -n "registry.access.redhat.com/ubi8/ubi-minimal" > '$(results.image.path)'
           cat > "$script_file" <<EOF
@@ -69,25 +69,25 @@ spec:
         echo "Skipping stage..."
         EOF
         else
-          if [[ "$(yq r "$config_file" "${stage}.image")" == "null" ]]; then
+          if [[ "$(yq r "$config_file" ".[\"${stage}\"].image")" == "null" ]]; then
             echo "Stage '${stage}' has no image!"
             exit 1
           else
-            image=$(yq r "$config_file" "${stage}.image")
+            image=$(yq r "$config_file" ".[\"${stage}\"].image")
             echo -n "$image" > '$(results.image.path)'
           fi
 
-          if [[ "$(yq r "$config_file" "${stage}.script")" == "null" ]]; then
+          if [[ "$(yq r "$config_file" ".[\"${stage}\"].script")" == "null" ]]; then
             echo "Stage '${stage}' has no script!"
             exit 1
           else
-            yq r "$config_file" "${stage}.script" > "$script_file"
+            yq r "$config_file" ".[\"${stage}\"].script" > "$script_file"
           fi
 
         fi
 
         for i in {0..4}; do
-          name="$(yq r -j "$config_file" | jq -r ".${stage}.configmaps[${i}] // \"not-provided-configmap-${i}\"")"
+          name="$(yq r -j "$config_file" | jq -r ".[\"${stage}\"].configmaps[${i}] // \"not-provided-configmap-${i}\"")"
           if [[ "$name" =~ ^\$ ]]; then
             name="$(cat "/config/$(tr -d $ <<<$name)")"
           fi
@@ -95,7 +95,7 @@ spec:
         done
 
         for i in {0..4}; do
-          name="$(yq r -j "$config_file" | jq -r ".${stage}.secrets[${i}] // \"not-provided-secret-${i}\"")"
+          name="$(yq r -j "$config_file" | jq -r ".[\"${stage}\"].secrets[${i}] // \"not-provided-secret-${i}\"")"
           if [[ "$name" =~ ^\$ ]]; then
             name="$(cat "/config/$(tr -d $ <<<$name)")"
           fi
