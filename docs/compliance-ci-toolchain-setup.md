@@ -8,6 +8,7 @@
 * **IBM Cloud Api Key**
 * [**Servide ID**](https://cloud.ibm.com/docs/account?topic=account-serviceids)
 * [**Service ID API Key**](https://cloud.ibm.com/docs/account?topic=account-serviceidapikeys#create_service_key)
+* [**HashiCorp Vault**](https://pages.github.ibm.com/vault-as-a-service/vault/)
 
 There are a couple of steps that need to be done prior to creating this toolchain for the first time.
 Please see:
@@ -59,6 +60,25 @@ Review the default information for the toolchain settings. The toolchain's name 
 Note: toolchain region can differ from cluster and registry region.
 
 ### 3. Tool integrations
+
+#### HashiCorp Vault
+
+Use HashiCorp Vault to securely store secrets that are needed by your toolchain. Examples of secrets are API keys, user passwords or any other tokens that enable access to sensitive information. Your toolchain stores references to the HashiCorp secrets, not the literal secret values, which enables advanced capabilities like secret rotation.
+
+If your team does not have a HashiCorp Vault set up, you can follow [this documentation](https://pages.github.ibm.com/vault-as-a-service/vault/onboarding/project.html) to request a `Role ID`.
+
+| ![HashiCorp Vault](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/hc-vault.png) |
+| :--: |
+
+ - **Name**: A name for this tool integration. This name will be displayed in the toolchain.
+ - **Server URL**: The server URL for your HashiCorp Vault Instance. (`https://vserv-us.sos.ibm.com:8200`, `https://vserv-eu.sos.ibm.com:8200`, `https://vserv-test.sos.ibm.com:8200`)
+ - **Integration URL**: The URL that you want to navigate to when you click the HashiCorp Vault Integration tile.
+ - **Secrets Path**: The mount path where your secrets are stored in your HashiCorp Vault Instance.
+ - **Authentication Method**: The Authentication method for your HashiCorp Vault Instance.
+ - **Role ID:** Your team's [AppRole Role ID](https://pages.github.ibm.com/vault-as-a-service/vault/usage/approle-role-ids.html).
+ - **Secret ID:** Your team's [Secret ID](https://pages.github.ibm.com/vault-as-a-service/vault/usage/manage-secret-ids.html).
+
+Note: _We advise you to use AppRole authentication method as this method can be used to read secret values._
 
 #### Repositories
 
