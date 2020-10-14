@@ -155,7 +155,7 @@ spec:
 
     - name: code-detect-secrets
       runAfter:
-        - code-fetch-code
+        - code-detect-secrets-status-pending
       taskRef:
         name: compliance-detect-secrets
       workspaces:
