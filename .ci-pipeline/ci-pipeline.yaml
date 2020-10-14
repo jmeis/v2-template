@@ -151,6 +151,22 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
+    - name: code-normalize-config
+      runAfter:
+        - code-fetch-code
+      taskRef:
+        name: normalize-config
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: working-dir
+          value: $(tasks.code-fetch-code.results.directory-name)
+        - name: file
+          value: $(params.one-pipeline-config)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
     - name: code-detect-secrets
       runAfter:
         - code-fetch-code
@@ -184,7 +200,7 @@ spec:
 
     - name: code-setup-config
       runAfter:
-        - code-fetch-code
+        - code-normalize-config
       taskRef:
         name: parse-config
       workspaces:
