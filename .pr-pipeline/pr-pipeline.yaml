@@ -238,6 +238,8 @@ spec:
           value: $(tasks.code-setup-config.results.secret-3)
         - name: secret-4
           value: $(tasks.code-setup-config.results.secret-4)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
 
     - name: code-unit-tests-status-pending
       runAfter:
@@ -313,6 +315,8 @@ spec:
           value: $(tasks.code-unit-tests-config.results.secret-3)
         - name: secret-4
           value: $(tasks.code-unit-tests-config.results.secret-4)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
 
     - name: code-unit-tests-status-finished
       runAfter:

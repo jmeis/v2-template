@@ -10,6 +10,9 @@ spec:
       description: Location of the config file.
     - name: stage
       description: Parse this section from the config file
+    - name: pipeline-debug
+      description: Use debug mode
+      default: "0"
   results:
     - name: image
       description: Docker image to be used in the specified stage.
@@ -42,6 +45,10 @@ spec:
     - name: environment-properties
       configMap:
         name: environment-properties
+  stepTemplate:
+    env:
+      - name: PIPELINE_DEBUG
+        value: $(params.pipeline-debug)
   steps:
     - name: parse-config
       image: ibmcom/pipeline-base-image:2.7
@@ -51,7 +58,12 @@ spec:
       script: |
         #!/bin/bash
 
-        set -ex
+        set -e
+
+        if [[ "$PIPELINE_DEBUG" == 1 ]]; then
+          set -x
+          trap env EXIT
+        fi
 
         cat '$(workspaces.app.path)/$(params.file)'
 

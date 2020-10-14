@@ -229,6 +229,8 @@ spec:
           value: $(tasks.code-setup-config.results.secret-3)
         - name: secret-4
           value: $(tasks.code-setup-config.results.secret-4)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
 
     - name: code-unit-tests-config
       runAfter:
@@ -277,6 +279,8 @@ spec:
           value: $(tasks.code-unit-tests-config.results.secret-3)
         - name: secret-4
           value: $(tasks.code-unit-tests-config.results.secret-4)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
 
     - name: code-vulnerability-scan-uploader
       runAfter:
@@ -591,6 +595,8 @@ spec:
           value: $(tasks.deploy-dev-config.results.secret-3)
         - name: secret-4
           value: $(tasks.deploy-dev-config.results.secret-4)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
 
     - name: deploy-acceptance-tests-config
       runAfter:
@@ -639,6 +645,8 @@ spec:
           value: $(tasks.deploy-acceptance-tests-config.results.secret-3)
         - name: secret-4
           value: $(tasks.deploy-acceptance-tests-config.results.secret-4)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
 
     - name: dev-publish-deployrecord
       taskRef:
