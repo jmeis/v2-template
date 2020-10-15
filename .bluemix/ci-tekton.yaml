@@ -35,7 +35,7 @@ inputs:
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/inventory-update-version/1.0.1
+    path: stable/task/inventory-update-version/1.0.2
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
@@ -43,7 +43,7 @@ inputs:
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/pipeline-evaluate/1.0.0
+    path: stable/task/pipeline-evaluate/1.0.1
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
