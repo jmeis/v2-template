@@ -253,6 +253,6 @@ form:
 
   customtool_doi-toolchain:
     parameters:
-      doi-toolchain-id:
+      doi-toolchain-id: ''
     schema:
       $ref: doi-toolchain.json
