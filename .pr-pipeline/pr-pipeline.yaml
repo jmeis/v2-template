@@ -664,7 +664,7 @@ spec:
         - code-branch-protection-status-finished
         - code-notify-pipeline-end
       taskRef:
-        name: util-evaluate-pipeline-results
+        name: pipeline-evaluate
       params:
         - name: results
           value: |

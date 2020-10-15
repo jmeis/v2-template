@@ -7,23 +7,7 @@ inputs:
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: preview/git
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: preview/compliance-checks
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
     path: preview/gitsecure
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: preview/util
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: preview/github
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
@@ -31,11 +15,35 @@ inputs:
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: preview/toolchain
+    path: stable/task/github-check-statuses/1.0.0
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/github-check-statuses/1.0.0
+    path: stable/configmap/retry-command/1.0.0
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: stable/task/toolchain-extract-value/1.0.0
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: stable/task/git-get-credentials/1.0.0
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: stable/task/github-set-status/1.0.0
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: stable/task/compliance-detect-secrets/1.0.0
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: stable/task/pipeline-evaluate/1.0.0
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: stable/task/git-clone/1.0.0
 triggers:
   - type: git
     name: Git PR Trigger

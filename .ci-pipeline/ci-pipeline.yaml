@@ -970,7 +970,7 @@ spec:
         - build-compliance-collector
         - build-notify-pipeline-end
       taskRef:
-        name: util-evaluate-pipeline-results
+        name: pipeline-evaluate
       params:
         - name: results
           value: |
