@@ -23,6 +23,9 @@ spec:
       description: dockerconfigjson for pullsecrets
     - name: slack-notifications
       description: toggles slack notifications
+    - name: one-pipeline-config
+      description: Configuration file to be used to customize pipeline behavior
+      default: .one-pipeline.yaml
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -75,3 +78,5 @@ spec:
             value: $(params.pr-url)
           - name: slack-notifications
             value: $(params.slack-notifications)
+          - name: one-pipeline-config
+            value: $(params.one-pipeline-config)

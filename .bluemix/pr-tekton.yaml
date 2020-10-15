@@ -65,3 +65,6 @@ properties:
   - name: artifactory-dockerconfigjson
     value: ${ARTIFACTORY_DOCKER_CONFIG_JSON}
     type: SECURE
+  - name: one-pipeline-config
+    value: .one-pipeline.yaml
+    type: text

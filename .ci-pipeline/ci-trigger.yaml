@@ -44,6 +44,9 @@ spec:
       default: ""
     - name: doi-toolchain-id
       description: toolchain ID
+    - name: one-pipeline-config
+      description: Configuration file to be used to customize pipeline behavior
+      default: .one-pipeline.yaml
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -115,4 +118,6 @@ spec:
             value: "$(params.cos-endpoint)"
           - name: doi-toolchain-id
             value: $(params.doi-toolchain-id)
+          - name: one-pipeline-config
+            value: $(params.one-pipeline-config)
         serviceAccountName: sa-pullsecret
