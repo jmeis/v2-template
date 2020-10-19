@@ -229,11 +229,6 @@ spec:
 
         set -e
 
-        if [[ "$PIPELINE_DEBUG" == 1 ]]; then
-          set -x
-          trap env EXIT
-        fi
-
         # run the stage script
         if $(workspaces.app.path)/$(params.script); then
           echo -n $? > $(results.exit-code.path)
