@@ -690,6 +690,8 @@ spec:
           value: $(tasks.code-extract-issues-repo-url.results.extracted-value)
         - name: evidence-repo-url
           value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
+        - name: application-repo-url
+          value: $(tasks.code-extract-repository-url.results.extracted-value)
         - name: commit-hash
           value: $(tasks.code-fetch-code.results.git-commit)
         - name: toolchain-crn
