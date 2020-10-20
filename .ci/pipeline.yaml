@@ -176,23 +176,13 @@ spec:
 
     - name: tekton-lint
       taskRef:
-        name: tekton-lint
+        name: lint-pipeline
       workspaces:
         - name: artifacts
-          workspace: artifacts
-        - name: secrets
           workspace: artifacts
       runAfter:
         - yaml-lint
       params:
-        - name: definitions
-          value: |
-            compliance-ci-toolchain/.ci-pipeline/**/*.yaml
-            compliance-ci-toolchain/.pr-pipeline/**/*.yaml
-            common-tekton-tasks/preview/*/*.yaml
-            common-tekton-tasks/stable/task/*/*/*.yaml
-        - name: working-dir
-          value: /artifacts/compliance-ci-toolchain
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
