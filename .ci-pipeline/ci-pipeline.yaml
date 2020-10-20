@@ -16,10 +16,6 @@ spec:
     - name: branch
       description: the branch for the git repo
       default: "master"
-    - name: cluster-name
-      description: the name of the cluster to target
-    - name: dev-cluster-namespace
-      description: the namespace
     - name: repository-integration
       description: the repo integration name
     - name: dev-resource-group
@@ -37,8 +33,6 @@ spec:
       description: inventory repository owner and name
     - name: version
       description: cr branch name
-    - name: slack-notifications
-      description: toggles slack notifications
     - name: cos-bucket-name
       description: Bucket name in your Cloud Object Storage instance, used as an Evidence Locker
       default: ""

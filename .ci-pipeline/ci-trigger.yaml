@@ -12,16 +12,12 @@ spec:
       description: The name of your app
     - name: registry-region
       description: The IBM Cloud region for image registry
-    - name: cluster-name
-      description: the name of the cluster to target
     - name: dev-resource-group
       description: Resource Group
     - name: dev-region
       description: target region
     - name: branch
       description: the branch for the git repo
-    - name: dev-cluster-namespace
-      description: namespace dev
     - name: repository-integration
       description: the repo integration name
     - name: commit-id
@@ -34,8 +30,6 @@ spec:
       description: cr branch name
     - name: artifactory-dockerconfigjson
       description: dockerconfigjson for pullsecrets
-    - name: slack-notifications
-      description: toggles slack notifications
     - name: cos-bucket-name
       description: Bucket name in your Cloud Object Storage instance, used as an Evidence Locker
       default: ""
@@ -96,10 +90,6 @@ spec:
             value: $(params.dev-resource-group)
           - name: branch
             value: $(params.branch)
-          - name: cluster-name
-            value: $(params.cluster-name)
-          - name: dev-cluster-namespace
-            value: $(params.dev-cluster-namespace)
           - name: repository-integration
             value: $(params.repository-integration)
           - name: pipeline-debug
@@ -110,8 +100,6 @@ spec:
             value: $(params.inventory-repo)
           - name: version
             value: $(params.version)
-          - name: slack-notifications
-            value: $(params.slack-notifications)
           - name: cos-bucket-name
             value: "$(params.cos-bucket-name)"
           - name: cos-endpoint
