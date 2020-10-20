@@ -9,8 +9,6 @@ spec:
       description: branch
     - name: target-branch
       description: target branch
-    - name: target-commit-id
-      description: target commit id
     - name: repository-integration
       description: the repo integration name
     - name: commit-id
@@ -21,8 +19,6 @@ spec:
       description: PR url
     - name: artifactory-dockerconfigjson
       description: dockerconfigjson for pullsecrets
-    - name: slack-notifications
-      description: toggles slack notifications
     - name: one-pipeline-config
       description: Configuration file to be used to customize pipeline behavior
       default: .one-pipeline.yaml
@@ -76,7 +72,5 @@ spec:
             value: $(params.pipeline-debug)
           - name: pr-url
             value: $(params.pr-url)
-          - name: slack-notifications
-            value: $(params.slack-notifications)
           - name: one-pipeline-config
             value: $(params.one-pipeline-config)

@@ -16,8 +16,6 @@ spec:
       description: commit id
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
-    - name: slack-notifications
-      description: toggles slack notifications
     - name: pr-url
       description: pr url
     - name: one-pipeline-config
