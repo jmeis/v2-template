@@ -75,4 +75,13 @@ spec:
             source /root/.nvm/nvm.sh
             export APP_URL=\$(cat ../app-url)
             npm run acceptance-test
+
+        package:
+          image: ibmcom/pipeline-base-image:2.7
+          script: |
+            #!/usr/bin/env bash
+            echo "No $(params.file) found, assuming default behavior..."
+            echo "See https://pages.github.ibm.com/one-pipeline/docs/custom-scripts for more details"
+
+            exit 0
         EOF

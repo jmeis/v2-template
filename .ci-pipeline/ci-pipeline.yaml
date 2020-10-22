@@ -491,11 +491,64 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
+    - name: build-package-config
+      taskRef:
+        name: parse-config
+      runAfter:
+        - build-image-signing
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: file
+          value: $(tasks.code-fetch-code.results.directory-name)/$(params.one-pipeline-config)
+        - name: stage
+          value: package
+
+    - name: build-package
+      taskRef:
+        name: run-stage
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: image
+          value: $(tasks.build-package-config.results.image)
+        - name: script
+          value: $(tasks.build-package-config.results.script)
+        - name: working-dir
+          value: $(tasks.build-package-config.directory-name)
+        - name: configmap-0
+          value: $(tasks.build-package-config.results.configmap-0)
+        - name: configmap-1
+          value: $(tasks.build-package-config.results.configmap-1)
+        - name: configmap-2
+          value: $(tasks.build-package-config.results.configmap-2)
+        - name: configmap-3
+          value: $(tasks.build-package-config.results.configmap-3)
+        - name: configmap-4
+          value: $(tasks.build-package-config.results.configmap-4)
+        - name: secret-0
+          value: $(tasks.build-package-config.results.secret-0)
+        - name: secret-1
+          value: $(tasks.build-package-config.results.secret-1)
+        - name: secret-2
+          value: $(tasks.build-package-config.results.secret-2)
+        - name: secret-3
+          value: $(tasks.build-package-config.results.secret-3)
+        - name: secret-4
+          value: $(tasks.build-package-config.results.secret-4)
+        - name: abort-on-failure
+          value: $(tasks.build-package-config.results.abort-on-failure)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
     - name: build-update-inventory
       taskRef:
         name: inventory-update-version
       runAfter:
         - build-containerize
+        - build-package
       workspaces:
         - name: artifacts
           workspace: artifacts
