@@ -82,6 +82,7 @@ spec:
         if [[ "$(parse '')" == "null" ]]; then
           echo "Stage '${stage}' is not defined in '${config_file}'"
           echo -n "registry.access.redhat.com/ubi8/ubi-minimal" > '$(results.image.path)'
+          echo -n "false" > "$(results.abort-on-failure.path)"
           cat > "$script_file" <<EOF
         #!/bin/sh
         echo "Skipping stage..."
