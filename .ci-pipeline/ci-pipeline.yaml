@@ -464,6 +464,7 @@ spec:
       taskRef:
         name: icr-containerize
       runAfter:
+        - code-setup
         - code-check-dockerfile
       workspaces:
         - name: source
