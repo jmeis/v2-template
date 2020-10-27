@@ -544,6 +544,16 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
+    - name: get-signature
+      taskRef:
+        name: get-signature-from-file
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: file
+          value: "$(tasks.build-image-signing.results.signature)"
+
     - name: build-update-inventory
       taskRef:
         name: inventory-update-version
@@ -570,6 +580,11 @@ spec:
           value: $(tasks.code-extract-repository-url.results.extracted-value)
         - name: commit-sha
           value: $(tasks.code-fetch-code.results.git-commit)
+        - name: app-artifacts
+          value: '{
+              "signature": "$(tasks.get-signature.results.signature)",
+              "provenance": "$(tasks.build-containerize.results.image-repository)@$(tasks.build-containerize.results.image-digest)"
+              }'
 
     - name: build-vulnerability-advisor
       taskRef:
