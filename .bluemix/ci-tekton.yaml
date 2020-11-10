@@ -121,8 +121,10 @@ properties:
     value: ${ARTIFACTORY_DOCKER_CONFIG_JSON}
     type: SECURE
   - name: pipeline-debug
-    value: "0"
-    type: text
+    type: single_select
+    value:
+      "0": true
+      "1": false
   - name: version
     value: v1
     type: text
