@@ -31,47 +31,47 @@ inputs:
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/github-check-statuses/1.0.0
+    path: stable/task/github-check-statuses/1
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/inventory-update-version/1.0.2
+    path: stable/task/inventory-update-version/1
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/compliance-detect-secrets/1.0.1
+    path: stable/task/compliance-detect-secrets/1
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/pipeline-evaluate/1.0.1
+    path: stable/task/pipeline-evaluate/1
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/git-clone/1.0.0
+    path: stable/task/git-clone/1
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/toolchain-extract-value/1.0.0
+    path: stable/task/toolchain-extract-value/1
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/git-get-credentials/1.1.0
+    path: stable/task/git-get-credentials/1
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: stable/configmap/retry-command/1.0.0
+    path: stable/configmap/retry-command/1
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: stable/configmap/compliance-helper-scripts/1.0.0
+    path: stable/configmap/compliance-helper-scripts/1
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/compliance-collector/2.0.0
+    path: stable/task/compliance-collector/2
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/compliance-doi-reporter/1.0.1
+    path: stable/task/compliance-doi-reporter/1
 triggers:
   - type: git
     name: Git CI Trigger
