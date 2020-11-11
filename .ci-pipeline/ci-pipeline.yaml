@@ -588,7 +588,7 @@ spec:
 
     - name: build-vulnerability-advisor
       taskRef:
-        name: icr-check-va-scan
+        name: containerize-check-va-scan
       workspaces:
         - name: artifacts
           workspace: artifacts
