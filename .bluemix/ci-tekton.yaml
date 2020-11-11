@@ -72,6 +72,10 @@ inputs:
     branch: master
     service: ${TEKTON_CATALOG_REPO}
     path: stable/task/compliance-doi-reporter/1
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: stable/task/ciso-image-sign/1.0.0
 triggers:
   - type: git
     name: Git CI Trigger

@@ -610,7 +610,7 @@ spec:
       runAfter:
         - build-vulnerability-advisor
       taskRef:
-        name: ciso-sign
+        name: ciso-image-sign
       params:
         - name: region
           value: $(params.dev-region)
