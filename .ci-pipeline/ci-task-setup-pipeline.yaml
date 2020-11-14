@@ -1,0 +1,40 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: code-setup-pipeline-env
+spec:
+  params:
+    - name: pipeline-debug
+      default: "0"
+  results:
+    - name: toolchain-id
+    - name: repository-url
+    - name: evidence-repo-url
+    - name: issues-repo-url
+    - name: gh-org
+  volumes:
+    - name: cd-config
+      configMap:
+        name: toolchain
+  steps:
+    - name: setup
+      image: ibmcom/pipeline-base-image:2.6
+      volumeMounts:
+        - name: cd-config
+          mountPath: /cd-config
+      env:
+        - name: PIPELINE_DEBUG
+          value: $(params.pipeline-debug)
+      script: |
+        #!/bin/bash
+
+        if [[ "$PIPELINE_DEBUG" == 1 ]]; then
+          trap env EXIT
+          set -x
+        fi
+
+        jq -j '.crn' /cd-config/toolchain.json > $(results.toolchain-id.path)
+        jq -j '.services[] | select(.toolchain_binding.name=="app-repo") | .dashboard_url' /cd-config/toolchain.json > $(results.repository-url.path)
+        jq -j '.services[] | select(.toolchain_binding.name=="evidence-repo") | .dashboard_url' /cd-config/toolchain.json > $(results.evidence-repo-url.path)
+        jq -j '.services[] | select(.toolchain_binding.name=="issues-repo") | .dashboard_url' /cd-config/toolchain.json > $(results.issues-repo-url.path)
+        cat $(results.repository-url.path) | cut -d/ -f4 > $(results.gh-org.path)

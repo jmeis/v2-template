@@ -43,10 +43,6 @@ inputs:
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/toolchain-extract-value/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
     path: stable/task/git-get-credentials/1
   - type: git
     branch: master

@@ -65,47 +65,14 @@ spec:
               print("CI Pipeline was Triggered By: " + os.getenv("TRIGGERED_BY"))
               print("<https://cloud.ibm.com/devops/pipelines/tekton/" + os.getenv("PIPELINE_ID") + "/runs/" + os.getenv("PIPELINE_RUN_ID") + "?env_id=ibm:yp:" + os.getenv("TOOLCHAIN_REGION") + "|See the Pipeline Logs>")
 
-    - name: code-extract-toolchain-crn
+    - name: code-setup-pipeline-env
       taskRef:
-        name: toolchain-extract-value
+        name: code-setup-pipeline-env
       params:
-        - name: expression
-          value: ".crn"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: code-extract-repository-url
-      taskRef:
-        name: toolchain-extract-value
-      params:
-        - name: expression
-          value: '.services[] | select(.toolchain_binding.name=="app-repo") | .dashboard_url'
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: code-extract-evidence-repo-url
-      taskRef:
-        name: toolchain-extract-value
-      params:
-        - name: expression
-          value: '.services[] | select(.toolchain_binding.name=="evidence-repo") | .dashboard_url'
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: code-extract-issues-repo-url
-      taskRef:
-        name: toolchain-extract-value
-      params:
-        - name: expression
-          value: '.services[] | select(.toolchain_binding.name=="issues-repo") | .dashboard_url'
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
     - name: code-fetch-credentials
-      runAfter:
-        - code-extract-toolchain-crn
-        - code-extract-evidence-repo-url
-        - code-extract-issues-repo-url
       taskRef:
         name: git-get-credentials
       workspaces:
@@ -117,7 +84,7 @@ spec:
         - name: ibmcloud-api-key-secret-key
           value: api-key
         - name: repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
         - name: repository-integration
           value: $(params.repository-integration)
         - name: pipeline-debug
@@ -135,7 +102,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
         - name: git-user
           value: $(tasks.code-fetch-credentials.results.git-auth-user)
         - name: branch
@@ -182,7 +149,7 @@ spec:
         - name: secret-key
           value: "api-key"
         - name: git-repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
         - name: git-branch
           value: $(params.branch)
         - name: git-commit
@@ -306,7 +273,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
         - name: revision
           value: $(params.branch)
         - name: commit-id
@@ -326,7 +293,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
         - name: revision
           value: $(params.branch)
         - name: pr-url
@@ -348,7 +315,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
         - name: revision
           value: $(params.branch)
         - name: pr-url
@@ -368,48 +335,11 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
         - name: revision
           value: $(params.branch)
         - name: commit-id
           value: $(tasks.code-fetch-code.results.git-commit)
-
-    - name: get-org
-      runAfter:
-        - code-fetch-credentials
-      params:
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-        - name: repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
-      taskSpec:
-        params:
-          - name: pipeline-debug
-            default: "0"
-          - name: repository
-        results:
-          - name: gh-org
-        stepTemplate:
-          env:
-            - name: PIPELINE_DEBUG
-              value: $(params.pipeline-debug)
-        steps:
-          - name: get-params
-            image: ibmcom/pipeline-base-image:2.6
-            script: |
-              #!/bin/bash
-
-              set -e -o pipefail
-
-              if [ $PIPELINE_DEBUG == 1 ]; then
-                pwd
-                env
-                trap env EXIT
-                set -x
-              fi
-
-              OWNER=$(echo "$(params.repository)" | cut -d/ -f4 )
-              echo -n $OWNER | tee $(results.gh-org.path)
 
     - name: code-branch-protection
       taskRef:
@@ -438,7 +368,7 @@ spec:
               }
             }]
         - name: gh-org
-          value: $(tasks.get-org.results.gh-org)
+          value: $(tasks.code-setup-pipeline-env.results.gh-org)
         - name: repository
           value: $(tasks.code-fetch-credentials.results.repo-name)
         - name: git-commit
@@ -577,7 +507,7 @@ spec:
         - name: app-name
           value: $(params.app-name)
         - name: repository-url
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
         - name: commit-sha
           value: $(tasks.code-fetch-code.results.git-commit)
         - name: app-artifacts
@@ -764,15 +694,15 @@ spec:
         - name: namespace
           value: ci
         - name: incident-issue-repo
-          value: $(tasks.code-extract-issues-repo-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.issues-repo-url)
         - name: evidence-repo-url
-          value: $(tasks.code-extract-evidence-repo-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.evidence-repo-url)
         - name: application-repo-url
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
         - name: commit-hash
           value: $(tasks.code-fetch-code.results.git-commit)
         - name: toolchain-crn
-          value: $(tasks.code-extract-toolchain-crn.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.toolchain-id)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: toolchain-apikey-secret-key
