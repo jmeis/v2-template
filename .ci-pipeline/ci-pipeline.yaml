@@ -175,11 +175,11 @@ spec:
 
     - name: build-doi-publish-buildrecord
       taskRef:
-        name: doi-publish-buildrecord
+        name: devops-insights-publish-build
       params:
         - name: app-name
           value: "$(params.app-name)"
-        - name: toolchain-apikey-secret-key
+        - name: secret-key
           value: "api-key"
         - name: git-repository
           value: $(tasks.code-extract-repository-url.results.extracted-value)
@@ -737,7 +737,7 @@ spec:
 
     - name: dev-publish-deployrecord
       taskRef:
-        name: doi-publish-deployrecord
+        name: devops-insights-publish-deploy
       runAfter:
         - deploy-dev
       params:

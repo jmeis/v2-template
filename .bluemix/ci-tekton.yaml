@@ -7,10 +7,6 @@ inputs:
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: preview/ciso
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
     path: preview/iks
   - type: git
     branch: master
@@ -20,10 +16,6 @@ inputs:
     branch: master
     service: ${TEKTON_CATALOG_REPO}
     path: preview/gitsecure
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: preview/devops-insights
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
@@ -75,11 +67,19 @@ inputs:
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/ciso-image-sign/1.0.0
+    path: stable/task/ciso-image-sign/1
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/containerize-check-va-scan/1.0.0
+    path: stable/task/containerize-check-va-scan/1
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: stable/task/devops-insights-publish-build/1
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: stable/task/devops-insights-publish-deploy/1
 triggers:
   - type: git
     name: Git CI Trigger
