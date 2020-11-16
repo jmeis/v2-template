@@ -231,29 +231,11 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: code-vulnerability-scan-uploader
+    - name: code-gitsecure-checks
       runAfter:
         - code-unit-tests
       taskRef:
-        name: gitsecure-discovery
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: repository
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
-        - name: revision
-          value: $(params.branch)
-        - name: commit-id
-          value: $(tasks.code-fetch-code.results.git-commit)
-        - name: directory-name
-          value: $(tasks.code-fetch-code.results.directory-name)
-
-    - name: code-vulnerability-scan
-      runAfter:
-        - code-vulnerability-scan-uploader
-      taskRef:
-        name: gitsecure-vulnerability-remediation
+        name: gitsecure-checks
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -264,50 +246,12 @@ spec:
           value: $(tasks.code-setup-pipeline-env.results.repository-url)
         - name: revision
           value: $(params.branch)
-        - name: pr-url
-          value: $(params.pr-url)
-        - name: commit-id
-          value: $(tasks.code-fetch-code.results.git-commit)
-        - name: git-api-token-key
-          value: git-token
-
-    - name: code-cis-check
-      taskRef:
-        name: gitsecure-cis-check
-      runAfter:
-        - code-vulnerability-scan-uploader
-      workspaces:
-        - name: secrets
-          workspace: artifacts
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: repository
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
-        - name: revision
-          value: $(params.branch)
-        - name: pr-url
-          value: $(params.pr-url)
         - name: commit-id
           value: $(tasks.code-fetch-code.results.git-commit)
         - name: directory-name
           value: $(tasks.code-fetch-code.results.directory-name)
-
-    - name: code-bom-check
-      runAfter:
-        - code-vulnerability-scan-uploader
-      taskRef:
-        name: gitsecure-bom-check
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: repository
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
-        - name: revision
-          value: $(params.branch)
-        - name: commit-id
-          value: $(tasks.code-fetch-code.results.git-commit)
+        - name: pr-url
+          value: $(params.pr-url)
 
     - name: code-branch-protection
       taskRef:
@@ -640,36 +584,36 @@ spec:
                 ]
               },
               {
-                "name": "code-vulnerability-scan",
+                "name": "code-gitsecure-checks",
                 "step": "remediation",
                 "evidence_type": "com.ibm.code_vulnerability_scan",
                 "evidence_type_version": "1.0.0",
                 "expected": "success",
-                "actual": "$(tasks.code-vulnerability-scan.results.status)",
+                "actual": "$(tasks.code-gitsecure-checks.results.status-va)",
                 "artifacts": [
-                  "$(tasks.code-vulnerability-scan.results.evidence-store)"
+                  "$(tasks.code-gitsecure-checks.results.evidence-store-va)"
                 ]
               },
               {
-                "name": "code-cis-check",
+                "name": "code-gitsecure-checks",
                 "step": "cis",
                 "evidence_type": "com.ibm.code_cis_check",
                 "evidence_type_version": "1.0.0",
                 "expected": "success",
-                "actual": "$(tasks.code-cis-check.results.status)",
+                "actual": "$(tasks.code-gitsecure-checks.results.status-cis)",
                 "artifacts": [
-                  "$(tasks.code-cis-check.results.evidence-store)"
+                  "$(tasks.code-gitsecure-checks.results.evidence-store-cis)"
                 ]
               },
               {
-                "name": "code-bom-check",
+                "name": "code-gitsecure-checks",
                 "step": "bom",
                 "evidence_type": "com.ibm.code_bom_check",
                 "evidence_type_version": "1.0.0",
                 "expected": "success",
-                "actual": "$(tasks.code-bom-check.results.status)",
+                "actual": "$(tasks.code-gitsecure-checks.results.status-bom)",
                 "artifacts": [
-                  "$(tasks.code-bom-check.results.evidence-store)"
+                  "$(tasks.code-gitsecure-checks.results.evidence-store-bom)"
                 ]
               },
               {
@@ -749,25 +693,25 @@ spec:
                 "actual": "$(tasks.code-unit-tests.results.status)"
               },
               {
-                "name": "code-vulnerability-scan",
+                "name": "code-gitsecure-checks",
                 "step": "remediation",
                 "evidence_type": "com.ibm.code_vulnerability_scan",
                 "expected": "success",
-                "actual": "$(tasks.code-vulnerability-scan.results.status)"
+                "actual": "$(tasks.code-gitsecure-checks.results.status-va)"
               },
               {
-                "name": "code-cis-check",
+                "name": "code-gitsecure-checks",
                 "step": "cis",
                 "evidence_type": "com.ibm.code_cis_check",
                 "expected": "success",
-                "actual": "$(tasks.code-cis-check.results.status)"
+                "actual": "$(tasks.code-gitsecure-checks.results.status-cis)"
               },
               {
-                "name": "code-bom-check",
+                "name": "code-gitsecure-checks",
                 "step": "bom",
                 "evidence_type": "com.ibm.code_bom_check",
                 "expected": "success",
-                "actual": "$(tasks.code-bom-check.results.status)"
+                "actual": "$(tasks.code-gitsecure-checks.results.status-bom)"
               },
               {
                 "name": "code-branch-protection",
@@ -827,19 +771,19 @@ spec:
                     "actual": "$(tasks.deploy-acceptance-tests.results.status)"
                   },
                   {
-                    "name": "code-vulnerability-scan",
+                    "name": "code-gitsecure-checks",
                     "expected": "success",
-                    "actual": "$(tasks.code-vulnerability-scan.results.status)"
+                    "actual": "$(tasks.code-gitsecure-checks.results.status-va)"
                   },
                   {
-                    "name": "code-cis-check",
+                    "name": "code-gitsecure-checks",
                     "expected": "success",
-                    "actual": "$(tasks.code-cis-check.results.status)"
+                    "actual": "$(tasks.code-gitsecure-checks.results.status-cis)"
                   },
                   {
-                    "name": "code-bom-check",
+                    "name": "code-gitsecure-checks",
                     "expected": "success",
-                    "actual": "$(tasks.code-bom-check.results.status)"
+                    "actual": "$(tasks.code-gitsecure-checks.results.status-bom)"
                   },
                   {
                     "name": "code-branch-protection",
@@ -894,19 +838,19 @@ spec:
                 "actual": "$(tasks.deploy-acceptance-tests.results.status)"
               },
               {
-                "name": "code-vulnerability-scan",
+                "name": "code-gitsecure-checks",
                 "expected": "success",
-                "actual": "$(tasks.code-vulnerability-scan.results.status)"
+                "actual": "$(tasks.code-gitsecure-checks.results.status-va)"
               },
               {
-                "name": "code-cis-check",
+                "name": "code-gitsecure-checks",
                 "expected": "success",
-                "actual": "$(tasks.code-cis-check.results.status)"
+                "actual": "$(tasks.code-gitsecure-checks.results.status-cis)"
               },
               {
-                "name": "code-bom-check",
+                "name": "code-gitsecure-checks",
                 "expected": "success",
-                "actual": "$(tasks.code-bom-check.results.status)"
+                "actual": "$(tasks.code-gitsecure-checks.results.status-bom)"
               },
               {
                 "name": "code-branch-protection",

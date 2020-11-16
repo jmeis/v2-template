@@ -1,0 +1,206 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: gitsecure-checks
+spec:
+  params:
+    - name: repository
+      description: the git repo
+    - name: revision
+      description: the revision
+      default: master
+    - name: commit-id
+      description: git commit id
+    - name: directory-name
+      description: directory name where the repository is cloned
+    - name: pr-url
+      description: pull request url
+    - name: continuous-delivery-context-secret
+      description: Reference name for the secret resource
+      default: "secure-properties"
+    - name: project-id
+      description: for gitlab repository, specify project-id
+      default: ""
+    - name: git-api-token-key
+      description: The name of the secret in the workspace
+      default: "git-token"
+    - name: target-branch
+      description: target branch
+      default: "master"
+  results:
+    - name: status-va
+      description: status of gitsecure discovery task, possible values are success|failure
+    - name: status-cis
+      description: status of gitsecure cis task, possible values are success|failure
+    - name: status-bom
+      description: status of gitsecure bom task, possible values are success|failure
+    - name: evidence-store-va
+      description: filepath to store vulnerability task evidence
+    - name: evidence-store-cis
+      description: filepath to store cis task evidence
+    - name: evidence-store-bom
+      description: filepath to store bom task evidence
+  stepTemplate:
+    env:
+      - name: PIPELINE_RUN_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
+  steps:
+    - name: discovery
+      image: wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/gitsecure/discovery-task:2.2.0
+      imagePullPolicy: Always
+      workingDir: "/artifacts"
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          #!/bin/sh
+          REPO_DIR_PATH="/artifacts/$(params.directory-name)"
+
+          /usr/local/bin/discovery \
+            -giturl "$(params.repository)" \
+            -gitbranch "$(params.revision)" \
+            -repodir $REPO_DIR_PATH \
+            -rigapi "https://apiservice-dal.gitsecureapi.com" \
+            -commitid "$(params.commit-id)" \
+            -checks "app,image" \
+            -pipelineid "$PIPELINE_RUN_ID"
+
+    - name: remediation
+      image: wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/gitsecure/remediation-task:2.0.5
+      imagePullPolicy: Always
+      workingDir: "/artifacts"
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          #!/bin/sh
+          /gitsecure/vulnerability-task \
+            -giturl "$(params.repository)" \
+            -gitbranch "$(params.revision)" \
+            -rigserviceapi https://apiservice-dal.gitsecureapi.com \
+            -runid "$PIPELINE_RUN_ID" \
+            -commitid "$(params.commit-id)" \
+            -security_advisory_svc http://vcurator-dal.gitsecureapi.com:32560 \
+            -results_status "$(results.status-va.path)" \
+            -results_evidence "./gitsecure-vulnerability-results.json" \
+            -comment_md "./vulnerability-comment.md"
+
+          echo -n "gitsecure-vulnerability-results.json" > $(results.evidence-store-va.path)
+          echo "COMMENT_FP_VA=./vulnerability-comment.md" >> /steps/next-step-env.properties
+
+      volumeMounts:
+        - mountPath: /steps
+          name: steps-volume
+
+    - name: comment-editor-va
+      image: wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/gitsecure/gitsecure-comm-editor:2.0.0
+      imagePullPolicy: Always
+      workingDir: "/artifacts"
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          #!/bin/sh
+          source /steps/next-step-env.properties
+
+          GIT_TOKEN=$(cat "/dynamic-secrets/$(params.git-api-token-key)")
+
+          /usr/local/bin/comm-editor \
+            -repo-url "$(params.repository)" \
+            -pr-url "$(params.pr-url)" \
+            -token "$GIT_TOKEN" \
+            -comment-fp "$COMMENT_FP_VA" \
+            -project-id "$(params.project-id)"
+
+      volumeMounts:
+        - mountPath: /steps
+          name: steps-volume
+
+    - name: cis
+      image: wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/gitsecure/cis-task:2.0.0
+      imagePullPolicy: Always
+      workingDir: "/artifacts"
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          #!/bin/sh
+
+          REPO_DIR_PATH="/artifacts/$(params.directory-name)"
+
+          /usr/local/bin/deploy-analytic \
+            -giturl "$(params.repository)" \
+            -gitbranch "$(params.revision)" \
+            -repodir $REPO_DIR_PATH \
+            -apiservice https://apiservice-dal.gitsecureapi.com \
+            -runid "$PIPELINE_RUN_ID" \
+            -commitid "$(params.commit-id)" \
+            -results_status "$(results.status-cis.path)" \
+            -results_evidence "./gitsecure-cis-results.json" \
+            -comment_md "./gitsecure-cis-comment.md"
+
+          echo -n "gitsecure-cis-results.json" > $(results.evidence-store-cis.path)
+          echo "COMMENT_FP_CIS=./gitsecure-cis-comment.md" >> /steps/next-step-env.properties
+
+      volumeMounts:
+        - name: steps-volume
+          mountPath: /steps
+
+    - name: comment-editor-cis
+      image: wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/gitsecure/gitsecure-comm-editor:2.0.0
+      imagePullPolicy: Always
+      workingDir: "/artifacts"
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          #!/bin/sh
+          source /steps/next-step-env.properties
+
+          GIT_TOKEN=$(cat "/dynamic-secrets/$(params.git-api-token-key)")
+
+          /usr/local/bin/comm-editor \
+            -repo-url "$(params.repository)" \
+            -pr-url "$(params.pr-url)" \
+            -token "$GIT_TOKEN" \
+            -comment-fp "$COMMENT_FP_CIS" \
+            -project-id "$(params.project-id)"
+
+      volumeMounts:
+        - mountPath: /steps
+          name: steps-volume
+
+    - name: bom
+      image: wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/gitsecure/bom-task:2.0.0
+      imagePullPolicy: Always
+      workingDir: "/artifacts"
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          #!/bin/sh
+
+          /gitsecure/bom-task \
+            -giturl "$(params.repository)" \
+            -gitbranch "$(params.revision)" \
+            -rigserviceapi https://apiservice-dal.gitsecureapi.com \
+            -runid "$PIPELINE_RUN_ID" \
+            -commitid "$(params.commit-id)" \
+            -results_status "$(results.status-bom.path)" \
+            -results_evidence "./gitsecure-bom-results.json" \
+            -comment_md "./gitsecure-bom-comment.md"
+
+          echo -n "gitsecure-bom-results.json" > $(results.evidence-store-bom.path)
+      volumeMounts:
+        - name: secrets
+          mountPath: /secrets
+
+  workspaces:
+    - name: artifacts
+      mountPath: /artifacts
+    - name: secrets
+      mountPath: /dynamic-secrets
+
+  volumes:
+    - name: steps-volume
+      emptyDir: {}
+    - name: secrets
+      secret:
+        secretName: $(params.continuous-delivery-context-secret)
