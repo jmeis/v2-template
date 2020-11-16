@@ -376,26 +376,11 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: code-check-dockerfile
-      runAfter:
-        - code-fetch-code
-      taskRef:
-        name: icr-check-dockerfile
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: app-directory
-          value: $(tasks.code-fetch-code.results.directory-name)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
     - name: build-containerize
       taskRef:
         name: icr-containerize
       runAfter:
         - code-setup
-        - code-check-dockerfile
       workspaces:
         - name: source
           workspace: artifacts
