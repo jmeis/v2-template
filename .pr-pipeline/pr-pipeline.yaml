@@ -5,7 +5,7 @@ metadata:
   name: pr-pipeline
 spec:
   params:
-
+    - name: pr-repository
     - name: branch
       description: branch
     - name: target-branch
@@ -117,7 +117,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(params.pr-repository)
         - name: branch
           value: $(params.branch)
         - name: git-user
@@ -373,7 +373,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(params.pr-repository)
         - name: revision
           value: $(params.branch)
         - name: commit-id
@@ -419,7 +419,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(params.pr-repository)
         - name: revision
           value: $(params.branch)
         - name: pr-url
@@ -493,7 +493,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(params.pr-repository)
         - name: revision
           value: $(params.branch)
         - name: pr-url
