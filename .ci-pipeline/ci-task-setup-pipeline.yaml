@@ -37,4 +37,4 @@ spec:
         jq -j '.services[] | select(.toolchain_binding.name=="app-repo") | .dashboard_url' /cd-config/toolchain.json > $(results.repository-url.path)
         jq -j '.services[] | select(.toolchain_binding.name=="evidence-repo") | .dashboard_url' /cd-config/toolchain.json > $(results.evidence-repo-url.path)
         jq -j '.services[] | select(.toolchain_binding.name=="issues-repo") | .dashboard_url' /cd-config/toolchain.json > $(results.issues-repo-url.path)
-        cat $(results.repository-url.path) | cut -d/ -f4 > $(results.gh-org.path)
+        jq -j '.services[] | select(.toolchain_binding.name=="issues-repo") | .dashboard_url | split("/")[3]' /cd-config/toolchain.json > $(results.gh-org.path)
