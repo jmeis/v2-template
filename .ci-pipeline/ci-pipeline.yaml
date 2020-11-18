@@ -576,7 +576,7 @@ spec:
               {
                 "name": "code-unit-tests",
                 "step": "run-script",
-                "evidence_type": "com.ibm.unit_test",
+                "evidence_type": "com.ibm.unit_tests",
                 "evidence_type_version": "1.0.0",
                 "expected": "success",
                 "actual": "$(tasks.code-unit-tests.results.status)",
@@ -629,7 +629,7 @@ spec:
               {
                 "name": "build-vulnerability-advisor",
                 "step": "run-vulnerability-advisor-scan",
-                "evidence_type": "com.ibm.cloud.icr_check_va_scan",
+                "evidence_type": "com.ibm.cloud.image_vulnerability_scan",
                 "evidence_type_version": "1.0.0",
                 "expected": "OK",
                 "actual": "$(tasks.build-vulnerability-advisor.results.scan-status)",
@@ -640,7 +640,7 @@ spec:
               {
                 "name": "build-image-signing",
                 "step": "sign-image",
-                "evidence_type": "com.ibm.cloud.icr_ciso_image_signing",
+                "evidence_type": "com.ibm.cloud.image_signing",
                 "evidence_type_version": "1.0.0",
                 "expected": "success",
                 "actual": "$(tasks.build-image-signing.results.status)",
@@ -688,7 +688,7 @@ spec:
               {
                 "name": "code-unit-tests",
                 "step": "run-script",
-                "evidence_type": "com.ibm.unit_test",
+                "evidence_type": "com.ibm.unit_tests",
                 "expected": "success",
                 "actual": "$(tasks.code-unit-tests.results.status)"
               },
@@ -723,14 +723,14 @@ spec:
               {
                 "name": "build-vulnerability-advisor",
                 "step": "run-vulnerability-advisor-scan",
-                "evidence_type": "com.ibm.cloud.icr_check_va_scan",
+                "evidence_type": "com.ibm.cloud.image_vulnerability_scan",
                 "expected": "OK",
                 "actual": "$(tasks.build-vulnerability-advisor.results.scan-status)"
               },
               {
                 "name": "build-image-signing",
                 "step": "sign-image",
-                "evidence_type": "com.ibm.cloud.icr_ciso_image_signing",
+                "evidence_type": "com.ibm.cloud.image_signing",
                 "expected": "success",
                 "actual": "$(tasks.build-image-signing.results.status)"
               },
