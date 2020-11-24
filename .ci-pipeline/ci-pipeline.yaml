@@ -63,7 +63,7 @@ spec:
               import os
 
               print("CI Pipeline was Triggered By: " + os.getenv("TRIGGERED_BY"))
-              print("<https://cloud.ibm.com/devops/pipelines/tekton/" + os.getenv("PIPELINE_ID") + "/runs/" + os.getenv("PIPELINE_RUN_ID") + "?env_id=ibm:yp:" + os.getenv("TOOLCHAIN_REGION") + "|See the Pipeline Logs>")
+              print("<https://cloud.ibm.com/devops/pipelines/tekton/" + os.getenv("PIPELINE_ID") + "/runs/" + os.getenv("PIPELINE_RUN_ID") + "?env_id=ibm:yp:" + os.getenv("TOOLCHAIN_REGION") + " | See the Pipeline Logs>")
 
     - name: code-setup-pipeline-env
       taskRef:
@@ -870,7 +870,7 @@ spec:
                 else:
                   print(":white_check_mark: Task `{taskName}` was successful.".format(taskName=result["name"]))
               print("CI Pipeline finished!")
-              print("<https://cloud.ibm.com/devops/pipelines/tekton/" + os.getenv("PIPELINE_ID") + "/runs/" + os.getenv("PIPELINE_RUN_ID") + "?env_id=ibm:yp:" + os.getenv("TOOLCHAIN_REGION") + "|See the Pipeline Logs>")
+              print("<https://cloud.ibm.com/devops/pipelines/tekton/" + os.getenv("PIPELINE_ID") + "/runs/" + os.getenv("PIPELINE_RUN_ID") + "?env_id=ibm:yp:" + os.getenv("TOOLCHAIN_REGION") + " | See the Pipeline Logs>")
 
     - name: build-pipeline-evaluator
       runAfter:

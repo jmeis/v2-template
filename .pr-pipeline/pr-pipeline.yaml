@@ -39,7 +39,7 @@ spec:
               import os
 
               print("PR Pipeline was Triggered By: " + os.getenv("TRIGGERED_BY"))
-              print("<https://cloud.ibm.com/devops/pipelines/tekton/" + os.getenv("PIPELINE_ID") + "/runs/" + os.getenv("PIPELINE_RUN_ID") + "?env_id=ibm:yp:" + os.getenv("TOOLCHAIN_REGION") + "|See the Pipeline Logs>")
+              print("<https://cloud.ibm.com/devops/pipelines/tekton/" + os.getenv("PIPELINE_ID") + "/runs/" + os.getenv("PIPELINE_RUN_ID") + "?env_id=ibm:yp:" + os.getenv("TOOLCHAIN_REGION") + " | See the Pipeline Logs>")
 
     - name: code-extract-repository-url
       taskRef:
@@ -660,7 +660,7 @@ spec:
                 else:
                   print(":white_check_mark: Task `{taskName}` was successful.".format(taskName=result["name"]))
               print("PR Pipeline finished!")
-              print("<https://cloud.ibm.com/devops/pipelines/tekton/" + os.getenv("PIPELINE_ID") + "/runs/" + os.getenv("PIPELINE_RUN_ID") + "?env_id=ibm:yp:" + os.getenv("TOOLCHAIN_REGION") + "|See the Pipeline Logs>")
+              print("<https://cloud.ibm.com/devops/pipelines/tekton/" + os.getenv("PIPELINE_ID") + "/runs/" + os.getenv("PIPELINE_RUN_ID") + "?env_id=ibm:yp:" + os.getenv("TOOLCHAIN_REGION") + " | See the Pipeline Logs>")
     - name: code-pipeline-evaluator
       runAfter:
         - code-branch-protection-status-finished
