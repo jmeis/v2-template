@@ -7,10 +7,6 @@ inputs:
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: preview/iks
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
     path: preview/container-registry
   - type: git
     branch: master
