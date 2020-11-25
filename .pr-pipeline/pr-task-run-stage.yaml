@@ -169,6 +169,8 @@ spec:
       volumeMounts:
         - name: config
           mountPath: /config
+        - name: toolchain
+          mountPath: /toolchain
         - name: environment-properties
           mountPath: /config/environment-properties
         - name: secure-properties
@@ -246,6 +248,9 @@ spec:
   volumes:
     - name: config
       emptyDir: {}
+    - name: toolchain
+      configMap:
+        name: toolchain
     - name: environment-properties
       configMap:
         name: environment-properties
