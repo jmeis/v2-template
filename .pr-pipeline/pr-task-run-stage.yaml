@@ -46,6 +46,9 @@ spec:
       default: 'not-provided-secret-4'
     - name: abort-on-failure
       description: "Whether abort the pipeline in case of a failure or not"
+    - name: dind
+      description: Launch Docker-in-Docker sidecar
+      default: "false"
     - name: pipeline-debug
       description: Use debug mode
       default: "0"
@@ -64,6 +67,31 @@ spec:
     env:
       - name: PIPELINE_DEBUG
         value: $(params.pipeline-debug)
+
+  sidecars:
+    - name: dind
+      image: docker.io/library/docker:dind
+      securityContext:
+        privileged: true
+      env:
+        - name: DOCKER_TLS_CERTDIR
+          value: /certs
+        - name: ENABLE_DIND
+          value: $(params.dind)
+      volumeMounts:
+        - mountPath: /certs/client
+          name: dind-certs
+      script: |
+        if [[ "$ENABLE_DIND" == "true" ]]; then
+          /usr/local/bin/dockerd-entrypoint.sh
+        else
+          mkdir -p /certs/client
+          touch /certs/client/ca.pem
+        fi
+      readinessProbe:
+        periodSeconds: 1
+        exec:
+          command: ['ls', '/certs/client/ca.pem']
 
   steps:
     - name: prepare
@@ -195,7 +223,15 @@ spec:
           mountPath: /config/$(params.secret-3)
         - name: secret-4
           mountPath: /config/$(params.secret-4)
+        - mountPath: /certs/client
+          name: dind-certs
       env:
+        - name: DOCKER_HOST
+          value: tcp://localhost:2376
+        - name: DOCKER_TLS_VERIFY
+          value: '1'
+        - name: DOCKER_CERT_PATH
+          value: /certs/client
         - name: PIPELINE_RUN_NAME
           valueFrom:
             fieldRef:
@@ -247,6 +283,8 @@ spec:
 
   volumes:
     - name: config
+      emptyDir: {}
+    - name: dind-certs
       emptyDir: {}
     - name: toolchain
       configMap:
