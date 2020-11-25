@@ -55,6 +55,21 @@ spec:
 
             npm test
 
+        containerize:
+          dind: true
+          image: ibmcom/pipeline-base-image:2.6
+          script: |
+            #!/usr/bin/env bash
+
+            if [[ "$PIPELINE_DEBUG" == 1 ]]; then
+              trap env EXIT
+              env
+              set -x
+            fi
+
+            source scripts/build_setup.sh
+            source scripts/build.sh
+
         deploy:
           image: ibmcom/pipeline-base-image:2.6
           script: |
@@ -62,7 +77,7 @@ spec:
             echo "No $(params.file) found, assuming default behavior..."
             echo "See https://pages.github.ibm.com/one-pipeline/docs/custom-scripts for more details"
 
-            source scripts/setup_deploy.sh
+            source scripts/deploy_setup.sh
             source scripts/deploy.sh
 
         acceptance-test:
@@ -75,13 +90,4 @@ spec:
             source /root/.nvm/nvm.sh
             export APP_URL=\$(cat ../app-url)
             npm run acceptance-test
-
-        package:
-          image: ibmcom/pipeline-base-image:2.7
-          script: |
-            #!/usr/bin/env bash
-            echo "No $(params.file) found, assuming default behavior..."
-            echo "See https://pages.github.ibm.com/one-pipeline/docs/custom-scripts for more details"
-
-            exit 0
         EOF

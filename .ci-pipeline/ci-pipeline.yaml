@@ -348,42 +348,11 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: build-containerize
-      taskRef:
-        name: icr-containerize
-      runAfter:
-        - code-setup
-      workspaces:
-        - name: source
-          workspace: artifacts
-      params:
-        - name: registry-region
-          value: $(params.registry-region)
-        - name: registry-namespace
-          value: $(params.registry-namespace)
-        - name: image-name
-          value: $(params.app-name)
-        - name: additional-tags-script
-          value: |
-            # The script is providing tag(s) as output
-            # But logs can be written as error stderr
-            echo "Providing an image tag including git branch and commit" >&2
-            # Add a specific tag with branch and commit
-            echo "$(date +%Y%m%d%H%M%S)-$(tasks.code-fetch-code.results.git-branch)-$(tasks.code-fetch-code.results.git-commit)"
-        - name: container-registry-apikey-secret-key
-          value: api-key
-        - name: path-to-context
-          value: "$(tasks.code-fetch-code.results.directory-name)"
-        - name: path-to-dockerfile
-          value: "./$(tasks.code-fetch-code.results.directory-name)"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: build-package-config
+    - name: build-containerize-config
       taskRef:
         name: parse-config
       runAfter:
-        - build-image-signing
+        - code-unit-tests
       workspaces:
         - name: app
           workspace: artifacts
@@ -391,9 +360,9 @@ spec:
         - name: file
           value: $(tasks.code-fetch-code.results.directory-name)/$(params.one-pipeline-config)
         - name: stage
-          value: package
+          value: containerize
 
-    - name: build-package
+    - name: build-containerize
       taskRef:
         name: run-stage
       workspaces:
@@ -401,19 +370,46 @@ spec:
           workspace: artifacts
       params:
         - name: image
-          value: $(tasks.build-package-config.results.image)
+          value: $(tasks.build-containerize-config.results.image)
         - name: script
-          value: $(tasks.build-package-config.results.script)
+          value: $(tasks.build-containerize-config.results.script)
         - name: working-dir
-          value: $(tasks.build-package-config.directory-name)
+          value: $(tasks.code-fetch-code.results.directory-name)
         - name: configmap-0
-          value: $(tasks.build-package-config.results.configmap-0)
+          value: $(tasks.build-containerize-config.results.configmap-0)
         - name: secret-0
-          value: $(tasks.build-package-config.results.secret-0)
+          value: $(tasks.build-containerize-config.results.secret-0)
         - name: abort-on-failure
-          value: $(tasks.build-package-config.results.abort-on-failure)
+          value: $(tasks.build-containerize-config.results.abort-on-failure)
+        - name: dind
+          value: $(tasks.build-containerize-config.results.dind)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: params
+          value: |
+            git-branch: $(tasks.code-fetch-code.results.git-branch)
+            git-commit: $(tasks.code-fetch-code.results.git-commit)
+
+    - name: build-containerize-results
+      taskSpec:
+        workspaces:
+          - name: artifacts
+        results:
+          - name: image
+          - name: image-digest
+          - name: image-tags
+        steps:
+          - name: emit-results
+            image: ibmcom/pipeline-base-image:2.9
+            script: |
+              cat "$(workspaces.artifacts.path)/image" > "$(results.image.path)"
+              cat "$(workspaces.artifacts.path)/image-digest" > "$(results.image-digest.path)"
+              cat "$(workspaces.artifacts.path)/image-tags" > "$(results.image-tags.path)"
+      runAfter:
+        - build-containerize
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
 
     - name: get-signature
       taskRef:
@@ -430,7 +426,6 @@ spec:
         name: inventory-update-version
       runAfter:
         - build-containerize
-        - build-package
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -444,7 +439,7 @@ spec:
         - name: version
           value: $(params.version)
         - name: artifact
-          value: "$(tasks.build-containerize.results.image-repository)@$(tasks.build-containerize.results.image-digest)"
+          value: "$(tasks.build-containerize-results.results.image)@$(tasks.build-containerize-results.results.image-digest)"
         - name: app-name
           value: $(params.app-name)
         - name: repository-url
@@ -454,7 +449,7 @@ spec:
         - name: app-artifacts
           value: '{
               "signature": "$(tasks.get-signature.results.signature)",
-              "provenance": "$(tasks.build-containerize.results.image-repository)@$(tasks.build-containerize.results.image-digest)"
+              "provenance": "$(tasks.build-containerize-results.results.image)@$(tasks.build-containerize-results.results.image-digest)"
               }'
 
     - name: build-vulnerability-advisor
@@ -465,9 +460,9 @@ spec:
           workspace: artifacts
       params:
         - name: image-url
-          value: $(tasks.build-containerize.results.image-repository)
+          value: $(tasks.build-containerize-results.results.image)
         - name: image-digest
-          value: $(tasks.build-containerize.results.image-digest)
+          value: $(tasks.build-containerize-results.results.image-digest)
         - name: scan-report-file
           value: 'app-image-va-report.json'
         - name: ibmcloud-api-key-secret-key
@@ -494,7 +489,7 @@ spec:
         - name: image-name
           value: $(params.app-name)
         - name: image-tag
-          value: $(tasks.build-containerize.results.image-tags)
+          value: $(tasks.build-containerize-results.results.image-tags)
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -528,7 +523,7 @@ spec:
           value: $(tasks.code-fetch-code.results.directory-name)
         - name: params
           value: |
-            image: $(tasks.build-containerize.results.image-repository)@$(tasks.build-containerize.results.image-digest)
+            image: $(tasks.build-containerize-results.results.image)@$(tasks.build-containerize-results.results.image-digest)
         - name: configmap-0
           value: $(tasks.deploy-dev-config.results.configmap-0)
         - name: secret-0
