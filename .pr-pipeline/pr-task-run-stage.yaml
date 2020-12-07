@@ -102,6 +102,7 @@ spec:
   steps:
     - name: prepare
       image: ibmcom/pipeline-base-image:2.7
+      workingDir: $(workspaces.app.path)
       volumeMounts:
         - name: config
           mountPath: /config
@@ -139,7 +140,14 @@ spec:
           trap env EXIT
         fi
 
+        cat /dev/null > environment-variables
+
         while read file; do
+          KEY=$(basename "$file" | tr "[:lower:]" "[:upper:]" | tr .- _)
+          VALUE=$(cat "$file")
+
+          echo "export $KEY=\"$VALUE\"" >> environment-variables
+
           ln -snf "$file" "/config/$(basename "$file")"
         done < <(find '/config/environment-properties' -type f)
 
@@ -273,7 +281,7 @@ spec:
       script: |
         #!/bin/sh
 
-        set -e
+        . ../environment-variables
 
         export WORKSPACE="$(workspaces.app.path)"
         export CONFIG_DIR="$(workspaces.app.path)/$(params.working-dir)"
