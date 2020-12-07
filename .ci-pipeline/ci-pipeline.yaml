@@ -710,7 +710,7 @@ spec:
               {
                 "name": "deploy-acceptance-tests",
                 "step": "run-script",
-                "evidence_type": "com.ibm.acceptance_test",
+                "evidence_type": "com.ibm.acceptance_tests",
                 "evidence_type_version": "1.0.0",
                 "expected": "success",
                 "actual": "$(tasks.deploy-acceptance-tests.results.status)",
@@ -796,7 +796,7 @@ spec:
               {
                 "name": "deploy-acceptance-tests",
                 "step": "run-script",
-                "evidence_type": "com.ibm.acceptance_test",
+                "evidence_type": "com.ibm.acceptance_tests",
                 "expected": "success",
                 "actual": "$(tasks.deploy-acceptance-tests.results.status)"
               }
