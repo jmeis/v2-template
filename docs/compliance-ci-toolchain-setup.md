@@ -4,19 +4,24 @@
 * **K8S Cluster**
 * **Artifactory access**
 * **IBM Cloud CLI**
-* **TaaS and Ciso Registrations**
+* **[TaaS and CISO Registration](#taas-ciso-registration)**
 * **IBM Cloud Api Key**
 * [**Servide ID**](https://cloud.ibm.com/docs/account?topic=account-serviceids)
 * [**Service ID API Key**](https://cloud.ibm.com/docs/account?topic=account-serviceidapikeys#create_service_key)
 * [**HashiCorp Vault**](https://pages.github.ibm.com/vault-as-a-service/vault/)
 * (optional) [COS Bucket configured as a Compliance Evidence Locker](https://github.ibm.com/one-pipeline/docs/cos-evidence-locker-buckets.md#bucket-configuration)
 
-There are a couple of steps that need to be done prior to creating this toolchain for the first time.
-Please see:
 
-- ***CISO Code Signing Service and Key Setup*** <https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/ciso-setup.md>
+### <a id="taas-ciso-registration"></a>TaaS and CISO Registration
+There are a couple of steps that need to be taken prior to creating this toolchain for the first time. 
+1) Get access to a private worker that can establish a connection with the IBM internal network
+2) A CISO account complete with a signing certificate
 
-- ***Service API Key for TaaS Private Worker*** <https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/taas-setup.md>
+The CISO service is a signing service that can be leveraged for signing images. A worker with access to the internal IBM network is required to reach the CISO service. If you do not already has a private worker with IBM intenral network access, you can avail of the services provided by TaaS. With TaaS, you can generate a service_api_key, that will allow you access to a pool of workers that have been preconfigured with IBM network access. Visit the following links for more details.
+
+* **[CISO Code Signing Service and Key Setup](<https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/ciso-setup.md>)**
+
+* **[Service API Key for TaaS Private Worker](<https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/taas-setup.md>)**
 
 Optionally, you can also follow the next two guides. These will help you set up cluster image enforcement with Portieris.
  
