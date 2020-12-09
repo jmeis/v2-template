@@ -19,15 +19,17 @@ There are a couple of steps that need to be taken prior to creating this toolcha
 
 The CISO service is a signing service that can be leveraged for signing images. A worker with access to the internal IBM network is required to reach the CISO service. If you do not already has a private worker with IBM intenral network access, you can avail of the services provided by TaaS. With TaaS, you can generate a service_api_key, that will allow you access to a pool of workers that have been preconfigured with IBM network access. Visit the following links for more details.
 
-* **[CISO Code Signing Service and Key Setup](<https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/ciso-setup.md>)**
+* **[CISO Code Signing Service and Key Setup](<ciso-setup.md>)**
 
-* **[Service API Key for TaaS Private Worker](<https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/taas-setup.md>)**
+* **[Service API Key for TaaS Private Worker](<taas-setup.md>)**
 
 Optionally, you can also follow the next two guides. These will help you set up cluster image enforcement with Portieris.
  
-- ***Obtain the Public Key Certificate*** Create and instance of the toolchain <https://github.ibm.com/one-pipeline/portieris-config-helper>. Once this pipeline has run, you can retrieve the public certificate from the logs
+- ***Obtain the Public Key Certificate***
 
-- ***Portieris Set Up*** <https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/portieris-setup.md>
+Create an instance of ***[this toolchain](<https://github.ibm.com/one-pipeline/portieris-config-helper>)***. Once this pipeline has run, you can retrieve the public certificate from the logs
+
+- ***[Portieris Set Up](<portieris-setup.md>)***
 
 The GitHub token that is issued to the IBM Cloud API key holder, needs access to read/set protected branch settings on repos.
 This can be only done by admin level access to the repository.
