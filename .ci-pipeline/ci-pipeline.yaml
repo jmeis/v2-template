@@ -194,6 +194,11 @@ spec:
           value: $(tasks.code-setup-config.results.abort-on-failure)
         - name: dind
           value: $(tasks.code-setup-config.results.dind)
+        - name: params
+          value: |
+            git-commit: $(tasks.code-fetch-code.results.git-commit)
+            repository-url: $(tasks.code-setup-pipeline-env.results.repository-url)
+            inventory-url: $(tasks.code-setup-pipeline-env.results.inventory-repo-url)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -232,6 +237,11 @@ spec:
           value: $(tasks.code-unit-tests-config.results.abort-on-failure)
         - name: dind
           value: $(tasks.code-unit-tests-config.results.dind)
+        - name: params
+          value: |
+            git-commit: $(tasks.code-fetch-code.results.git-commit)
+            repository-url: $(tasks.code-setup-pipeline-env.results.repository-url)
+            inventory-url: $(tasks.code-setup-pipeline-env.results.inventory-repo-url)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -389,6 +399,8 @@ spec:
           value: |
             git-branch: $(tasks.code-fetch-code.results.git-branch)
             git-commit: $(tasks.code-fetch-code.results.git-commit)
+            repository-url: $(tasks.code-setup-pipeline-env.results.repository-url)
+            inventory-url: $(tasks.code-setup-pipeline-env.results.inventory-repo-url)
 
     - name: build-containerize-results
       taskSpec:
@@ -435,7 +447,7 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: inventory-repo
-          value: $(params.inventory-repo)
+          value: $(tasks.code-setup-pipeline-env.results.inventory-repo-url)
         - name: version
           value: $(params.version)
         - name: artifact
@@ -524,6 +536,9 @@ spec:
         - name: params
           value: |
             image: $(tasks.build-containerize-results.results.image)@$(tasks.build-containerize-results.results.image-digest)
+            git-commit: $(tasks.code-fetch-code.results.git-commit)
+            repository-url: $(tasks.code-setup-pipeline-env.results.repository-url)
+            inventory-url: $(tasks.code-setup-pipeline-env.results.inventory-repo-url)
         - name: configmap-0
           value: $(tasks.deploy-dev-config.results.configmap-0)
         - name: secret-0
@@ -570,6 +585,11 @@ spec:
           value: $(tasks.deploy-acceptance-tests-config.results.abort-on-failure)
         - name: dind
           value: $(tasks.deploy-acceptance-tests-config.results.dind)
+        - name: params
+          value: |
+            git-commit: $(tasks.code-fetch-code.results.git-commit)
+            repository-url: $(tasks.code-setup-pipeline-env.results.repository-url)
+            inventory-url: $(tasks.code-setup-pipeline-env.results.inventory-repo-url)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
