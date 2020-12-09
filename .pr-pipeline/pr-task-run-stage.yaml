@@ -83,6 +83,12 @@ spec:
           name: dind-certs
       script: |
         if [[ "$ENABLE_DIND" == "true" ]]; then
+          if [[ $(df -PT /var/lib/docker | awk 'NR==2 {print $2}') == virtiofs ]]; then
+            apk add e2fsprogs
+            truncate -s 20G /tmp/disk.img
+            mkfs.ext4 /tmp/disk.img
+            mount /tmp/disk.img /var/lib/docker
+          fi
           /usr/local/bin/dockerd-entrypoint.sh
         else
           mkdir -p /certs/client
