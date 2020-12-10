@@ -433,37 +433,6 @@ spec:
         - name: file
           value: "$(tasks.build-image-signing.results.signature)"
 
-    - name: build-update-inventory
-      taskRef:
-        name: inventory-update-version
-      runAfter:
-        - build-containerize
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-        - name: inventory-repo
-          value: $(tasks.code-setup-pipeline-env.results.inventory-repo-url)
-        - name: version
-          value: $(params.version)
-        - name: artifact
-          value: "$(tasks.build-containerize-results.results.image)@$(tasks.build-containerize-results.results.image-digest)"
-        - name: app-name
-          value: $(params.app-name)
-        - name: repository-url
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
-        - name: commit-sha
-          value: $(tasks.code-fetch-code.results.git-commit)
-        - name: app-artifacts
-          value: '{
-              "signature": "$(tasks.get-signature.results.signature)",
-              "provenance": "$(tasks.build-containerize-results.results.image)@$(tasks.build-containerize-results.results.image-digest)"
-              }'
-
     - name: build-vulnerability-advisor
       taskRef:
         name: containerize-check-va-scan
@@ -592,6 +561,37 @@ spec:
             inventory-url: $(tasks.code-setup-pipeline-env.results.inventory-repo-url)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+
+    - name: build-update-inventory
+      taskRef:
+        name: inventory-update-version
+      runAfter:
+        - deploy-acceptance-tests
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: inventory-repo
+          value: $(tasks.code-setup-pipeline-env.results.inventory-repo-url)
+        - name: version
+          value: $(params.version)
+        - name: artifact
+          value: "$(tasks.build-containerize-results.results.image)@$(tasks.build-containerize-results.results.image-digest)"
+        - name: app-name
+          value: $(params.app-name)
+        - name: repository-url
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
+        - name: commit-sha
+          value: $(tasks.code-fetch-code.results.git-commit)
+        - name: app-artifacts
+          value: '{
+              "signature": "$(tasks.get-signature.results.signature)",
+              "provenance": "$(tasks.build-containerize-results.results.image)@$(tasks.build-containerize-results.results.image-digest)"
+              }'
 
     - name: dev-publish-deployrecord
       taskRef:
