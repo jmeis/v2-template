@@ -269,6 +269,10 @@ spec:
 
         set -e
 
+        export WORKSPACE="$(workspaces.app.path)"
+        export CONFIG_DIR="$(workspaces.app.path)/$(params.working-dir)"
+        export APP_DIR="$(params.working-dir)"
+
         # run the stage script
         if "$(workspaces.app.path)"/"$(params.script)"; then
           printf "%s" $? > "$(results.exit-code.path)"
