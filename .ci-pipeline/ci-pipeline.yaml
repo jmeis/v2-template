@@ -45,6 +45,9 @@ spec:
     - name: doi-toolchain-id
       description: DevOps Toolchain ID
       default: ""
+    - name: doi-environment
+      description: doi target environment
+      default: ""
 
   workspaces:
     - name: artifacts
@@ -605,6 +608,8 @@ spec:
           value: "$(params.doi-toolchain-id)"
         - name: environment
           value: "dev"
+        - name: doi-environment
+          value: $(params.doi-environment)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: toolchain-apikey-secret-key

@@ -232,7 +232,7 @@ If You decide not to use Cloud Object Storage as an evidence locker, You can als
 
 CI toolchain needs a toolchain ID with an existing DevOps Insights instance, so that it is able to publish the deployment records to insights. If toolchain ID is not present, the local DevOps Insights integration is used if present.
 
-| ![DOI Toolchain ID](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-cd-toolchain/doi-toolchain-optional.png) |
+| ![DOI Toolchain ID](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/doi-toolchain-optional.png) |
 | :--: |
 
 You can copy the Toolchain ID from the URL of your toolchain.
@@ -241,6 +241,9 @@ A toolchain's URL follows this pattern: `https://cloud.ibm.com/devops/toolchains
 For example, if the URL is: `https://cloud.ibm.com/devops/toolchains/aaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee?env_id=ibm:yp:us-south` then the toolchain's ID is: `aaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee`.
 
 Note: Make sure to only include the ID here, not the full URL.
+
+
+You can also set a target environment for the DOI interactions, this parameter is optional. If you provide this parameter, it will be used instead of the target environment from the inventory.
 
 
 #### Artifactory

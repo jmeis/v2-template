@@ -59,3 +59,5 @@ doiToolchain.description: "The ID of the toolchain that contains the DevOps Insi
 doiToolchain.longDescription: "Link toolchain for DevOps Insights"
 doiToolchain.id: "DOI Toolchain ID"
 doiToolchain.help: "CI toolchain needs a toolchain ID with an existing DevOps Insights instance, so that it is able to publish the deployment records to insights. If not provided it will look for a DOI instance in this toolchain."
+doiToolchain.envDescription: "(Optional) The environment for the DOI interactions. If you provide this parameter, it will be used instead of the target environment from the inventory."
+doiToolchain.env: "DOI target environment"

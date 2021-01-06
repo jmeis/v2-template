@@ -38,6 +38,9 @@ spec:
       default: ""
     - name: doi-toolchain-id
       description: toolchain ID
+    - name: doi-environment
+      description: doi target environment, this can be overridden
+      default: ""
     - name: one-pipeline-config
       description: Configuration file to be used to customize pipeline behavior
       default: .one-pipeline.yaml
@@ -106,6 +109,8 @@ spec:
             value: "$(params.cos-endpoint)"
           - name: doi-toolchain-id
             value: $(params.doi-toolchain-id)
+          - name: doi-environment
+            value: $(params.doi-environment)
           - name: one-pipeline-config
             value: $(params.one-pipeline-config)
         serviceAccountName: sa-pullsecret

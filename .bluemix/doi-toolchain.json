@@ -18,6 +18,11 @@
       "description": {
         "$ref": "#/messages/doiToolchain.idDescription"
       }
+    },
+    "doi-environment": {
+      "description": {
+        "$ref": "#/messages/doiToolchain.envDescription"
+      }
     }
   },
   "form": [
@@ -38,9 +43,22 @@
       "title": {
         "$ref": "#/messages/doiToolchain.id"
       },
-      "description": "Toolchain ID",
+      "description": {
+        "$ref": "#/messages/doiToolchain.idDescription"
+      },
       "placeholder": "Toolchain placeholder ID",
       "key": "doi-toolchain-id",
+      "type": "text"
+    },
+    {
+      "title": {
+        "$ref": "#/messages/doiToolchain.env"
+      },
+      "description": {
+        "$ref": "#/messages/doiToolchain.envDescription"
+      },
+      "placeholder": "Target environment placeholder",
+      "key": "doi-environment",
       "type": "text"
     }
   ]

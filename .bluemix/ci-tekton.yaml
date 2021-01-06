@@ -131,6 +131,9 @@ properties:
   - name: doi-toolchain-id
     value: ${DOI_TOOLCHAIN_ID}
     type: text
+  - name: doi-environment
+    value: ${DOI_ENVIRONMENT}
+    type: text
   - name: cos-endpoint
     value: ${COS_ENDPOINT}
     type: text
