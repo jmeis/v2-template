@@ -14,6 +14,8 @@ spec:
       description: the repo integration name
     - name: commit-id
       description: commit id
+    - name: commit-timestamp
+      description: the timestamp of when the commit pushed
     - name: slack-notifications
       description: toggles slack notifications
     - name: pipeline-debug
@@ -373,7 +375,7 @@ spec:
         - code-fetch-code
         - code-unit-tests
       taskRef:
-        name: gitsecure-discovery
+        name: cra-discovery
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -384,6 +386,8 @@ spec:
           value: $(params.branch)
         - name: commit-id
           value: $(params.commit-id)
+        - name: commit-timestamp
+          value: $(params.commit-timestamp)
         - name: directory-name
           value: $(tasks.code-fetch-code.results.directory-name)
 
@@ -417,7 +421,7 @@ spec:
       runAfter:
         - code-vulnerability-scan-uploader
       taskRef:
-        name: gitsecure-vulnerability-remediation
+        name: cra-vulnerability-remediation
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -432,8 +436,6 @@ spec:
           value: $(params.pr-url)
         - name: commit-id
           value: $(params.commit-id)
-        - name: git-api-token-key
-          value: git-token
 
     - name: code-vulnerability-scan-status-finished
       runAfter:
@@ -489,7 +491,7 @@ spec:
 
     - name: code-cis-check
       taskRef:
-        name: gitsecure-cis-check
+        name: cra-cis-check
       runAfter:
         - code-cis-check-status-pending
       workspaces:

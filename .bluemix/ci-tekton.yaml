@@ -11,10 +11,6 @@ inputs:
   - type: git
     branch: master
     service: ${TEKTON_CATALOG_REPO}
-    path: preview/gitsecure
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
     path: preview/slack
   - type: git
     branch: master
@@ -72,6 +68,22 @@ inputs:
     branch: master
     service: ${TEKTON_CATALOG_REPO}
     path: stable/task/devops-insights-publish-deploy/1
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: stable/task/cra-bom/1
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: stable/task/cra-cis-check/1
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: stable/task/cra-discovery/1
+  - type: git
+    branch: master
+    service: ${TEKTON_CATALOG_REPO}
+    path: stable/task/cra-vulnerability-remediation/1
 triggers:
   - type: git
     name: Git CI Trigger

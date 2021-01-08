@@ -22,6 +22,8 @@ spec:
       description: the repo integration name
     - name: commit-id
       description: commit id
+    - name: commit-timestamp
+      description: the timestamp of when the commit pushed
     - name: slack-notifications
       description: toggles slack notifications
     - name: pipeline-debug
@@ -103,6 +105,8 @@ spec:
             value: $(params.pipeline-debug)
           - name: commit-id
             value: $(params.commit-id)
+          - name: commit-timestamp
+            value: $(params.commit-timestamp)
           - name: inventory-repo
             value: $(params.inventory-repo)
           - name: version

@@ -11,3 +11,5 @@ spec:
       value: "master"
     - name: commit-id
       value: $(event.head_commit.id)
+    - name: commit-timestamp
+      value: $(event.repository.updated_at)

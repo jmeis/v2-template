@@ -28,6 +28,8 @@ spec:
       description: toggles debug mode for the pipeline
     - name: commit-id
       description: commit id
+    - name: commit-timestamp
+      description: the timestamp of when the commit pushed
     - name: pr-url
       description: pr url
       default: ""
@@ -258,7 +260,7 @@ spec:
       runAfter:
         - code-unit-tests
       taskRef:
-        name: gitsecure-discovery
+        name: cra-discovery
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -269,6 +271,8 @@ spec:
           value: $(params.branch)
         - name: commit-id
           value: $(tasks.code-fetch-code.results.git-commit)
+        - name: commit-timestamp
+          value: $(params.commit-timestamp)
         - name: directory-name
           value: $(tasks.code-fetch-code.results.directory-name)
 
@@ -276,7 +280,7 @@ spec:
       runAfter:
         - code-vulnerability-scan-uploader
       taskRef:
-        name: gitsecure-vulnerability-remediation
+        name: cra-vulnerability-remediation
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -291,12 +295,10 @@ spec:
           value: $(params.pr-url)
         - name: commit-id
           value: $(tasks.code-fetch-code.results.git-commit)
-        - name: git-api-token-key
-          value: git-token
 
     - name: code-cis-check
       taskRef:
-        name: gitsecure-cis-check
+        name: cra-cis-check
       runAfter:
         - code-vulnerability-scan-uploader
       workspaces:
@@ -320,8 +322,10 @@ spec:
       runAfter:
         - code-vulnerability-scan-uploader
       taskRef:
-        name: gitsecure-bom-check
+        name: cra-bom
       workspaces:
+        - name: secrets
+          workspace: artifacts
         - name: artifacts
           workspace: artifacts
       params:
