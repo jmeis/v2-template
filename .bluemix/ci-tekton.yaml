@@ -146,4 +146,7 @@ properties:
   - name: git-token
     value: ""
     type: SECURE
+  - name: slack-notifications
+    value: "0"
+    type: text
 private_worker: ${PRIVATE_WORKER}

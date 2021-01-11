@@ -22,6 +22,8 @@ spec:
       description: Resource Group
     - name: dev-region
       description: target region
+    - name: slack-notifications
+      description: toggles slack notifications
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
     - name: commit-id
@@ -54,6 +56,10 @@ spec:
 
   tasks:
     - name: code-notify-pipeline-start
+      when:
+        - input: $(params.slack-notifications)
+          operator: in
+          values: ["1"]
       taskRef:
         name: slack-post-message
       workspaces:
@@ -844,6 +850,10 @@ spec:
             ]
 
     - name: build-notify-pipeline-end
+      when:
+        - input: $(params.slack-notifications)
+          operator: in
+          values: ["1"]
       runAfter:
         - build-compliance-collector
         - build-compliance-doi-reporter
@@ -920,7 +930,6 @@ spec:
       runAfter:
         - build-compliance-doi-reporter
         - build-compliance-collector
-        - build-notify-pipeline-end
       taskRef:
         name: pipeline-evaluate
       params:

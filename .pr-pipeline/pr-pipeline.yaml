@@ -14,6 +14,8 @@ spec:
       description: the repo integration name
     - name: commit-id
       description: commit id
+    - name: slack-notifications
+      description: toggles slack notifications
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
     - name: pr-url
@@ -27,6 +29,10 @@ spec:
 
   tasks:
     - name: code-notify-pipeline-start
+      when:
+        - input: $(params.slack-notifications)
+          operator: in
+          values: ["1"]
       taskRef:
         name: slack-post-message
       workspaces:
@@ -617,6 +623,10 @@ spec:
           value: $(params.pipeline-debug)
 
     - name: code-notify-pipeline-end
+      when:
+        - input: $(params.slack-notifications)
+          operator: in
+          values: ["1"]
       runAfter:
         - code-branch-protection
       taskRef:
@@ -661,10 +671,10 @@ spec:
                   print(":white_check_mark: Task `{taskName}` was successful.".format(taskName=result["name"]))
               print("PR Pipeline finished!")
               print("<https://cloud.ibm.com/devops/pipelines/tekton/" + os.getenv("PIPELINE_ID") + "/runs/" + os.getenv("PIPELINE_RUN_ID") + "?env_id=ibm:yp:" + os.getenv("TOOLCHAIN_REGION") + " | See the Pipeline Logs>")
+
     - name: code-pipeline-evaluator
       runAfter:
         - code-branch-protection-status-finished
-        - code-notify-pipeline-end
       taskRef:
         name: pipeline-evaluate
       params:

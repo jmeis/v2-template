@@ -22,6 +22,8 @@ spec:
       description: the repo integration name
     - name: commit-id
       description: commit id
+    - name: slack-notifications
+      description: toggles slack notifications
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
     - name: inventory-repo
@@ -95,6 +97,8 @@ spec:
             value: $(params.branch)
           - name: repository-integration
             value: $(params.repository-integration)
+          - name: slack-notifications
+            value: $(params.slack-notifications)
           - name: pipeline-debug
             value: $(params.pipeline-debug)
           - name: commit-id
