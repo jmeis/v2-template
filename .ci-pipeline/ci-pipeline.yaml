@@ -484,6 +484,8 @@ spec:
           value: $(params.app-name)
         - name: image-tag
           value: $(tasks.build-containerize-results.results.image-tags)
+        - name: toolchain-apikey-secret-key
+          value: "api-key"
       workspaces:
         - name: artifacts
           workspace: artifacts
