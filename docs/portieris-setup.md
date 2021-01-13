@@ -65,17 +65,18 @@ It can be configured to secure cluster-wide deployments or namespace
 specific deployments. For this setup we will be using a namespace
 specific set up
 
-To get started clone the Protieris repository
+To get started go to the Portieris release page and download the latest version
 
-<https://github.com/IBM/portieris.git>
+<https://github.com/IBM/portieris/releases>
 
-Use the same namespace that will be used in the Compliance-CI-Template
+Unpack the download with tar xzvf portieris-0.XX.X.tgz 
 
-Change directory into the Portieris Git repository.
+Use the same namespace that you set in the Compliance-CI-Template 
 
 Run
 ```javascript
-./helm/portieris/gencerts <namespace>
+sh portieris/gencerts <namespace>.
+helm install portieris --create-namespace --namespace <namespace> ./portieris.
 ```
 
 The gencerts script generates new SSL certificates and keys for
@@ -84,22 +85,23 @@ server when the API server makes admission requests. If you do not
 generate new certificates, it could be possible for an attacker to spoof
 Portieris in your cluster.
 
-Run
-```javascript
-kubectl create namespace <namespace>
-```
-
-Run
-```javascript
-helm install portieris --set namespace=<namespace> helm/portieris
-```
-
+For uninstalling Portieris and further details. Refer to the Portieris readme.
+<https://github.com/IBM/portieris/blob/master/README.md>
 
 ### Provisioning the Secrets Key
 
+We need to have a public key that can be obtained from the CISO signing key. If you are well versed with the CISO client and have access to the CISO account you can generate this locally by installing the CISO client and following the instructions provided by CISO that can be accessed when you log in. 
+<https://pgawdccosig01.sl.bluecloud.ibm.com/help/ph2-3-signverify>
+
+Otherwise there is a simple toolchain template that can be set up that will extract/generate the public signing key for you.
+
+See <https://github.ibm.com/one-pipeline/portieris-config-helper>
+
+Create an instance of the template using the same values that you used for the CI-template. 
+Run the pipeline and the public certificate will be written out to the log. Copy the certifcate content into a file called key.asc
+
 With the public key on hand we need to use it to generate a Kubernetes
-secret. For this illustration, we will call the public certificate key
-from GPG key.asc
+secret. 
 
 First change directory to the one containing the key
 
