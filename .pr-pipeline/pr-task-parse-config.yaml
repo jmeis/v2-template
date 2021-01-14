@@ -136,4 +136,4 @@ spec:
         done
 
         echo -n "$(basename $script_file)" > '$(results.script.path)'
-        chmod +x "$script_file"
+        chmod +rx "$script_file"
