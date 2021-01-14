@@ -36,7 +36,7 @@ spec:
 
         jq -j '.crn' /cd-config/toolchain.json > $(results.toolchain-id.path)
         jq -j '.services[] | select(.toolchain_binding.name=="app-repo") | .dashboard_url' /cd-config/toolchain.json > $(results.repository-url.path)
+        jq -j '.services[] | select(.toolchain_binding.name=="app-repo") | .dashboard_url | split("/")[3]' /cd-config/toolchain.json > $(results.gh-org.path)
         jq -j '.services[] | select(.toolchain_binding.name=="evidence-repo") | .dashboard_url' /cd-config/toolchain.json > $(results.evidence-repo-url.path)
         jq -j '.services[] | select(.toolchain_binding.name=="issues-repo") | .dashboard_url' /cd-config/toolchain.json > $(results.issues-repo-url.path)
-        jq -j '.services[] | select(.toolchain_binding.name=="issues-repo") | .dashboard_url | split("/")[3]' /cd-config/toolchain.json > $(results.gh-org.path)
         jq -j '.services[] | select(.toolchain_binding.name=="inventory-repo") | .dashboard_url' /cd-config/toolchain.json > $(results.inventory-repo-url.path)
