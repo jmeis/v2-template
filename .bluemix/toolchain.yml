@@ -181,6 +181,7 @@ services:
           TEKTON_CATALOG_REPO: tekton-catalog-repo
           ARTIFACTORY_DOCKER_CONFIG_JSON: '{{form.artifactoryComp.parameters.docker_config_json}}'
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
+          ONE_PIPELINE_REPO: '{{services.app-repo.parameters.repo_url}}'
         execute: false
   ci:
     service_id: pipeline
@@ -215,6 +216,7 @@ services:
           DOI_ENVIRONMENT: '{{form.customtool_doi-toolchain.parameters.doi-environment}}'
           COS_BUCKET_NAME: '{{form.customtool_cos-bucket.parameters.cos-bucket-name}}'
           COS_ENDPOINT: '{{form.customtool_cos-bucket.parameters.cos-endpoint}}'
+          ONE_PIPELINE_REPO: '{{services.app-repo.parameters.repo_url}}'
         execute: false
 
   webide:

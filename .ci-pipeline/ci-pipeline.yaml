@@ -46,6 +46,11 @@ spec:
     - name: one-pipeline-config
       description: Configuration file to be used to customize pipeline behavior
       default: .one-pipeline.yaml
+    - name: one-pipeline-config-repo
+      description: repository url of the one-pipeline config
+    - name: one-pipeline-config-branch
+      description: the branch of the one-pipeline config
+      default: "master"
     - name: doi-toolchain-id
       description: DevOps Toolchain ID
       default: ""
@@ -123,9 +128,31 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
+    - name: code-clone-one-pipeline-config-repo
+      taskRef:
+        name: git-clone
+      runAfter:
+        - code-fetch-credentials
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: repository
+          value: $(params.one-pipeline-config-repo)
+        - name: branch
+          value: $(params.one-pipeline-config-branch)
+        - name: directory-name
+          value: "one-pipeline-config-repo"
+        - name: git-user
+          value: $(tasks.code-fetch-credentials.results.git-auth-user)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
     - name: code-normalize-config
       runAfter:
-        - code-fetch-code
+        - code-clone-one-pipeline-config-repo
       taskRef:
         name: normalize-config
       workspaces:
@@ -133,7 +160,7 @@ spec:
           workspace: artifacts
       params:
         - name: working-dir
-          value: $(tasks.code-fetch-code.results.directory-name)
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)
         - name: file
           value: $(params.one-pipeline-config)
         - name: pipeline-debug
@@ -180,7 +207,7 @@ spec:
           workspace: artifacts
       params:
         - name: file
-          value: $(tasks.code-fetch-code.results.directory-name)/$(params.one-pipeline-config)
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)/$(params.one-pipeline-config)
         - name: stage
           value: setup
 
@@ -196,7 +223,7 @@ spec:
         - name: script
           value: $(tasks.code-setup-config.results.script)
         - name: working-dir
-          value: $(tasks.code-fetch-code.results.directory-name)
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)
         - name: configmap-0
           value: $(tasks.code-setup-config.results.configmap-0)
         - name: secret-0
@@ -223,7 +250,7 @@ spec:
           workspace: artifacts
       params:
         - name: file
-          value: $(tasks.code-fetch-code.results.directory-name)/$(params.one-pipeline-config)
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)/$(params.one-pipeline-config)
         - name: stage
           value: test
 
@@ -239,7 +266,7 @@ spec:
         - name: script
           value: $(tasks.code-unit-tests-config.results.script)
         - name: working-dir
-          value: $(tasks.code-fetch-code.results.directory-name)
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)
         - name: configmap-0
           value: $(tasks.code-unit-tests-config.results.configmap-0)
         - name: secret-0
@@ -381,7 +408,7 @@ spec:
           workspace: artifacts
       params:
         - name: file
-          value: $(tasks.code-fetch-code.results.directory-name)/$(params.one-pipeline-config)
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)/$(params.one-pipeline-config)
         - name: stage
           value: containerize
 
@@ -397,7 +424,7 @@ spec:
         - name: script
           value: $(tasks.build-containerize-config.results.script)
         - name: working-dir
-          value: $(tasks.code-fetch-code.results.directory-name)
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)
         - name: configmap-0
           value: $(tasks.build-containerize-config.results.configmap-0)
         - name: secret-0
@@ -500,7 +527,7 @@ spec:
           workspace: artifacts
       params:
         - name: file
-          value: $(tasks.code-fetch-code.results.directory-name)/$(params.one-pipeline-config)
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)/$(params.one-pipeline-config)
         - name: stage
           value: deploy
 
@@ -516,7 +543,7 @@ spec:
         - name: script
           value: $(tasks.deploy-dev-config.results.script)
         - name: working-dir
-          value: $(tasks.code-fetch-code.results.directory-name)
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)
         - name: params
           value: |
             image: $(tasks.build-containerize-results.results.image)@$(tasks.build-containerize-results.results.image-digest)
@@ -544,7 +571,7 @@ spec:
           workspace: artifacts
       params:
         - name: file
-          value: $(tasks.code-fetch-code.results.directory-name)/$(params.one-pipeline-config)
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)/$(params.one-pipeline-config)
         - name: stage
           value: acceptance-test
 
@@ -560,7 +587,7 @@ spec:
         - name: script
           value: $(tasks.deploy-acceptance-tests-config.results.script)
         - name: working-dir
-          value: $(tasks.code-fetch-code.results.directory-name)
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)
         - name: configmap-0
           value: $(tasks.deploy-acceptance-tests-config.results.configmap-0)
         - name: secret-0
@@ -587,7 +614,7 @@ spec:
           workspace: artifacts
       params:
         - name: file
-          value: $(tasks.code-fetch-code.results.directory-name)/$(params.one-pipeline-config)
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)/$(params.one-pipeline-config)
         - name: stage
           value: release
 
@@ -605,7 +632,7 @@ spec:
         - name: script
           value: $(tasks.deploy-release-config.results.script)
         - name: working-dir
-          value: $(tasks.code-fetch-code.results.directory-name)
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)
         - name: configmap-0
           value: $(tasks.deploy-release-config.results.configmap-0)
         - name: secret-0

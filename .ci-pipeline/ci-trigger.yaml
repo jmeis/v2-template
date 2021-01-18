@@ -51,6 +51,11 @@ spec:
     - name: one-pipeline-config
       description: Configuration file to be used to customize pipeline behavior
       default: .one-pipeline.yaml
+    - name: one-pipeline-config-repo
+      description: repository url of the one-pipeline config
+    - name: one-pipeline-config-branch
+      description: the branch of the one-pipeline config
+      default: "master"
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -132,4 +137,8 @@ spec:
             value: $(params.doi-environment)
           - name: one-pipeline-config
             value: $(params.one-pipeline-config)
+          - name: one-pipeline-config-repo
+            value: $(params.one-pipeline-config-repo)
+          - name: one-pipeline-config-branch
+            value: $(params.one-pipeline-config-branch)
         serviceAccountName: sa-pullsecret

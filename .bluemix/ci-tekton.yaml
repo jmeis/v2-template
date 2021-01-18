@@ -155,6 +155,12 @@ properties:
   - name: one-pipeline-config
     value: .one-pipeline.yaml
     type: text
+  - name: one-pipeline-config-repo
+    value: ${ONE_PIPELINE_REPO}
+    type: text
+  - name: one-pipeline-config-branch
+    value: "master"
+    type: text
   - name: git-token
     value: ""
     type: SECURE
