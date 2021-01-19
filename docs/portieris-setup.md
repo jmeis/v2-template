@@ -5,7 +5,7 @@
 
 Kubernetes 1.16 or above
 
-Helm 3 is required to install Portieris. This needs to be installed on
+Helm 3 is required to install `Portieris`. This needs to be installed on
 your workstation.
 
 Installing Helm 3
@@ -38,8 +38,9 @@ Log into your account and ensure that you can run Kube commands. Please
 see <https://cloud.ibm.com/kubernetes/clusters> for help
 
 ### Migrating from DCT signing to CISO
-This is a second pre-requisite step and only applies to users with an existing toolchain with the Docker siging and image policy in place. This needs to be removed before installing Portieris.
-***Note the following will remove all image policies***. 
+This is a second pre-requisite step and only applies to users with an existing toolchain with the Docker signing and image policy in place. This needs to be removed before installing `Portieris`.
+
+**Note**: _The following will remove all image policies._
 
 Run
 ```javascript
@@ -69,9 +70,9 @@ To get started go to the Portieris release page and download the latest version
 
 <https://github.com/IBM/portieris/releases>
 
-Unpack the download with tar xzvf portieris-0.XX.X.tgz 
+Unpack the download with `tar xzvf portieris-0.XX.X.tgz`
 
-Use the same namespace that you set in the Compliance-CI-Template 
+Use the same namespace that you set in the Compliance-CI-Template
 
 Run
 ```javascript
@@ -80,28 +81,28 @@ helm install portieris --create-namespace --namespace <namespace> ./portieris.
 ```
 
 The gencerts script generates new SSL certificates and keys for
-Portieris. Portieris presents this certificates to the Kubernetes API
+`Portieris`. `Portieris` presents this certificates to the Kubernetes API
 server when the API server makes admission requests. If you do not
 generate new certificates, it could be possible for an attacker to spoof
 Portieris in your cluster.
 
-For uninstalling Portieris and further details. Refer to the Portieris readme.
+For uninstalling `Portieris` and further details, refer to the `Portieris` readme.
 <https://github.com/IBM/portieris/blob/master/README.md>
 
 ### Provisioning the Secrets Key
 
-We need to have a public key that can be obtained from the CISO signing key. If you are well versed with the CISO client and have access to the CISO account you can generate this locally by installing the CISO client and following the instructions provided by CISO that can be accessed when you log in. 
+We need to have a public key that can be obtained from the `CISO` signing key. If you are well versed with the `CISO` client and have access to the `CISO` account you can generate this locally by installing the `CISO` client and following the instructions provided by `CISO` that can be accessed when you log in.
 <https://pgawdccosig01.sl.bluecloud.ibm.com/help/ph2-3-signverify>
 
 Otherwise there is a simple toolchain template that can be set up that will extract/generate the public signing key for you.
 
 See <https://github.ibm.com/one-pipeline/portieris-config-helper>
 
-Create an instance of the template using the same values that you used for the CI-template. 
-Run the pipeline and the public certificate will be written out to the log. Copy the certifcate content into a file called key.asc
+Create an instance of the template using the same values that you used for the CI-template.
+Run the pipeline and the public certificate will be written out to the log. Copy the certificate content into a file called `key.asc`
 
 With the public key on hand we need to use it to generate a Kubernetes
-secret. 
+secret.
 
 First change directory to the one containing the key
 
@@ -110,12 +111,10 @@ Run
 kubectl create secret generic fskey -n <namespace> --from-file=key=key.asc
 ```
 
-***fskey***: the name of the generated secret
-
-***namespace***: the namespace that was or will be used by the Compliance
+- **fskey**: the name of the generated secret
+- **namespace**: the namespace that was or will be used by the Compliance
 Template deployment.
-
-***key.asc***: the public key certificate.
+- **key.asc**: the public key certificate.
 
 
 To view the secret that has been created:
@@ -142,10 +141,10 @@ deployments to the cluster.
 
 -   ***ImagePolices***
 
-The ClusterImagePolicy is a cluster level enforcement. It will take
-effect when no imagepolicy is available. For example, an image policy is
-set up in a namespace called "prod" but an image gets deployed to
-"default" in this case the ClusterImagePolicy will be applied.
+The `ClusterImagePolicy` is a cluster level enforcement. It will take
+effect when no image policy is available. For example, an image policy is
+set up in a namespace called `prod` but an image gets deployed to
+`default` in this case the `ClusterImagePolicy` will be applied.
 
 To view the different policies
 
@@ -174,7 +173,7 @@ kubectl edit imagepolicies default -n prod
 
 ![](https://github.ibm.com/one-pipeline/docs/blob/master/assets/signing-setup/portierirs/image_policy.png)
 
-The "spec" part here needs to be modified to enforce a signature constraint
+The `spec` part here needs to be modified to enforce a signature constraint
 on images from our designated registry namespace.
 
 Edit the image policy. Under repositories:
@@ -197,20 +196,14 @@ Add the following:
 
 ```
 
-***name***: refers to the path to the image registry that we wish to check
+- **name**: refers to the path to the image registry that we wish to check
+- **policy**: is the conditions, which need to be enforced
+- **type**: `signedBy` requires a signature on the image
+- **keySecret**: is a reference to the secret that we set up previously from the GPG public key certificate
 
-***policy***: is the conditions that we which to enforce
+The above steps are all the requirements for setting up `Portieris` in relation to the Compliant template usage.
 
-***type***: signedBy requires a signature on the image
-
-***keySecret***: is a reference to the secret that we set up previously from
-the GPG public key certificate
-
-The above steps are all the requirements for setting up Portieris in
-relation to the Compliant template usage.
-
-Portieris can handle multiple signatures from different sources for
-example
+`Portieris` can handle multiple signatures from different sources for example:
 
 ```yaml
 - name: us.icr.io/team1-namespace/\*
@@ -229,7 +222,5 @@ example
       - type: signedBy
         keySecret: team2-key
 ```
-
-For more complex setups, please see
 
 See <https://github.com/IBM/portieris> for more details

@@ -31,14 +31,14 @@ or from the home page
 
 ![](https://github.ibm.com/one-pipeline/docs/blob/master/assets/signing-setup/ciso/certrequest.png)
 
-Note: You do not require a production certificate for signing. The CISO team can provide a self-signed certificate for development
+**Note**: _You do not require a production certificate for signing. The CISO team can provide a self-signed certificate for development._
 
 ### <a id="access"></a>Download the CISO certficate key to access your CISO services
 #### Downloading the Installer
 
-The Compliance-CI-Template uses the CISO signing client to facilitate signing images. The Tekton signing task in the Compliance-CI-Template uses a preconfigured image with the CISO client already installed. It only requires the CISO .pfx file to access the CISO signing service. There is a distinction between the these certificates. The certificate in the previous step is used for signing. The certificate in this step is used for accessing the CISO services.
+The Compliance-CI-Template uses the CISO signing client to facilitate signing images. The Tekton signing task in the Compliance-CI-Template uses a preconfigured image with the CISO client already installed. It only requires the CISO `.pfx` file to access the CISO signing service. There is a distinction between the these certificates. The certificate in the previous step is used for signing. The certificate in this step is used for accessing the CISO services.
 
-The .pfx file can be obtained by downloading the CISO client.
+The `.pfx` file can be obtained by downloading the CISO client.
 
 Click on the Local Sign button
 
@@ -50,12 +50,11 @@ Select the following options:
 
 Click Review Parameters and generate your client bundle.
 
-Extract the contents of the generated .tar file and look for the .pfx
-file.
+Extract the contents of the generated `.tar` file and look for the `.pfx` file.
 
 The contents will look like the following.
 
-```javascript
+```
 Client_XXXXXXXXXXXXXXXXX.pfx
 client.conf
 config.txt
@@ -63,55 +62,49 @@ ekm-client-2.0.2001.42407-el7+el8.x86_64.rpm
 ```
 
 ### <a id="vault"></a>Save the certificate/key into a secure vault for your pipeline to access it
-We only need the file with the .pfx extension to proceed. 
+We only need the file with the `.pfx` extension to proceed.
+
 The steps differ slightly depeneding on whether Key-Protect or Hashicorp vaults are used and whether you are using a Windows or Linux based machine.
 
 #### Mac
 
 * ##### Double base64 encoding
-```javascript
+```bash
 echo $(cat Client_XXXXXXXXXXXXXXXXX.pfx | base64) | base64
 ```
 
 * ##### Single base64 encoding
-```javascript
+```bash
 cat Client_XXXXXXXXXXXXXXXXX.pfx | base64
 ```
 
 #### Windows
 
 * ##### Double base64 encoding
-```javascript
+```bash
 echo $(cat Client_XXXXXXXXXXXXXXXXX.pfx | base64 -w0) | base64 -w0
 ```
 
 * ##### Single base64 encoding
-```javascript
+```bash
 cat Client_XXXXXXXXXXXXXXXXX.pfx | base64 -w0
 ```
 
 This is important due to the different handling of line breaks
 
 ### Hashicorp
-You can use your own instance of Hashicorp. When uploading the .pfx content. It needs to be single base64  encoded.
-This is now the preferred method for the compliance-ci-template
+You can use your own instance of Hashicorp. When uploading the `.pfx` content, it needs to be single base64 encoded. This is now the preferred method for the `compliance-ci-template`.
 
 ### Creating Key-Protect instance
-Note: requires the value of the double base64 encoded .pfx file
-Visit
-<https://cloud.ibm.com/catalog/services/key-protect>
+**Note**: _Requires the value of the double base64 encoded `.pfx` file._
 
-Create a new Key Protect instance or use an existing one.
+ - Visit <https://cloud.ibm.com/catalog/services/key-protect>
+ - Create a new Key Protect instance or use an existing one.
+ - Select the region and specify a service name for the instance.
 
-Select the region and specify a service name for the instance.
+#### Uploading the certificate to the Vault
 
-
-#### Uploading the certificate to the Vault.
-
-Go to
-<https://cloud.ibm.com/resources>
-
-and click the Key Protect instance that was created.
+Go to <https://cloud.ibm.com/resources> and click the Key Protect instance that was created.
 
 Click the Add Key button
 
@@ -119,12 +112,10 @@ Click the Add Key button
 
 On the following dialog, select Import Key and Standard Key.
 
-Set a name for the key and paste the double base64 encoded .pfx file into the
-key material field. Please note there are restrictions on the key name. The name must between 2 and 50 characters long. Use standard English alpha-numeric characters. The only special character permitted is "-" 
+Set a name for the key and paste the double base64 encoded `.pfx` file into the key material field. Please note, there are restrictions on the key name. The name must be between 2 and 50 characters long. Use standard English alpha-numeric characters. The only special character permitted is `"-"`.
 
 Click import key
 
 ![](https://github.ibm.com/one-pipeline/docs/blob/master/assets/signing-setup/ciso/set_key_data.png)
 
-Make note of the Key-protect service instance name as well as the key
-name as these will be required when configuring the Compliance Template
+Make note of the Key-Protect service instance name as well, as the key name will be required when configuring the Compliance Template.

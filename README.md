@@ -14,7 +14,10 @@ This toolchain is pre-configured with a simple sample app to enable out of the b
 
 ### Step by Step Guide
 
-If this is your first time running the CI template then you should read this [Setup Guide](./docs/compliance-ci-toolchain-setup.md) before running the toolchain. If you experience a problem during setup or running your pipelines, check out our [troubleshooting guide](https://github.ibm.com/one-pipeline/docs/blob/master/faq.md) before raising an issue. It implements the following best practices:
+If this is your first time running the CI template then you should read this [Setup Guide](./docs/compliance-ci-toolchain-setup.md) before running the toolchain. If you experience a problem during setup or running your pipelines, check out our [troubleshooting guide](https://github.ibm.com/one-pipeline/docs/blob/master/faq.md) before raising an issue.
+
+It implements the following best practices:
+
 - sanity check the Dockerfile prior to attempting creating the image
 - apply Docker signature after Docker unit tests, sanity checks and successful build
 - build container image on every Git commit, setting a tag based on build number, timestamp and commit id for traceability
@@ -27,14 +30,15 @@ If this is your first time running the CI template then you should read this [Se
 ### Required GitHub Status Checks
 
 Status checks let you know if your commits meet the conditions set for the repository you're contributing to. The toolchain ships with a `CI` and a `PR` pipeline.
-Currently these status checks have to be set required in the repository:  
+
+Currently these status checks have to be set required in the repository:
 
       tekton/code-branch-protection
       tekton/code-unit-tests
       tekton/code-cis-check
       tekton/code-vulnerability-scan
       tekton/code-detect-secrets
-      
+
 Also the following branch protection settings need to be enabled in GitHub:
 
    * Require branches to be up to date before merging
@@ -52,6 +56,6 @@ They are checked by both `PR` and `CI` pipelines. To configure your repository t
 * [Getting started with toolchains](https://cloud.ibm.com/devops/getting-started)
 * [Documentation](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-getting-started&pos=2)
 * [Private workers](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-install-private-workers)
-* [Artifactory](https://taas.w3ibm.mybluemix.net/guides#artifactory)
+* [Artifactory](https://www.ibm.com/garage/method/practices/deliver/tool_artifactory)
 * [Working with Tekton pipelines](https://cloud.ibm.com/docs/services/ContinuousDelivery?topic=ContinuousDelivery-tekton-pipelines)
 * [Getting started IBM Cloud CLI](https://cloud.ibm.com/docs/cli?topic=cloud-cli-getting-started)

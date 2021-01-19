@@ -1,44 +1,44 @@
 # Setup Guide for Tekton CI Pipeline with Compliance
 
 ### Prerequisites:
-* **K8S Cluster**
-* **Artifactory access**
-* **IBM Cloud CLI**
-* **[TaaS and CISO Registration](#taas-ciso-registration)**
-* **IBM Cloud Api Key**
-* [**Servide ID**](https://cloud.ibm.com/docs/account?topic=account-serviceids)
-* [**Service ID API Key**](https://cloud.ibm.com/docs/account?topic=account-serviceidapikeys#create_service_key)
-* [**HashiCorp Vault**](https://pages.github.ibm.com/vault-as-a-service/vault/)
-* (optional) [COS Bucket configured as a Compliance Evidence Locker](https://github.ibm.com/one-pipeline/docs/cos-evidence-locker-buckets.md#bucket-configuration)
+* **[K8S Cluster](https://cloud.ibm.com/docs/containers?topic=containers-getting-started)**
+* **[Artifactory access](#artifactory)**
+* **[IBM Cloud CLI](https://cloud.ibm.com/docs/cli?topic=cloud-cli-getting-started)**
+* **[TaaS and CISO Registration](#taas-and-ciso-registration)**
+* **[IBM Cloud Api Key](#ibm-cloud-api-key)**
+* **[Service ID**](https://cloud.ibm.com/docs/account?topic=account-serviceids)**
+* **[Service ID API Key**](https://cloud.ibm.com/docs/account?topic=account-serviceidapikeys#create_service_key)**
+* **[HashiCorp Vault](https://pages.github.ibm.com/vault-as-a-service/vault/)**
+* **[COS Bucket configured as a Compliance Evidence Locker](https://github.ibm.com/one-pipeline/docs/cos-evidence-locker-buckets.md#bucket-configuration)** (optional)
 
 
-### <a id="taas-ciso-registration"></a>TaaS and CISO Registration
-There are a couple of steps that need to be taken prior to creating this toolchain for the first time. 
+### TaaS and CISO Registration
+There are a couple of steps that need to be taken prior to creating this toolchain for the first time.
 1) Get access to a private worker that can establish a connection with the IBM internal network
 2) A CISO account complete with a signing certificate
 
-The CISO service is a signing service that can be leveraged for signing images. A worker with access to the internal IBM network is required to reach the CISO service. If you do not already has a private worker with IBM intenral network access, you can avail of the services provided by TaaS. With TaaS, you can generate a service_api_key, that will allow you access to a pool of workers that have been preconfigured with IBM network access. Visit the following links for more details.
+The CISO service is a signing service that can be leveraged for signing images. A worker with access to the internal IBM network is required to reach the CISO service. If you do not already has a private worker with IBM internal network access, you can avail of the services provided by TaaS. With TaaS, you can generate a `service_api_key`, that will allow you access to a pool of workers that have been preconfigured with IBM network access. Visit the following links for more details.
 
 * **[CISO Code Signing Service and Key Setup](<ciso-setup.md>)**
 
 * **[Service API Key for TaaS Private Worker](<taas-setup.md>)**
 
-Optionally, you can also follow the next two guides. These will help you set up cluster image enforcement with Portieris.
- 
-- ***Obtain the Public Key Certificate***
+Optionally, you can also follow the next two guides. These will help you set up cluster image enforcement with `Portieris`.
 
-Create an instance of ***[this toolchain](<https://github.ibm.com/one-pipeline/portieris-config-helper>)***. Once this pipeline has run, you can retrieve the public certificate from the logs
+- **Obtain the Public Key Certificate**
 
-- ***[Portieris Set Up](<portieris-setup.md>)***
+Create an instance of **[this toolchain](<https://github.ibm.com/one-pipeline/portieris-config-helper>)**. Once this pipeline has run, you can retrieve the public certificate from the logs
+
+- **[Portieris Set Up](<portieris-setup.md>)**
 
 The GitHub token that is issued to the IBM Cloud API key holder, needs access to read/set protected branch settings on repos.
 This can be only done by admin level access to the repository.
 
 - Possible solutions:
     - Use your personal IBM API key and personal repositories.
-    - Use an IBM API key what is owned by a user with admin rights to the repository.  
+    - Use an IBM API key what is owned by a user with admin rights to the repository.
 
-### Migrating an existing DCT signing toolchain to CISO signing 
+### Migrating an existing DCT signing toolchain to CISO signing
 If you have an existing pipeline that uses DCT signing, the following link will show how to make the switch to CISO signing.
 <https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/dct-ciso-migrate.md>
 
@@ -60,12 +60,11 @@ Modifications on feature branches can be tried out before merging into master.
 ### 2. Name toolchain and select a toolchain region
 
 | ![Toolchain default settings](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/toolchain-default-settings.png) |
-| :--: | 
+| :--: |
 
 Review the default information for the toolchain settings. The toolchain's name identifies it in IBM Cloud. Make sure that the toolchain's name is unique within your toolchains for the same region and resource group in IBM Cloud.
 
-
-Note: toolchain region can differ from cluster and registry region.
+**Note**: _Toolchain region can differ from cluster and registry region._
 
 ### 3. Tool integrations
 
@@ -86,7 +85,7 @@ If your team does not have a HashiCorp Vault set up, you can follow [this docume
  - **Role ID:** Your team's [AppRole Role ID](https://pages.github.ibm.com/vault-as-a-service/vault/usage/approle-role-ids.html).
  - **Secret ID:** Your team's [Secret ID](https://pages.github.ibm.com/vault-as-a-service/vault/usage/manage-secret-ids.html).
 
-Note: _We advise you to use AppRole authentication method as this method can be used to read secret values._
+**Note**: _We advise you to use AppRole authentication method as this method can be used to read secret values._
 
 #### Key Protect
 
@@ -100,11 +99,11 @@ A Key Protect tool integration is included in this template to securely manage t
 #### Repositories
 
 | ![App repository](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/app-repo.png) |
-| :--: | 
+| :--: |
 
-- **Application repository:** The application to be deployed. 
+- **Application repository:** The application to be deployed.
 
-     All fields are required. 
+     All fields are required.
 
     - **Repository type:**
       - `New`: Creates a new empty repository.
@@ -112,24 +111,24 @@ A Key Protect tool integration is included in this template to securely manage t
       - `Clone`: Clone the repository you add in the `Source repository URL` field. You have to choose the owner of the repository, which by default is your selected IBM Cloud login account. Check the `Repository Name` field for possible mismatch.
       - `Existing:` It uses a repository what you source in the repository url.
     - **Source repository URL:**
-        The application repository URL. 
+        The application repository URL.
       - Default: <https://github.ibm.com/one-pipeline/hello-compliance-app>
     - **Owner:** The application repository owner. If you want to switch to a different account, click the Profile avatar icon in the banner and select the account.
-      - Default: Your login account. 
+      - Default: Your login account.
     - **Repository Name:** The repository name will be generated from the name you gave for toolchain.
- 
+
 - **Application related repositories**
 
     All fields are required.
 
-    - **Incident issues repository:** Issues about incidents that happen during the build and deployment process are stored here.    
+    - **Incident issues repository:** Issues about incidents that happen during the build and deployment process are stored here.
         - Default repository type: `Clone`
 
-    - **Evidence locker repository:** All raw compliance evidence that belongs to the application is collected here.  
-        - Default repository type: `Clone` 
-  
+    - **Evidence locker repository:** All raw compliance evidence that belongs to the application is collected here.
+        - Default repository type: `Clone`
+
     - **Inventory repository:** Change management is tracked in this repository. CD pipeline creates a new branch named as the created CR number, and merges it to master after deployment is concluded.
-        - Default repository type: `Clone` 
+        - Default repository type: `Clone`
 
 #### Delivery Pipeline
 The Tekton CI Toolchain with Compliance comes with an integrated Tekton pipeline to automate continuous build, test and deploy of the Docker application.
@@ -137,59 +136,60 @@ The Tekton CI Toolchain with Compliance comes with an integrated Tekton pipeline
 | ![Delivery pipeline](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/delivery-pipeline.png) |
 | :--: |
 
-- **App name:**  
+- **App name:**\
 The name of the application.
     - Default: `hello-compliance-app`
-    
-- **IBM Cloud API Key:**  
-The API key is used to interact with the ibmcloud CLI tool in several tasks.
+
+- **IBM Cloud API Key:**<a id="ibm-cloud-api-key"></a>\
+The API key is used to interact with the `ibmcloud` CLI tool in several tasks.
 
     - An existing key can be copy&pasted
-    - An existing key can be imported from an existing Key Protect Instance by clicking the key icon 
-    
-| ![IBM Cloud API Key](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/ibmcloud-api-key-to-key-icon.png) |
-| :--: | 
-    
-   - A new key can be created from here by clicking the `New +` button.
-   - Generate a new api-key if you don’t have one or copy an existing key to the field (IMPORTANT: if you want an IBM Cloud API key, you must have a Kubernetes cluster)
+    - An existing key can be imported from an existing Key Protect Instance by clicking the key icon
 
-    
+| ![IBM Cloud API Key](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/ibmcloud-api-key-to-key-icon.png) |
+| :--: |
+
+   - A new key can be created from here by clicking the `New +` button.
+   - Generate a new api-key if you don’t have one or copy an existing key to the field (**IMPORTANT**: _if you want an IBM Cloud API key, you must have a Kubernetes cluster_)
+
+
 | ![New API Key](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/new-api-key.png) |
-| :--: | 
-    
-   Note: The newly generated API key can be immediately saved to an existing Key Protect instance.
-    
+| :--: |
+
+   **Note**: _The newly generated API key can be immediately saved to an existing Key Protect instance._
+
 | ![Save new API Key](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/save-new-api-key.png) |
-| :--: | 
-    
-   Note: A new Key Protect Instance can be created here: <https://cloud.ibm.com/catalog/services/key-protect>  
-   Note: An IBM Cloud API key can also be created here: <https://cloud.ibm.com/iam/apikeys>  
-   
+| :--: |
+
+   **Note**: _A new Key Protect Instance can be created here: <https://cloud.ibm.com/catalog/services/key-protect>_
+
+   **Note**: _An IBM Cloud API key can also be created here: <https://cloud.ibm.com/iam/apikeys>_
+
    Once the API Key field is filled out, the registry and cluster related fields will be filled out automatically.
-    
+
 | ![Kubernetes cluster](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/kubernetes-cluster.png) |
-| :--: | 
-    
+| :--: |
+
 - **CISO secret:**
    - Use the picker to select the vault integration and key entry containing the CISO pfx certificate secret
-    
-    
+
+
 ##### Tekton Definitions
 
  Tekton definitions can be changed also after the toolchain is created. These repositories can be contributed to or can be forked.
  All fields are required.
- 
+
    | ![Tekton definitions](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/tekton-definitions.png) |
-   | :--: | 
- 
+   | :--: |
+
  - **Tekton Definition repository:**
-     The tekton pipeline defintions (pipeline(s), triggers, listeners, etc.) are kept in this repo.  
-     Default: <https://github.ibm.com/one-pipeline/compliance-ci-toolchain>
+    The tekton pipeline defintions (pipeline(s), triggers, listeners, etc.) are kept in this repo.\
+    Default: <https://github.ibm.com/one-pipeline/compliance-ci-toolchain>
 
  - **Tekton Catalog repository:**
-     The common tekton tasks are contained in this repo.  
-     Default: <https://github.ibm.com/one-pipeline/common-tekton-tasks> 
-     
+    The common tekton tasks are contained in this repo.\
+    Default: <https://github.ibm.com/one-pipeline/common-tekton-tasks>
+
   | ![Tekton Definitions](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/tekton-definitions.png) |
   | :--: |
 
@@ -200,7 +200,7 @@ The Delivery Pipeline Private Worker tool integration connects with one or more 
 Insert your `Service ID API Key` to the corresponding field. This should be the Service API key obtained from TaaS. It is required to connect to the IBM internal network.
 
 | ![Delivery Pipeline Private Worker](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/private-worker-integration-setup.png) |
-| :--: | 
+| :--: |
 
 For more information see:
  - [Working with Delivery Pipeline Private Workers](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-private-workers)
@@ -209,15 +209,15 @@ For more information see:
 #### Cloud Object Storage (optional)
 
 Cloud Object Storage is used to store the evidences and artifacts generated by the Compliance Pipelines.
-If you wish to use this feature, you must have a Cloud Object Storage instance and a Bucket. [Read the recommendation for configuring a Bucket that can act as a Compliance Evidence Locker](https://github.ibm.com/one-pipeline/docs/cos-evidence-locker-buckets.md#bucket-configuration). 
+If you wish to use this feature, you must have a Cloud Object Storage instance and a Bucket. [Read the recommendation for configuring a Bucket that can act as a Compliance Evidence Locker](https://github.ibm.com/one-pipeline/docs/cos-evidence-locker-buckets.md#bucket-configuration).
 
-_**NOTE:** this is currently optional, you can set any kind of COS bucket as a locker, event without a retention policy. The pipeline won't check or enforce settings at the moment._
+**Note:**: _This is currently optional, you can set any kind of COS bucket as a locker, event without a retention policy. The pipeline won't check or enforce settings at the moment._
 
 For help, please visit the [Cloud Object Storage documentation](https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-getting-started-cloud-object-storage).
 
 You need to provide the following information for the Pipelines to reach the aforementioned bucket:
-- Cloud Object Storage Endpoint
-- Bucket Name
+- Cloud Object Storage endpoint
+- Bucket name
 
 You can set up the COS locker later, by providing the necessari `cos-bucket-name` and `cos-endpoint`
 
@@ -226,7 +226,7 @@ To get the **Cloud Object Storage Endpoint**, please visit your COS Instance's p
 | ![COS Endpoint](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/cos-endpoint-menu.png) |
 | :--: |
 
-If You decide not to use Cloud Object Storage as an evidence locker, You can also set the required values after the creation of the toolchain by setting the `cos-bucket-name`, `cos-endpoint` environment variables in the CI Pipeline. 
+If You decide not to use Cloud Object Storage as an evidence locker, you can also set the required values after the creation of the toolchain by setting the `cos-bucket-name`, `cos-endpoint` environment variables in the CI Pipeline.
 
 #### Link DOI toolchain (optional)
 
@@ -240,7 +240,7 @@ A toolchain's URL follows this pattern: `https://cloud.ibm.com/devops/toolchains
 
 For example, if the URL is: `https://cloud.ibm.com/devops/toolchains/aaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee?env_id=ibm:yp:us-south` then the toolchain's ID is: `aaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee`.
 
-Note: Make sure to only include the ID here, not the full URL.
+**Note**: _Make sure to only include the ID here, not the full URL._
 
 
 You can also set a target environment for the DOI interactions, this parameter is optional. If you provide this parameter, it will be used instead of the target environment from the inventory.
@@ -248,40 +248,42 @@ You can also set a target environment for the DOI interactions, this parameter i
 
 #### Artifactory
 
-The template comes with an artifactory integration to enable using cocoa compliance custom base image in the tekton tasks.  
-Note: You can access the Artifactory [here](https://eu.artifactory.swg-devops.com/artifactory/webapp/#/home)  
-      Further material and guides about the artifactory are available [here](https://taas.w3ibm.mybluemix.net/guides#artifactory)  
+The template comes with an artifactory integration to enable using cocoa compliance custom base image in the tekton tasks.
+
+Further material and guides about the artifactory are available [here](https://www.ibm.com/garage/method/practices/deliver/tool_artifactory).
+
+**Note**: _You can access the Artifactory [here](https://eu.artifactory.swg-devops.com/artifactory/webapp/#/home)._
 
 | ![Artifactory](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/artifactory.png) |
-| :--: | 
+| :--: |
 
-- **Integration name:**  Tool integration name in the toolchain  
+- **Integration name:**  Tool integration name in the toolchain
     Default: `artifactory-{timestamp}`
-- **Integration URL:**  The url of the artifactory service   
-    Default: `https://na.artifactory.swg-devops.com`  
+- **Integration URL:**  The url of the artifactory service
+    Default: `https://na.artifactory.swg-devops.com`
     This is where the cocoa base image is stored.
-- **Repository URL:**  The full url of the artifactory repository where images used in the compliance template are stored  
-    Default: `https://wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com`  
+- **Repository URL:**  The full url of the artifactory repository where images used in the compliance template are stored
+    Default: `https://wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com`
     This is where the cocoa base image is stored.
 - **Repository name:**  The name of the artifactory repository
-    Default: `wcp-compliance-automation-team-docker-local`  
+    Default: `wcp-compliance-automation-team-docker-local`
     This is where the cocoa base image is stored.
-- **Repository type:**  The artifactory repository type  
-    Default: `Docker registry`  
-    Note: This should not be changed, otherwise the pipeline will break.
+- **Repository type:**  The artifactory repository type
+    Default: `Docker registry`
+    **Note**: _This should not be changed, otherwise the pipeline will break._
 - **User ID:** The artifactory user id - usually your w3 id
-- **Authentication token:** The artifactory API key  
-    An artifactory token can be created [here](https://eu.artifactory.swg-devops.com/artifactory/webapp/#/profile) and stored in Key Protect  
+- **Authentication token:** The artifactory API key
+    An artifactory token can be created [here](https://eu.artifactory.swg-devops.com/artifactory/webapp/#/profile) and stored in Key Protect
     When an artifactory API key already exists in Key Protect, it can be imported here.
 
-    Note: The User ID and the Authentication token is required for pipeline working!
-- **Release URL:**  The url of the artifactory repository  
+    **Note**: _The User ID and the Authentication token is required for pipeline working._
+- **Release URL:**  The url of the artifactory repository
     Default: `wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com`
-    
+
 #### DevOps Insights
 
 | ![DevOps Insights](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/doi.png) |
-| :--: | 
+| :--: |
 
 DevOps Insights is automatically included in the created toolchain and after each compliance check evidence is published into it. It is not needed to configure insights, the CI pipeline will automatically use the insights instance included in the toolchain.
 
@@ -292,7 +294,7 @@ If you want to receive notifications about your PR/CI Pipeline events, you can c
 In order for a Slack channel to receive notifications from your tools, you need a Slack webhook URL. To get a webhook URL, see the Incoming Webhooks section of the [Slack API website](https://api.slack.com/messaging/webhooks).
 
 | ![Slack Tool](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/slack.png) |
-| :--: | 
+| :--: |
 
 
 ### 4. Create Toolchain
@@ -301,17 +303,17 @@ In order for a Slack channel to receive notifications from your tools, you need 
 
   - Click the create button at the bottom of the page, and wait for the toolchain to be created.
 
-  Note: The individual toolchain integrations can be configured also after the pipeline has been created.
+  **Note**: _The individual toolchain integrations can be configured also after the pipeline has been created._
 
 
 ### 5. Run PR/CI Pipeline
 
 Configure your application repository by following these [instructions](https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/github-repository-configuration.md)
- 
+
 **Run PR Pipeline**
 
 - To start the PR pipeline, you should create a pull request in your application repository.
-  
+
 | ![PR status checks](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/pr-checks.png) |
 | :--: |
 
@@ -328,7 +330,9 @@ Currently
 
 
 - Keep in mind, that at least one run is needed for github to list the status checks in Settings, to be able to mark them as required. Because of this, for the first time, pr pipeline will inevitably fail. Mark the status checks required and rerun the pr pipeline from the UI.
-  
+
+**Note**: _There is a solution to bypass the initial failing pr pipeline, which is available in the end of [this instruction](https://github.ibm.com/one-pipeline/compliance-ci-toolchain/blob/master/docs/github-repository-configuration.md)._
+
 **Run CI Pipeline**
 
 There are two ways to start a CI pipeline:
@@ -338,21 +342,20 @@ There are two ways to start a CI pipeline:
 If you want to trigger the CI pipeline manually select the Delivery Pipeline card.
 
 | ![Run CI Pipeline](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/run-ci-pipeline.png) |
-| :--: | 
+| :--: |
 
 **Configure Pipeline**
 
-You can add a `commitid` text property (click `Add property` button and select `"Text property"`), if you trigger the pipeline manually. If no commit ID is supplied, the Pipeline will take the latest commit ID from the master branch of your app.
+You can add a `commit-id` text property (click `Add property` button and select `"Text property"`), if you trigger the pipeline manually. If no `commit-id` is supplied, the Pipeline will take the latest commit ID from the master branch of your app.
 
 <!-- TBD: Readme needed after implementing the automated versioning -->
 
-For example: 
+For example:
 
 | ![commit-id](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/commit-id.png) |
-| :--: | 
+| :--: |
 
 Add the trigger parameters (click `Run Pipeline` button), select `"Manual Trigger"` and click `Run`.
 
 | ![CI Trigger](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/ci-trigger.png) |
-| :--: | 
-
+| :--: |
