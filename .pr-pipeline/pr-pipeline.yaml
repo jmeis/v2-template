@@ -29,7 +29,6 @@ spec:
       description: repository url of the one-pipeline config
     - name: one-pipeline-config-branch
       description: the branch of the one-pipeline config
-      default: "master"
 
   workspaces:
     - name: artifacts
@@ -54,12 +53,16 @@ spec:
               print("PR Pipeline was Triggered By: " + os.getenv("TRIGGERED_BY"))
               print("<https://cloud.ibm.com/devops/pipelines/tekton/" + os.getenv("PIPELINE_ID") + "/runs/" + os.getenv("PIPELINE_RUN_ID") + "?env_id=ibm:yp:" + os.getenv("TOOLCHAIN_REGION") + " | See the Pipeline Logs>")
 
-    - name: code-extract-repository-url
+    - name: code-setup-pipeline-env
       taskRef:
-        name: toolchain-extract-value
+        name: code-setup-pipeline-env
       params:
-        - name: expression
-          value: '.services[] | select(.toolchain_binding.name=="app-repo") | .dashboard_url'
+        - name: one-pipeline-config-branch
+          value: $(params.one-pipeline-config-branch)
+        - name: one-pipeline-config-repo
+          value: $(params.one-pipeline-config-repo)
+        - name: repository-branch
+          value: $(params.branch)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -73,7 +76,7 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
         - name: repository-integration
           value: $(params.repository-integration)
         - name: ibmcloud-api-key-secret-key
@@ -88,7 +91,7 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: repository
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
       taskSpec:
         params:
           - name: pipeline-debug
@@ -150,9 +153,9 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(params.one-pipeline-config-repo)
+          value: $(tasks.code-setup-pipeline-env.results.one-pipeline-repo-url)
         - name: branch
-          value: $(params.one-pipeline-config-branch)
+          value: $(tasks.code-setup-pipeline-env.results.one-pipeline-repo-branch)
         - name: directory-name
           value: "one-pipeline-config-repo"
         - name: git-user
@@ -188,7 +191,7 @@ spec:
         - name: secret-name
           value: git-token
         - name: repo-url
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
         - name: commit-sha
           value: $(params.commit-id)
         - name: state
@@ -226,7 +229,7 @@ spec:
         - name: secret-name
           value: git-token
         - name: repo-url
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
         - name: commit-sha
           value: $(params.commit-id)
         - name: state
@@ -304,7 +307,7 @@ spec:
         - name: secret-name
           value: git-token
         - name: repo-url
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
         - name: commit-sha
           value: $(params.commit-id)
         - name: state
@@ -383,7 +386,7 @@ spec:
         - name: secret-name
           value: git-token
         - name: repo-url
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
         - name: commit-sha
           value: $(params.commit-id)
         - name: state
@@ -430,7 +433,7 @@ spec:
         - name: secret-name
           value: git-token
         - name: repo-url
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
         - name: commit-sha
           value: $(params.commit-id)
         - name: state
@@ -476,7 +479,7 @@ spec:
         - name: secret-name
           value: git-token
         - name: repo-url
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
         - name: commit-sha
           value: $(params.commit-id)
         - name: state
@@ -502,7 +505,7 @@ spec:
         - name: secret-name
           value: git-token
         - name: repo-url
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
         - name: commit-sha
           value: $(params.commit-id)
         - name: state
@@ -550,7 +553,7 @@ spec:
         - name: secret-name
           value: git-token
         - name: repo-url
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
         - name: commit-sha
           value: $(params.commit-id)
         - name: state
@@ -576,7 +579,7 @@ spec:
         - name: secret-name
           value: git-token
         - name: repo-url
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
         - name: commit-sha
           value: $(params.commit-id)
         - name: state
@@ -637,7 +640,7 @@ spec:
         - name: secret-name
           value: git-token
         - name: repo-url
-          value: $(tasks.code-extract-repository-url.results.extracted-value)
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
         - name: commit-sha
           value: $(params.commit-id)
         - name: state

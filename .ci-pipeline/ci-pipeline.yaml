@@ -50,7 +50,6 @@ spec:
       description: repository url of the one-pipeline config
     - name: one-pipeline-config-branch
       description: the branch of the one-pipeline config
-      default: "master"
     - name: doi-toolchain-id
       description: DevOps Toolchain ID
       default: ""
@@ -85,6 +84,12 @@ spec:
       taskRef:
         name: code-setup-pipeline-env
       params:
+        - name: one-pipeline-config-branch
+          value: $(params.one-pipeline-config-branch)
+        - name: one-pipeline-config-repo
+          value: $(params.one-pipeline-config-repo)
+        - name: repository-branch
+          value: $(params.branch)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -140,9 +145,9 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(params.one-pipeline-config-repo)
+          value: $(tasks.code-setup-pipeline-env.results.one-pipeline-repo-url)
         - name: branch
-          value: $(params.one-pipeline-config-branch)
+          value: $(tasks.code-setup-pipeline-env.results.one-pipeline-repo-branch)
         - name: directory-name
           value: "one-pipeline-config-repo"
         - name: git-user

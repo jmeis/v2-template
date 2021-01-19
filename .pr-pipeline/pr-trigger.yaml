@@ -35,7 +35,6 @@ spec:
       description: repository url of the one-pipeline config
     - name: one-pipeline-config-branch
       description: the branch of the one-pipeline config
-      default: "master"
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
