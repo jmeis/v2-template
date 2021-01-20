@@ -30,7 +30,8 @@ template:
           "/tree/" + $env.branch + ")"
 
 toolchain:
-  name: 'compliance-ci-toolchain-{{timestamp}}'
+  name: >
+    $env.toolchainName ? '{{toolchainName}}' : 'compliance-ci-toolchain-{{timestamp}}'
   template:
     getting_started:
       $ref: "#/messages/template.gettingStarted"
@@ -72,7 +73,13 @@ services:
   privateWorker:
     service_id: private_worker
     parameters:
-      name: private-worker
+      # name: '{{form.pipeline.parameters.private-worker-name}}'
+      # workerQueueCredentials: '{{form.pipeline.parameters.private-worker-creds}}'
+      name: >
+        $env.privateWorkerName ? '{{privateWorkerName}}' : 'private-worker'
+      workerQueueCredentials: '{{privateWorkerCreds}}'
+      # TODO: this wont be needed once a fix is in place for https://github.ibm.com/org-ids/roadmap/issues/15360
+      workerQueueIdentifier: '{{privateWorkerIdentifier}}'
 
   artifactoryComp:
     service_id: artifactory
@@ -82,6 +89,8 @@ services:
       repository_url: 'https://wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com'
       repository_name: 'wcp-compliance-automation-team-docker-local'
       type: docker
+      user_id: '{{form.pipeline.parameters.artifactory-userid}}'
+      token: '{{form.pipeline.parameters.artifactory-token}}'
 
   app-repo:
     service_id: >
@@ -89,11 +98,9 @@ services:
     parameters:
       repo_name: 'compliance-app-{{timestamp}}'
       repo_url: >
-        $env.type === 'link' ?
-          $env.app_repo : 'https://github.ibm.com/one-pipeline/hello-compliance-app'
+        $env.app_repo ? $env.app_repo : $env.sourceRepoUrl ? '{{sourceRepoUrl}}' : 'https://github.ibm.com/one-pipeline/hello-compliance-app'
       source_repo_url: >
-        $env.type === 'fork' || $env.type === 'clone' ?
-          $env.app_repo : 'https://github.ibm.com/one-pipeline/hello-compliance-app'
+        $env.app_repo ? $env.app_repo : $env.sourceRepoUrl ? '{{sourceRepoUrl}}' : 'https://github.ibm.com/one-pipeline/hello-compliance-app'
       type: $env.type || 'clone'
       has_issues: false
       enable_traceability: false
@@ -103,8 +110,11 @@ services:
     service_id: github_integrated
     parameters:
       repo_name: 'compliance-inventory-{{timestamp}}'
-      type: clone
-      source_repo_url: https://github.ibm.com/one-pipeline/compliance-inventory
+      type: $env.type || 'clone'
+      repo_url: >
+        $env.inventory_repo ? $env.inventory_repo : $env.inventoryRepo ? '{{inventoryRepo}}' : 'https://github.ibm.com/one-pipeline/compliance-inventory'
+      source_repo_url: >
+        $env.inventory_repo ? $env.inventory_repo : $env.inventoryRepo ? '{{inventoryRepo}}' : 'https://github.ibm.com/one-pipeline/compliance-inventory'
       has_issues: false
       enable_traceability: false
       legal: true
@@ -113,8 +123,11 @@ services:
     service_id: github_integrated
     parameters:
       repo_name: 'compliance-issues-{{timestamp}}'
-      type: clone
-      source_repo_url: https://github.ibm.com/one-pipeline/compliance-incident-issues
+      type: $env.type || 'clone'
+      repo_url: >
+        $env.issues_repo ? $env.issues_repo : $env.issuesRepo ? '{{issuesRepo}}' : 'https://github.ibm.com/one-pipeline/compliance-incident-issues'
+      source_repo_url: >
+        $env.issues_repo ? $env.issues_repo : $env.issuesRepo ? '{{issuesRepo}}' : 'https://github.ibm.com/one-pipeline/compliance-incident-issues'
       has_issues: true
       enable_traceability: false
       legal: true
@@ -123,8 +136,11 @@ services:
     service_id: github_integrated
     parameters:
       repo_name: 'evidence-{{timestamp}}'
-      type: clone
-      source_repo_url: https://github.ibm.com/one-pipeline/compliance-evidence-locker
+      type: $env.type || 'clone'
+      repo_url: >
+        $env.evidence_repo ? $env.evidence_repo : $env.evidenceRepo ? '{{evidenceRepo}}' : 'https://github.ibm.com/one-pipeline/compliance-evidence-locker'
+      source_repo_url: >
+        $env.evidence_repo ? $env.evidence_repo : $env.evidenceRepo ? '{{evidenceRepo}}' : 'https://github.ibm.com/one-pipeline/compliance-evidence-locker'
       has_issues: false
       enable_traceability: false
       legal: true
@@ -134,11 +150,9 @@ services:
     parameters:
       repo_name: 'compliance-ci-toolchain'
       repo_url: >
-        $env.type === 'link' ?
-          $env.app_repo : 'https://github.ibm.com/one-pipeline/compliance-ci-toolchain'
+        $env.pipeline_repo ? $env.pipeline_repo : $env.pipelineRepo ? '{{pipelineRepo}}' : 'https://github.ibm.com/one-pipeline/compliance-ci-toolchain'
       source_repo_url: >
-        $env.type === 'fork' || $env.type === 'clone' ?
-          $env.app_repo : 'https://github.ibm.com/one-pipeline/compliance-ci-toolchain'
+        $env.pipeline_repo ? $env.pipeline_repo : $env.pipelineRepo ? '{{pipelineRepo}}' : 'https://github.ibm.com/one-pipeline/compliance-ci-toolchain'
       type: $env.type || 'link'
       has_issues: false
       enable_traceability: false
@@ -150,11 +164,9 @@ services:
     parameters:
       repo_name: 'common-tekton-tasks'
       repo_url: >
-        $env.type === 'link' ?
-          $env.app_repo : 'https://github.ibm.com/one-pipeline/common-tekton-tasks'
+        $env.tekton_catalog_repo ? $env.tekton_catalog_repo : $env.tektonCatalogRepo ? '{{tektonCatalogRepo}}' : 'https://github.ibm.com/one-pipeline/common-tekton-tasks'
       source_repo_url: >
-        $env.type === 'fork' || $env.type === 'clone' ?
-          $env.app_repo : 'https://github.ibm.com/one-pipeline/common-tekton-tasks'
+        $env.tekton_catalog_repo ? $env.tekton_catalog_repo : $env.tektonCatalogRepo ? '{{tektonCatalogRepo}}' : 'https://github.ibm.com/one-pipeline/common-tekton-tasks'
       type: $env.type || 'link'
       has_issues: false
       enable_traceability: false
@@ -176,12 +188,18 @@ services:
           $text: pr-tekton.yaml
         env:
           PIPELINE_REPO: pipeline-repo
+          APP_NAME: >
+            $env.appName ? '{{appName}}' : '{{form.pipeline.parameters.app-name}}'
           APP_REPO: app-repo
           API_KEY: '{{form.pipeline.parameters.api-key}}'
           TEKTON_CATALOG_REPO: tekton-catalog-repo
-          ARTIFACTORY_DOCKER_CONFIG_JSON: '{{form.artifactoryComp.parameters.docker_config_json}}'
+          ARTIFACTORY_DOCKER_CONFIG_JSON: >
+            $env.artifactoryDockerConfigJson ? '{{artifactoryDockerConfigJson}}' : '{{form.artifactoryComp.parameters.docker_config_json}}'
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
           ONE_PIPELINE_REPO: '{{services.app-repo.parameters.repo_url}}'
+          VAULT_SECRET: '{{form.pipeline.parameters.vault_secret}}'
+          GIT_TOKEN: >
+            $env.gitToken ? '{{gitToken}}' : ''
         execute: false
   ci:
     service_id: pipeline
@@ -199,24 +217,27 @@ services:
           $text: ci-tekton.yaml
         env:
           PIPELINE_REPO: pipeline-repo
+          APP_NAME: >
+            $env.appName ? '{{appName}}' : '{{form.pipeline.parameters.app-name}}'
           APP_REPO: app-repo
-          APP_NAME: '{{form.pipeline.parameters.app-name}}'
+          API_KEY: '{{form.pipeline.parameters.api-key}}'
           REGISTRY_REGION_ID: '{{form.pipeline.parameters.registry-region}}'
           REGISTRY_NAMESPACE: '{{form.pipeline.parameters.registry-namespace}}'
-          API_KEY: '{{form.pipeline.parameters.api-key}}'
           DEV_REGION_ID: '{{form.pipeline.parameters.dev-region}}'
           DEV_RESOURCE_GROUP: '{{form.pipeline.parameters.dev-resource-group}}'
           DEV_CLUSTER_NAME: '{{form.pipeline.parameters.dev-cluster-name}}'
           DEV_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.dev-cluster-namespace}}'
           TEKTON_CATALOG_REPO: tekton-catalog-repo
-          ARTIFACTORY_DOCKER_CONFIG_JSON: '{{form.artifactoryComp.parameters.docker_config_json}}'
+          ARTIFACTORY_DOCKER_CONFIG_JSON: >
+            $env.artifactoryDockerConfigJson ? '{{artifactoryDockerConfigJson}}' : '{{form.artifactoryComp.parameters.docker_config_json}}'
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
-          VAULT_SECRET: '{{services.pipeline.parameters.vault_secret}}'
           DOI_TOOLCHAIN_ID: '{{form.customtool_doi-toolchain.parameters.doi-toolchain-id}}'
           DOI_ENVIRONMENT: '{{form.customtool_doi-toolchain.parameters.doi-environment}}'
           COS_BUCKET_NAME: '{{form.customtool_cos-bucket.parameters.cos-bucket-name}}'
           COS_ENDPOINT: '{{form.customtool_cos-bucket.parameters.cos-endpoint}}'
           ONE_PIPELINE_REPO: '{{services.app-repo.parameters.repo_url}}'
+          GIT_TOKEN: >
+            $env.gitToken ? '{{gitToken}}' : ''
         execute: false
 
   webide:
@@ -241,9 +262,23 @@ services:
 form:
   pipeline:
     parameters:
-      app-name: hello-compliance-app
-      dev-cluster-namespace: default
+      app-name: >
+        $env.appName ? '{{appName}}' : 'hello-compliance-app'
+      api-key: '{{apiKey}}'
+      registry-region: '{{registryRegion}}'
+      registry-namespace: '{{registryNamespace}}'
+      dev-region: '{{devRegion}}'
+      dev-resource-group: '{{devResourceGroup}}'
+      app-repo: '{{sourceRepoUrl}}'
+      pipeline-repo: '{{pipelineRepo}}'
+      tekton-catalog-repo: '{{tektonCatalogRepo}}'
+      dev-cluster-name: >
+        $env.devClusterName ? '{{devClusterName}}' : 'default'
+      dev-cluster-namespace: '{{devClusterNamespace}}'
       build-cluster-namespace: build
+      artifactory-userid: '{{artifactoryUserId}}'
+      artifactory-token: '{{artifactoryToken}}'
+      vault_secret: '{{vaultSecret}}'
     schema:
       $ref: deploy.json
 
