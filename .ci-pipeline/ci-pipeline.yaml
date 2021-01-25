@@ -274,8 +274,24 @@ spec:
           value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)
         - name: configmap-0
           value: $(tasks.code-unit-tests-config.results.configmap-0)
+        - name: configmap-1
+          value: $(tasks.code-unit-tests-config.results.configmap-1)
+        - name: configmap-2
+          value: $(tasks.code-unit-tests-config.results.configmap-2)
+        - name: configmap-3
+          value: $(tasks.code-unit-tests-config.results.configmap-3)
+        - name: configmap-4
+          value: $(tasks.code-unit-tests-config.results.configmap-4)
         - name: secret-0
           value: $(tasks.code-unit-tests-config.results.secret-0)
+        - name: secret-1
+          value: $(tasks.code-unit-tests-config.results.secret-1)
+        - name: secret-2
+          value: $(tasks.code-unit-tests-config.results.secret-2)
+        - name: secret-3
+          value: $(tasks.code-unit-tests-config.results.secret-3)
+        - name: secret-4
+          value: $(tasks.code-unit-tests-config.results.secret-4)
         - name: abort-on-failure
           value: $(tasks.code-unit-tests-config.results.abort-on-failure)
         - name: dind

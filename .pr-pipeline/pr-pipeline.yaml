@@ -371,6 +371,12 @@ spec:
           value: $(tasks.code-unit-tests-config.results.secret-4)
         - name: abort-on-failure
           value: $(tasks.code-unit-tests-config.results.abort-on-failure)
+        - name: dind
+          value: $(tasks.code-unit-tests-config.results.dind)
+        - name: params
+          value: |
+            git-commit: $(tasks.code-fetch-code.results.git-commit)
+            repository-url: $(tasks.code-setup-pipeline-env.results.repository-url)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
