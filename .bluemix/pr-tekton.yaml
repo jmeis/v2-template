@@ -75,13 +75,13 @@ properties:
     value: ${ARTIFACTORY_DOCKER_CONFIG_JSON}
     type: SECURE
   - name: one-pipeline-config
-    value: .one-pipeline.yaml
+    value: ${ONE_PIPELINE_CONFIG}
     type: text
   - name: one-pipeline-config-repo
-    value: ${ONE_PIPELINE_REPO}
+    value: ${ONE_PIPELINE_CONFIG_REPO}
     type: text
   - name: one-pipeline-config-branch
-    value: "master"
+    value: ${ONE_PIPELINE_CONFIG_BRANCH}
     type: text
   - name: git-token
     value: ${GIT_TOKEN}

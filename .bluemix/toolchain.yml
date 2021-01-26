@@ -170,6 +170,19 @@ services:
       legal: true
       kind: ['pipeline']
 
+  config-repo:
+    service_id: >
+      $env.configRepoEnabled ? 'github_integrated' : ''
+    parameters:
+      repo_url: >
+        $env.configRepoEnabled ? '{{onePipelineConfigRepo}}' : 'https://github.ibm.com/one-pipeline/sample-config-repo'
+      source_repo_url: >
+        $env.configRepoEnabled ? '{{onePipelineConfigRepo}}' : 'https://github.ibm.com/one-pipeline/sample-config-repo'
+      type: "link"
+      has_issues: false
+      enable_traceability: false
+      legal: true
+
   pr:
     service_id: pipeline
     parameters:
@@ -177,6 +190,7 @@ services:
         - app-repo
         - pipeline-repo
         - tekton-catalog-repo
+        - config-repo
       name: 'ci-pr-pipeline'
       ui-pipeline: true
       type: tekton
@@ -194,6 +208,12 @@ services:
             $env.artifactoryDockerConfigJson ? '{{artifactoryDockerConfigJson}}' : '{{form.artifactoryComp.parameters.docker_config_json}}'
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
           ONE_PIPELINE_REPO: '{{services.app-repo.parameters.repo_url}}'
+          ONE_PIPELINE_CONFIG: >
+            $env.onePipelineConfig ? '{{onePipelineConfig}}' : '.one-pipeline.yaml'
+          ONE_PIPELINE_CONFIG_REPO: >
+            $env.onePipelineConfigRepo ? '{{onePipelineConfigRepo}}' : ''
+          ONE_PIPELINE_CONFIG_BRANCH: >
+            $env.onePipelineConfigBranch ? '{{onePipelineConfigBranch}}' : 'master'
           VAULT_SECRET: '{{form.pipeline.parameters.vault_secret}}'
           GIT_TOKEN: >
             $env.gitToken ? '{{gitToken}}' : ''
@@ -205,6 +225,7 @@ services:
         - app-repo
         - pipeline-repo
         - tekton-catalog-repo
+        - config-repo
         - customtool_doi-toolchain
       name: 'ci-pipeline'
       ui-pipeline: true
@@ -234,6 +255,12 @@ services:
           COS_ENDPOINT: '{{form.customtool_cos-bucket.parameters.cos-endpoint}}'
           ONE_PIPELINE_REPO: '{{services.app-repo.parameters.repo_url}}'
           VAULT_SECRET: '{{form.pipeline.parameters.vault_secret}}'
+          ONE_PIPELINE_CONFIG: >
+            $env.onePipelineConfig ? '{{onePipelineConfig}}' : '.one-pipeline.yaml'
+          ONE_PIPELINE_CONFIG_REPO: >
+            $env.onePipelineConfigRepo ? '{{onePipelineConfigRepo}}' : ''
+          ONE_PIPELINE_CONFIG_BRANCH: >
+            $env.onePipelineConfigBranch ? '{{onePipelineConfigBranch}}' : 'master'
           GIT_TOKEN: >
             $env.gitToken ? '{{gitToken}}' : ''
         execute: false
