@@ -5,10 +5,6 @@ metadata:
   name: pipeline
 spec:
   params:
-    - name: registry-namespace
-      description: The namespace in the container image registry. You can set it up
-        with {bx cr namespace-add]. Learn more at
-        https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started#getting-started.
     - name: app-name
       description: The name of your app
     - name: registry-region
@@ -18,10 +14,6 @@ spec:
       default: "master"
     - name: repository-integration
       description: the repo integration name
-    - name: dev-resource-group
-      description: Resource Group
-    - name: dev-region
-      description: target region
     - name: slack-notifications
       description: toggles slack notifications
     - name: pipeline-debug
@@ -33,10 +25,6 @@ spec:
     - name: pr-url
       description: pr url
       default: ""
-    - name: inventory-repo
-      description: inventory repository owner and name
-    - name: version
-      description: cr branch name
     - name: cos-bucket-name
       description: Bucket name in your Cloud Object Storage instance, used as an Evidence Locker
       default: ""
@@ -484,16 +472,6 @@ spec:
         - name: artifacts
           workspace: artifacts
 
-    - name: get-signature
-      taskRef:
-        name: get-signature-from-file
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: file
-          value: "$(tasks.build-image-signing.results.signature)"
-
     - name: build-vulnerability-advisor
       taskRef:
         name: containerize-check-va-scan
@@ -520,20 +498,12 @@ spec:
       taskRef:
         name: ciso-image-sign
       params:
-        - name: region
-          value: $(params.dev-region)
-        - name: resource-group
-          value: $(params.dev-resource-group)
         - name: registry-region
           value: $(params.registry-region)
-        - name: registry-namespace
-          value: $(params.registry-namespace)
-        - name: image-name
-          value: $(params.app-name)
-        - name: image-tag
-          value: $(tasks.build-containerize-results.results.image-tags)
-        - name: toolchain-apikey-secret-key
-          value: "api-key"
+        - name: image
+          value: $(tasks.build-containerize-results.results.image)
+        - name: image-digest
+          value: $(tasks.build-containerize-results.results.image-digest)
       workspaces:
         - name: artifacts
           workspace: artifacts
@@ -668,7 +638,7 @@ spec:
             repository-url: $(tasks.code-setup-pipeline-env.results.repository-url)
             inventory-url: $(tasks.code-setup-pipeline-env.results.inventory-repo-url)
             artifact: $(tasks.build-containerize-results.results.image)@$(tasks.build-containerize-results.results.image-digest)
-            signature: $(tasks.get-signature.results.signature)
+            signature: $(tasks.build-image-signing.results.signature-content)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 

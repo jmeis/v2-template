@@ -5,17 +5,10 @@ metadata:
   name: template
 spec:
   params:
-    - name: registry-namespace
-      description: The namespace in the container image registry. You can set it up
-        with {bx cr namespace-add]. Learn more at https://cloud.ibm.com/docs/services/Registry?topic=registry-getting-started#getting-started.
     - name: app-name
       description: The name of your app
     - name: registry-region
       description: The IBM Cloud region for image registry
-    - name: dev-resource-group
-      description: Resource Group
-    - name: dev-region
-      description: target region
     - name: branch
       description: the branch for the git repo
     - name: repository-integration
@@ -28,10 +21,6 @@ spec:
       description: toggles slack notifications
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
-    - name: inventory-repo
-      description: inventory repository owner and name
-    - name: version
-      description: cr branch name
     - name: artifactory-dockerconfigjson
       description: dockerconfigjson for pullsecrets
     - name: onepipeline-dockerconfigjson
@@ -100,16 +89,10 @@ spec:
             persistentVolumeClaim:
               claimName: pipelinerun-$(uid)-pvc
         params:
-          - name: registry-namespace
-            value: $(params.registry-namespace)
           - name: app-name
             value: $(params.app-name)
           - name: registry-region
             value: $(params.registry-region)
-          - name: dev-region
-            value: $(params.dev-region)
-          - name: dev-resource-group
-            value: $(params.dev-resource-group)
           - name: branch
             value: $(params.branch)
           - name: repository-integration
@@ -122,10 +105,6 @@ spec:
             value: $(params.commit-id)
           - name: commit-timestamp
             value: $(params.commit-timestamp)
-          - name: inventory-repo
-            value: $(params.inventory-repo)
-          - name: version
-            value: $(params.version)
           - name: cos-bucket-name
             value: "$(params.cos-bucket-name)"
           - name: cos-endpoint
