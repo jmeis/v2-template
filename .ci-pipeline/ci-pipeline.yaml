@@ -461,7 +461,7 @@ spec:
           - name: image-tags
         steps:
           - name: emit-results
-            image: ibmcom/pipeline-base-image:2.9@sha256:2976e1374e87f5cddabcf80179d9708868d52dbf656fdde60f803553be633db2
+            image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.9@sha256:2976e1374e87f5cddabcf80179d9708868d52dbf656fdde60f803553be633db2
             script: |
               cat "$(workspaces.artifacts.path)/image" > "$(results.image.path)"
               cat "$(workspaces.artifacts.path)/image-digest" > "$(results.image-digest.path)"
