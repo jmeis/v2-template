@@ -73,8 +73,6 @@ services:
   privateWorker:
     service_id: private_worker
     parameters:
-      # name: '{{form.pipeline.parameters.private-worker-name}}'
-      # workerQueueCredentials: '{{form.pipeline.parameters.private-worker-creds}}'
       name: >
         $env.privateWorkerName ? '{{privateWorkerName}}' : 'private-worker'
       workerQueueCredentials: '{{privateWorkerCreds}}'
@@ -274,7 +272,8 @@ form:
       tekton-catalog-repo: '{{tektonCatalogRepo}}'
       dev-cluster-name: >
         $env.devClusterName ? '{{devClusterName}}' : 'default'
-      dev-cluster-namespace: '{{devClusterNamespace}}'
+      dev-cluster-namespace: >
+        $env.devClusterNamespace ? '{{devClusterNamespace}}' : 'default'
       build-cluster-namespace: build
       artifactory-userid: '{{artifactoryUserId}}'
       artifactory-token: '{{artifactoryToken}}'
@@ -284,14 +283,18 @@ form:
 
   customtool_cos-bucket:
     parameters:
-      cos-bucket-name: ''
-      cos-endpoint: ''
+      cos-bucket-name: >
+        $env.cosBucketName ? '{{cosBucketName}}' : ''
+      cos-endpoint: >
+        $env.cosEndpoint ? '{{cosEndpoint}}' : ''
     schema:
       $ref: cos.json
 
   customtool_doi-toolchain:
     parameters:
-      doi-toolchain-id: ''
-      doi-environment: ''
+      doi-toolchain-id: >
+        $env.doiToolchainId ? '{{doiToolchainId}}' : ''
+      doi-environment: >
+        $env.doiEnvironment ? '{{doiEnvironment}}' : ''
     schema:
       $ref: doi-toolchain.json
