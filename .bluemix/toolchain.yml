@@ -234,6 +234,7 @@ services:
           COS_BUCKET_NAME: '{{form.customtool_cos-bucket.parameters.cos-bucket-name}}'
           COS_ENDPOINT: '{{form.customtool_cos-bucket.parameters.cos-endpoint}}'
           ONE_PIPELINE_REPO: '{{services.app-repo.parameters.repo_url}}'
+          VAULT_SECRET: '{{form.pipeline.parameters.vault_secret}}'
           GIT_TOKEN: >
             $env.gitToken ? '{{gitToken}}' : ''
         execute: false
