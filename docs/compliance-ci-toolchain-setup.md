@@ -78,7 +78,7 @@ If your team does not have a HashiCorp Vault set up, you can follow [this docume
 | :--: |
 
  - **Name**: A name for this tool integration. This name will be displayed in the toolchain.
- - **Server URL**: The server URL for your HashiCorp Vault Instance. (`https://vserv-us.sos.ibm.com:8200`, `https://vserv-eu.sos.ibm.com:8200`, `https://vserv-test.sos.ibm.com:8200`)
+ - **Server URL**: The server URL for your HashiCorp Vault Instance. (`https://vserv-us.sos.ibm.com:8200`, `https://vserv-eu.sos.ibm.com:8200`, `https://vserv-test.sos.ibm.com:8200`, `https://vserv.sos.ibm.com:8200`)
  - **Integration URL**: The URL that you want to navigate to when you click the HashiCorp Vault Integration tile.
  - **Secrets Path**: The mount path where your secrets are stored in your HashiCorp Vault Instance.
  - **Authentication Method**: The Authentication method for your HashiCorp Vault Instance.
