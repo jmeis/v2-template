@@ -90,7 +90,6 @@ spec:
             source /root/.nvm/nvm.sh
             export APP_URL=\$(cat ../app-url)
             npm run acceptance-test
-        EOF
 
         release:
           image: wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/ibm-compliance-automation:1.2.4@sha256:dc98cc52c0caede42149c08727147520e30e81fee543b8dd5939b45d06baa142
@@ -100,3 +99,4 @@ spec:
             echo "See https://pages.github.ibm.com/one-pipeline/docs/#/custom-scripts for more details"
 
             source scripts/release.sh
+        EOF
