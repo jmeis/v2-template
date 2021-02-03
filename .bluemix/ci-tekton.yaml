@@ -102,7 +102,7 @@ properties:
   - name: vault-secret
     value: ${VAULT_SECRET}
     type: SECURE
-  - name: revision
+  - name: branch
     value: master
     type: text
   - name: registry-region
