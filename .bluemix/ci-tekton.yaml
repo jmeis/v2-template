@@ -167,4 +167,6 @@ properties:
   - name: slack-notifications
     value: "0"
     type: text
+  - name: custom-image-tag
+    type: text
 private_worker: ${PRIVATE_WORKER}
