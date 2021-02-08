@@ -169,4 +169,7 @@ properties:
     type: text
   - name: custom-image-tag
     type: text
+  - name: onepipeline-dockerconfigjson
+    value: ${ONE_PIPELINE_DOCKER_CONFIG_JSON}
+    type: SECURE
 private_worker: ${PRIVATE_WORKER}
