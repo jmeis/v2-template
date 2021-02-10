@@ -66,9 +66,12 @@ services:
   slack:
     service_id: slack
     parameters:
-      channel_name: ''
-      api_token: ''
-      team_url: ''
+      channel_name: >
+        $env.slackChannelName ? '{{slackChannelName}}' : ''
+      api_token: >
+        $env.slackWebhook ? '{{slackWebhook}}' : ''
+      team_url: >
+        $env.slackTeamName ? '{{slackTeamName}}' : ''
 
   privateWorker:
     service_id: private_worker
