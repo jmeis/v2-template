@@ -64,6 +64,28 @@ triggers:
     events:
       pull_request: true
     eventListener: pr-listener
+  - type: manual
+    name: Manual Trigger
+    eventListener: manual-pr-listener
+    properties:
+      - name: branch
+        type: text
+        value: ""
+      - name: target-branch
+        type: text
+        value: "master"
+      - name: pr-repository
+        type: text
+        value: ${PR_REPOSITORY}
+      - name: pr-url
+        type: text
+        value: ""
+      - name: commit-id
+        type: text
+        value: ""
+      - name: commit-timestamp
+        type: text
+        value: ""
 properties:
   - name: api-key
     value: ${API_KEY}

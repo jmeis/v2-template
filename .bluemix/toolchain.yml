@@ -222,6 +222,7 @@ services:
             $env.gitToken ? '{{gitToken}}' : ''
           ONE_PIPELINE_DOCKER_CONFIG_JSON: >
             $env.onePipelineDockerConfigJson ? '{{onePipelineDockerConfigJson}}' : 'eyJhdXRocyI6e319'
+          PR_REPOSITORY: '{{services.app-repo.parameters.repo_name}}'
         execute: false
   ci:
     service_id: pipeline

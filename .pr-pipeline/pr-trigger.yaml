@@ -6,9 +6,9 @@ metadata:
 spec:
   params:
     - name: branch
-      description: branch
+      description: source branch of the PR
     - name: target-branch
-      description: target branch
+      description: target branch of the PR
     - name: repository-integration
       description: the repo integration name
     - name: commit-id
@@ -22,7 +22,7 @@ spec:
     - name: pr-url
       description: PR url
     - name: pr-repository
-      description: the repo with as PR source
+      description: the name of the PR's repo source
     - name: artifactory-dockerconfigjson
       description: dockerconfigjson for pullsecrets
     - name: onepipeline-dockerconfigjson

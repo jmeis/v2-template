@@ -1,0 +1,19 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: pr-manual-binding
+spec:
+  params:
+    - name: branch
+      value: $(params.branch)
+    - name: target-branch
+      value: $(params.target-branch)
+    - name: pr-repository
+      value: $(params.pr-repository)
+    - name: pr-url
+      value: $(params.pr-url)
+    - name: commit-id
+      value: $(params.commit-id)
+    - name: commit-timestamp
+      value: $(params.commit-timestamp)
