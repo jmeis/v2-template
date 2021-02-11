@@ -221,7 +221,7 @@ services:
           GIT_TOKEN: >
             $env.gitToken ? '{{gitToken}}' : ''
           ONE_PIPELINE_DOCKER_CONFIG_JSON: >
-            $env.onePipelineDockerConfigJson ? '{{onePipelineDockerConfigJson}}' : ''
+            $env.onePipelineDockerConfigJson ? '{{onePipelineDockerConfigJson}}' : 'eyJhdXRocyI6e319'
         execute: false
   ci:
     service_id: pipeline
@@ -269,7 +269,7 @@ services:
           GIT_TOKEN: >
             $env.gitToken ? '{{gitToken}}' : ''
           ONE_PIPELINE_DOCKER_CONFIG_JSON: >
-            $env.onePipelineDockerConfigJson ? '{{onePipelineDockerConfigJson}}' : ''
+            $env.onePipelineDockerConfigJson ? '{{onePipelineDockerConfigJson}}' : 'eyJhdXRocyI6e319'
         execute: false
 
   webide:
