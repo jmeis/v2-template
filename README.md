@@ -48,6 +48,48 @@ Also the following branch protection settings need to be enabled in GitHub:
 They are checked by both `PR` and `CI` pipelines. To configure your repository to pass the branch protection settings checks, read the [Repository Configuration Guide](./docs/github-repository-configuration.md).
 
 ---
+### Using the development mode
+The development mode enables you to quickly test the implementation of your [shift-left compliance one-pipeline.yaml](https://pages.github.ibm.com/one-pipeline/docs/#/custom-scripts) file, without executing any shift-left compliance related task, so as to optimize pipeline execution time.
+
+* Audience: developers in charge of adopting the shift-left compliance CI pipeline for a given component, implementing [corresponding one-pipeline.yaml](https://pages.github.ibm.com/one-pipeline/docs/#/custom-scripts) file.
+
+* Purpose
+
+  - Develop, implement and quickly test a new [shift-left compliance one-pipeline.yaml](https://pages.github.ibm.com/one-pipeline/docs/#/custom-scripts) file using a simplified pipeline.
+  - Only execute the various stages of the one-pipeline.yaml file.
+  - Skip most of the shift-left compliance related task, hence optimizing the time to execute your code.
+
+* Warning: this mode should be used for **development** purpose **only**, and can not be considered as a replacement of the official shift-left compliance pipelines which remain the reference implementations.
+
+* Prereq: you already created a compliance CI toolchain.
+
+* Set-up
+  - Go to the Triggers page of your CI pipeline
+  - Create a new development mode trigger:
+
+    - name: pick a name of your choice (ex: `Manual-Dev-Mode`)
+
+    - EventListener: `dev-mode-listener`
+
+    - Save your changes
+
+  ![Icon](./.bluemix/dev-mode-trigger.png)
+
+* Run the Development mode pipeline
+  - Back to the `PipelineRuns` page, click on the `Run Pipeline button`.
+  - Select Dev Mode trigger you just created.
+  - Click on the `Run` button.
+
+  ![Icon](./.bluemix/run-dev-mode.png)
+
+* Development mode pipeline execution
+  - Observe: the pipeline is executed without unnecessary shift-left compliance tasks.
+  - Iterate until you're satisfied with your one-pipeline.yaml file implementation.
+
+* Switching back to shift-left compliance CI pipeline
+Either disable or delete the development mode trigger.
+
+---
 ### Learn more
 
 * Blog [Continuously deliver your app to Kubernetes with Bluemix](https://www.ibm.com/blogs/bluemix/2017/07/continuously-deliver-your-app-to-kubernetes-with-bluemix/)

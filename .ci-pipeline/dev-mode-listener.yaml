@@ -1,0 +1,12 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: dev-mode-listener
+spec:
+  triggers:
+    - bindings:
+        - name: binding
+        - name: dev-mode-binding
+      template:
+        name: template

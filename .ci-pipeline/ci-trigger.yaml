@@ -44,6 +44,9 @@ spec:
       description: repository url of the one-pipeline config
     - name: one-pipeline-config-branch
       description: the branch of the one-pipeline config
+    - name: pipeline-name
+      description: The name of the pipeline to run
+      default: pipeline
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -83,7 +86,7 @@ spec:
         name: pipelinerun-$(uid)
       spec:
         pipelineRef:
-          name: pipeline
+          name: $(params.pipeline-name)
         workspaces:
           - name: artifacts
             persistentVolumeClaim:

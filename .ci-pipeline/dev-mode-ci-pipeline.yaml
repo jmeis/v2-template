@@ -1,0 +1,418 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: dev-mode-pipeline
+spec:
+  params:
+    - name: registry-region
+      description: The IBM Cloud region for image registry
+    - name: branch
+      description: the branch for the git repo
+      default: "master"
+    - name: repository-integration
+      description: the repo integration name
+    - name: pipeline-debug
+      description: toggles debug mode for the pipeline
+    - name: commit-id
+      description: commit id
+    - name: one-pipeline-config
+      description: Configuration file to be used to customize pipeline behavior
+      default: .one-pipeline.yaml
+    - name: one-pipeline-config-repo
+      description: repository url of the one-pipeline config
+    - name: one-pipeline-config-branch
+      description: the branch of the one-pipeline config
+
+  workspaces:
+    - name: artifacts
+
+  tasks:
+    - name: code-setup-pipeline-env
+      taskRef:
+        name: code-setup-pipeline-env
+      params:
+        - name: one-pipeline-config-branch
+          value: $(params.one-pipeline-config-branch)
+        - name: one-pipeline-config-repo
+          value: $(params.one-pipeline-config-repo)
+        - name: repository-branch
+          value: $(params.branch)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: code-fetch-credentials
+      taskRef:
+        name: git-get-credentials
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: ibmcloud-api-key-secret-key
+          value: api-key
+        - name: repository
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
+        - name: repository-integration
+          value: $(params.repository-integration)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: code-fetch-code
+      runAfter:
+        - code-fetch-credentials
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: repository
+          value: $(tasks.code-setup-pipeline-env.results.repository-url)
+        - name: git-user
+          value: $(tasks.code-fetch-credentials.results.git-auth-user)
+        - name: branch
+          value: $(params.branch)
+        - name: revision
+          value: $(params.commit-id)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: code-clone-one-pipeline-config-repo
+      taskRef:
+        name: git-clone
+      runAfter:
+        - code-fetch-credentials
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+        - name: secrets
+          workspace: artifacts
+      params:
+        - name: repository
+          value: $(tasks.code-setup-pipeline-env.results.one-pipeline-repo-url)
+        - name: branch
+          value: $(tasks.code-setup-pipeline-env.results.one-pipeline-repo-branch)
+        - name: directory-name
+          value: "one-pipeline-config-repo"
+        - name: git-user
+          value: $(tasks.code-fetch-credentials.results.git-auth-user)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: code-normalize-config
+      runAfter:
+        - code-clone-one-pipeline-config-repo
+      taskRef:
+        name: normalize-config
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: working-dir
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)
+        - name: file
+          value: $(params.one-pipeline-config)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: code-setup-config
+      runAfter:
+        - code-normalize-config
+      taskRef:
+        name: parse-config
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: file
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)/$(params.one-pipeline-config)
+        - name: stage
+          value: setup
+
+    - name: code-setup
+      taskRef:
+        name: run-stage
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: image
+          value: $(tasks.code-setup-config.results.image)
+        - name: script
+          value: $(tasks.code-setup-config.results.script)
+        - name: working-dir
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)
+        - name: configmap-0
+          value: $(tasks.code-setup-config.results.configmap-0)
+        - name: secret-0
+          value: $(tasks.code-setup-config.results.secret-0)
+        - name: abort-on-failure
+          value: $(tasks.code-setup-config.results.abort-on-failure)
+        - name: dind
+          value: $(tasks.code-setup-config.results.dind)
+        - name: params
+          value: |
+            git-commit: $(tasks.code-fetch-code.results.git-commit)
+            repository-url: $(tasks.code-setup-pipeline-env.results.repository-url)
+            inventory-url: $(tasks.code-setup-pipeline-env.results.inventory-repo-url)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: code-unit-tests-config
+      runAfter:
+        - code-setup
+      taskRef:
+        name: parse-config
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: file
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)/$(params.one-pipeline-config)
+        - name: stage
+          value: test
+
+    - name: code-unit-tests
+      taskRef:
+        name: run-stage
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: image
+          value: $(tasks.code-unit-tests-config.results.image)
+        - name: script
+          value: $(tasks.code-unit-tests-config.results.script)
+        - name: working-dir
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)
+        - name: configmap-0
+          value: $(tasks.code-unit-tests-config.results.configmap-0)
+        - name: configmap-1
+          value: $(tasks.code-unit-tests-config.results.configmap-1)
+        - name: configmap-2
+          value: $(tasks.code-unit-tests-config.results.configmap-2)
+        - name: configmap-3
+          value: $(tasks.code-unit-tests-config.results.configmap-3)
+        - name: configmap-4
+          value: $(tasks.code-unit-tests-config.results.configmap-4)
+        - name: secret-0
+          value: $(tasks.code-unit-tests-config.results.secret-0)
+        - name: secret-1
+          value: $(tasks.code-unit-tests-config.results.secret-1)
+        - name: secret-2
+          value: $(tasks.code-unit-tests-config.results.secret-2)
+        - name: secret-3
+          value: $(tasks.code-unit-tests-config.results.secret-3)
+        - name: secret-4
+          value: $(tasks.code-unit-tests-config.results.secret-4)
+        - name: abort-on-failure
+          value: $(tasks.code-unit-tests-config.results.abort-on-failure)
+        - name: dind
+          value: $(tasks.code-unit-tests-config.results.dind)
+        - name: params
+          value: |
+            git-commit: $(tasks.code-fetch-code.results.git-commit)
+            repository-url: $(tasks.code-setup-pipeline-env.results.repository-url)
+            inventory-url: $(tasks.code-setup-pipeline-env.results.inventory-repo-url)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: build-containerize-config
+      taskRef:
+        name: parse-config
+      runAfter:
+        - code-unit-tests
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: file
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)/$(params.one-pipeline-config)
+        - name: stage
+          value: containerize
+
+    - name: build-containerize
+      taskRef:
+        name: run-stage
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: image
+          value: $(tasks.build-containerize-config.results.image)
+        - name: script
+          value: $(tasks.build-containerize-config.results.script)
+        - name: working-dir
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)
+        - name: configmap-0
+          value: $(tasks.build-containerize-config.results.configmap-0)
+        - name: secret-0
+          value: $(tasks.build-containerize-config.results.secret-0)
+        - name: abort-on-failure
+          value: $(tasks.build-containerize-config.results.abort-on-failure)
+        - name: dind
+          value: $(tasks.build-containerize-config.results.dind)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: params
+          value: |
+            git-branch: $(tasks.code-fetch-code.results.git-branch)
+            git-commit: $(tasks.code-fetch-code.results.git-commit)
+            repository-url: $(tasks.code-setup-pipeline-env.results.repository-url)
+            inventory-url: $(tasks.code-setup-pipeline-env.results.inventory-repo-url)
+
+    - name: build-containerize-results
+      taskSpec:
+        workspaces:
+          - name: artifacts
+        results:
+          - name: image
+          - name: image-digest
+          - name: image-tags
+        steps:
+          - name: emit-results
+            image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.9@sha256:2976e1374e87f5cddabcf80179d9708868d52dbf656fdde60f803553be633db2
+            script: |
+              cat "$(workspaces.artifacts.path)/image" > "$(results.image.path)"
+              cat "$(workspaces.artifacts.path)/image-digest" > "$(results.image-digest.path)"
+              cat "$(workspaces.artifacts.path)/image-tags" > "$(results.image-tags.path)"
+      runAfter:
+        - build-containerize
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+
+    - name: deploy-dev-config
+      taskRef:
+        name: parse-config
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: file
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)/$(params.one-pipeline-config)
+        - name: stage
+          value: deploy
+
+    - name: deploy-dev
+      taskRef:
+        name: run-stage
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: image
+          value: $(tasks.deploy-dev-config.results.image)
+        - name: script
+          value: $(tasks.deploy-dev-config.results.script)
+        - name: working-dir
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)
+        - name: params
+          value: |
+            image: $(tasks.build-containerize-results.results.image)@$(tasks.build-containerize-results.results.image-digest)
+            git-commit: $(tasks.code-fetch-code.results.git-commit)
+            repository-url: $(tasks.code-setup-pipeline-env.results.repository-url)
+            inventory-url: $(tasks.code-setup-pipeline-env.results.inventory-repo-url)
+        - name: configmap-0
+          value: $(tasks.deploy-dev-config.results.configmap-0)
+        - name: secret-0
+          value: $(tasks.deploy-dev-config.results.secret-0)
+        - name: abort-on-failure
+          value: $(tasks.deploy-dev-config.results.abort-on-failure)
+        - name: dind
+          value: $(tasks.deploy-dev-config.results.dind)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: deploy-acceptance-tests-config
+      runAfter:
+        - deploy-dev
+      taskRef:
+        name: parse-config
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: file
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)/$(params.one-pipeline-config)
+        - name: stage
+          value: acceptance-test
+
+    - name: deploy-acceptance-tests
+      taskRef:
+        name: run-stage
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: image
+          value: $(tasks.deploy-acceptance-tests-config.results.image)
+        - name: script
+          value: $(tasks.deploy-acceptance-tests-config.results.script)
+        - name: working-dir
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)
+        - name: configmap-0
+          value: $(tasks.deploy-acceptance-tests-config.results.configmap-0)
+        - name: secret-0
+          value: $(tasks.deploy-acceptance-tests-config.results.secret-0)
+        - name: abort-on-failure
+          value: $(tasks.deploy-acceptance-tests-config.results.abort-on-failure)
+        - name: dind
+          value: $(tasks.deploy-acceptance-tests-config.results.dind)
+        - name: params
+          value: |
+            git-commit: $(tasks.code-fetch-code.results.git-commit)
+            repository-url: $(tasks.code-setup-pipeline-env.results.repository-url)
+            inventory-url: $(tasks.code-setup-pipeline-env.results.inventory-repo-url)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: deploy-release-config
+      runAfter:
+        - deploy-acceptance-tests
+      taskRef:
+        name: parse-config
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: file
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)/$(params.one-pipeline-config)
+        - name: stage
+          value: release
+
+    - name: deploy-release
+      runAfter:
+        - deploy-release-config
+      taskRef:
+        name: run-stage
+      workspaces:
+        - name: app
+          workspace: artifacts
+      params:
+        - name: image
+          value: $(tasks.deploy-release-config.results.image)
+        - name: script
+          value: $(tasks.deploy-release-config.results.script)
+        - name: working-dir
+          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)
+        - name: configmap-0
+          value: $(tasks.deploy-release-config.results.configmap-0)
+        - name: secret-0
+          value: $(tasks.deploy-release-config.results.secret-0)
+        - name: abort-on-failure
+          value: $(tasks.deploy-release-config.results.abort-on-failure)
+        - name: dind
+          value: $(tasks.deploy-release-config.results.dind)
+        - name: params
+          value: |
+            git-commit: $(tasks.code-fetch-code.results.git-commit)
+            repository-url: $(tasks.code-setup-pipeline-env.results.repository-url)
+            inventory-url: $(tasks.code-setup-pipeline-env.results.inventory-repo-url)
+            artifact: $(tasks.build-containerize-results.results.image)@$(tasks.build-containerize-results.results.image-digest)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
