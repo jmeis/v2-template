@@ -6,6 +6,8 @@ spec:
   params:
     - name: one-pipeline-config-branch
     - name: one-pipeline-config-repo
+    - name: repository
+      default: ""
     - name: repository-branch
     - name: pipeline-debug
       default: "0"
@@ -30,6 +32,8 @@ spec:
           value: $(params.one-pipeline-config-repo)
         - name: APP_REPO_BRANCH
           value: $(params.repository-branch)
+        - name: REPOSITORY
+          value: $(params.repository)
         - name: PIPELINE_DEBUG
           value: $(params.pipeline-debug)
       script: |
@@ -40,7 +44,12 @@ spec:
           set -x
         fi
 
-        APP_REPO=$(jq -j '.services[] | select(.toolchain_binding.name=="app-repo") | .dashboard_url' /cd-config/toolchain.json)
+        if [[ "${REPOSITORY}" ]]; then
+          APP_REPO=$REPOSITORY
+        else
+          APP_REPO=$(jq -j '.services[] | select(.toolchain_binding.name=="app-repo") | .dashboard_url' /cd-config/toolchain.json)
+        fi
+
         ONE_PIPELINE_REPO="${ONE_PIPELINE_CONFIG_REPO:=$APP_REPO}"
         ONE_PIPELINE_BRANCH="${ONE_PIPELINE_CONFIG_BRANCH:=$APP_REPO_BRANCH}"
 

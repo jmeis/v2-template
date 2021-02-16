@@ -63,6 +63,8 @@ spec:
           value: $(params.one-pipeline-config-repo)
         - name: repository-branch
           value: $(params.branch)
+        - name: repository
+          value: $(params.pr-repository)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
