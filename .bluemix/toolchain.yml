@@ -223,6 +223,8 @@ services:
           ONE_PIPELINE_DOCKER_CONFIG_JSON: >
             $env.onePipelineDockerConfigJson ? '{{onePipelineDockerConfigJson}}' : 'eyJhdXRocyI6e319'
           PR_REPOSITORY: '{{services.app-repo.parameters.repo_name}}'
+          SLACK_ENABLED: >
+            $env.slackEnabled ? '{{slackEnabled}}' : '0'
         execute: false
   ci:
     service_id: pipeline
@@ -271,6 +273,8 @@ services:
             $env.gitToken ? '{{gitToken}}' : ''
           ONE_PIPELINE_DOCKER_CONFIG_JSON: >
             $env.onePipelineDockerConfigJson ? '{{onePipelineDockerConfigJson}}' : 'eyJhdXRocyI6e319'
+          SLACK_ENABLED: >
+            $env.slackEnabled ? '{{slackEnabled}}' : '0'
         execute: false
 
   webide:

@@ -109,7 +109,7 @@ properties:
     value: ${GIT_TOKEN}
     type: SECURE
   - name: slack-notifications
-    value: "0"
+    value: ${SLACK_ENABLED}
     type: text
   - name: onepipeline-dockerconfigjson
     value: ${ONE_PIPELINE_DOCKER_CONFIG_JSON}

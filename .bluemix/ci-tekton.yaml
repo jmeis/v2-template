@@ -165,7 +165,7 @@ properties:
     value: ${GIT_TOKEN}
     type: SECURE
   - name: slack-notifications
-    value: "0"
+    value: ${SLACK_ENABLED}
     type: text
   - name: custom-image-tag
     type: text
