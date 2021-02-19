@@ -275,6 +275,8 @@ services:
             $env.onePipelineDockerConfigJson ? '{{onePipelineDockerConfigJson}}' : 'eyJhdXRocyI6e319'
           SLACK_ENABLED: >
             $env.slackEnabled ? '{{slackEnabled}}' : '0'
+          GIT_CI_TIMED_TRIGGER_DISABLE: >
+            $env.disableGitCiTimedTrigger === 'false' ? false : true
         execute: false
 
   webide:

@@ -92,6 +92,11 @@ triggers:
     events:
       push: true
     eventListener: listener
+  - type: timer
+    name: Git CI Timed Trigger
+    eventListener: listener
+    disabled: ${GIT_CI_TIMED_TRIGGER_DISABLE}
+    cron: "0 4 * * *"
   - type: manual
     name: Manual Trigger
     eventListener: listener
