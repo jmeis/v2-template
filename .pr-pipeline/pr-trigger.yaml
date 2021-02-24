@@ -5,14 +5,24 @@ metadata:
   name: pr-template
 spec:
   params:
-    - name: branch
+    - name: head-branch
       description: source branch of the PR
-    - name: target-branch
+    - name: head-sha
+      description: commit id
+    - name: head-repo
+      description: the name of the PR's repo source
+
+    - name: base-branch
       description: target branch of the PR
+    - name: base-repo
+      description: the name of the PR's repo target
+    - name: base-repo-name
+      description: the name of the PR's repo target
+    - name: base-repo-owner
+      description: the owner of the PR's repo target
+
     - name: repository-integration
       description: the repo integration name
-    - name: commit-id
-      description: commit id
     - name: commit-timestamp
       description: the timestamp of when the commit pushed
     - name: slack-notifications
@@ -21,8 +31,6 @@ spec:
       description: toggles debug mode for the pipeline
     - name: pr-url
       description: PR url
-    - name: pr-repository
-      description: the name of the PR's repo source
     - name: artifactory-dockerconfigjson
       description: dockerconfigjson for pullsecrets
     - name: onepipeline-dockerconfigjson
@@ -81,16 +89,22 @@ spec:
               claimName: pipelinerun-$(uid)-pvc
         serviceAccountName: sa-pullsecret
         params:
-          - name: branch
-            value: $(params.branch)
-          - name: target-branch
-            value: $(params.target-branch)
+          - name: head-branch
+            value: $(params.head-branch)
+          - name: head-sha
+            value: $(params.head-sha)
+          - name: head-repo
+            value: $(params.head-repo)
+          - name: base-branch
+            value: $(params.base-branch)
+          - name: base-repo
+            value: $(params.base-repo)
+          - name: base-repo-name
+            value: $(params.base-repo-name)
+          - name: base-repo-owner
+            value: $(params.base-repo-owner)
           - name: repository-integration
             value: $(params.repository-integration)
-          - name: pr-repository
-            value: $(params.pr-repository)
-          - name: commit-id
-            value: $(params.commit-id)
           - name: commit-timestamp
             value: $(params.commit-timestamp)
           - name: slack-notifications

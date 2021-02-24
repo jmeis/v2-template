@@ -5,16 +5,22 @@ metadata:
   name: pr-pipeline
 spec:
   params:
-    - name: pr-repository
-      description: the name of the PR's repo source
-    - name: branch
+    - name: head-branch
       description: source branch of the PR
-    - name: target-branch
+    - name: head-sha
+      description: commit id
+    - name: head-repo
+      description: the name of the PR's repo source
+    - name: base-branch
       description: target branch of the PR
+    - name: base-repo
+      description: target branch of the PR
+    - name: base-repo-name
+      description: name of the base repo
+    - name: base-repo-owner
+      description: owner of the base repo
     - name: repository-integration
       description: the repo integration name
-    - name: commit-id
-      description: commit id
     - name: commit-timestamp
       description: the timestamp of when the commit pushed
     - name: slack-notifications
@@ -63,9 +69,9 @@ spec:
         - name: one-pipeline-config-repo
           value: $(params.one-pipeline-config-repo)
         - name: repository-branch
-          value: $(params.branch)
+          value: $(params.head-branch)
         - name: repository
-          value: $(params.pr-repository)
+          value: $(params.head-repo)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -87,43 +93,6 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: get-org
-      runAfter:
-        - code-fetch-credentials
-      params:
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-        - name: repository
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
-      taskSpec:
-        params:
-          - name: pipeline-debug
-            default: "0"
-          - name: repository
-        results:
-          - name: gh-org
-        stepTemplate:
-          env:
-            - name: PIPELINE_DEBUG
-              value: $(params.pipeline-debug)
-        steps:
-          - name: get-params
-            image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.6@sha256:7f588468622a981f89cf5e1212aaf75fface9da6169b5345ca52ab63d8215907
-            script: |
-              #!/bin/bash
-
-              set -e -o pipefail
-
-              if [ $PIPELINE_DEBUG == 1 ]; then
-                pwd
-                env
-                trap env EXIT
-                set -x
-              fi
-
-              OWNER=$(echo "$(params.repository)" | cut -d/ -f4 )
-              echo -n $OWNER | tee $(results.gh-org.path)
-
     - name: code-fetch-code
       runAfter:
         - code-fetch-credentials
@@ -136,9 +105,9 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(params.pr-repository)
+          value: $(params.head-repo)
         - name: branch
-          value: $(params.branch)
+          value: $(params.head-branch)
         - name: git-user
           value: $(tasks.code-fetch-credentials.results.git-auth-user)
         - name: pipeline-debug
@@ -194,9 +163,9 @@ spec:
         - name: secret-name
           value: git-token
         - name: repo-url
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
+          value: $(params.base-repo)
         - name: commit-sha
-          value: $(params.commit-id)
+          value: $(params.head-sha)
         - name: state
           value: pending
         - name: task-name
@@ -232,9 +201,9 @@ spec:
         - name: secret-name
           value: git-token
         - name: repo-url
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
+          value: $(params.base-repo)
         - name: commit-sha
-          value: $(params.commit-id)
+          value: $(params.head-sha)
         - name: state
           value: $(tasks.code-detect-secrets.results.status)
         - name: task-name
@@ -310,9 +279,9 @@ spec:
         - name: secret-name
           value: git-token
         - name: repo-url
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
+          value: $(params.base-repo)
         - name: commit-sha
-          value: $(params.commit-id)
+          value: $(params.head-sha)
         - name: state
           value: pending
         - name: task-name
@@ -395,9 +364,9 @@ spec:
         - name: secret-name
           value: git-token
         - name: repo-url
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
+          value: $(params.base-repo)
         - name: commit-sha
-          value: $(params.commit-id)
+          value: $(params.head-sha)
         - name: state
           value: $(tasks.code-unit-tests.results.status)
         - name: task-name
@@ -420,11 +389,11 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(params.pr-repository)
+          value: $(params.head-repo)
         - name: revision
-          value: $(params.branch)
+          value: $(params.head-branch)
         - name: commit-id
-          value: $(params.commit-id)
+          value: $(params.head-sha)
         - name: commit-timestamp
           value: $(params.commit-timestamp)
         - name: directory-name
@@ -442,9 +411,9 @@ spec:
         - name: secret-name
           value: git-token
         - name: repo-url
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
+          value: $(params.base-repo)
         - name: commit-sha
-          value: $(params.commit-id)
+          value: $(params.head-sha)
         - name: state
           value: pending
         - name: task-name
@@ -468,13 +437,13 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(params.pr-repository)
+          value: $(params.head-repo)
         - name: revision
-          value: $(params.branch)
+          value: $(params.head-branch)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
-          value: $(params.commit-id)
+          value: $(params.head-sha)
 
     - name: code-vulnerability-scan-status-finished
       runAfter:
@@ -488,9 +457,9 @@ spec:
         - name: secret-name
           value: git-token
         - name: repo-url
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
+          value: $(params.base-repo)
         - name: commit-sha
-          value: $(params.commit-id)
+          value: $(params.head-sha)
         - name: state
           value: "$(tasks.code-vulnerability-scan.results.status)"
         - name: task-name
@@ -514,9 +483,9 @@ spec:
         - name: secret-name
           value: git-token
         - name: repo-url
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
+          value: $(params.base-repo)
         - name: commit-sha
-          value: $(params.commit-id)
+          value: $(params.head-sha)
         - name: state
           value: pending
         - name: task-name
@@ -540,13 +509,13 @@ spec:
           workspace: artifacts
       params:
         - name: repository
-          value: $(params.pr-repository)
+          value: $(params.head-repo)
         - name: revision
-          value: $(params.branch)
+          value: $(params.head-branch)
         - name: pr-url
           value: $(params.pr-url)
         - name: commit-id
-          value: $(params.commit-id)
+          value: $(params.head-sha)
         - name: directory-name
           value: $(tasks.code-fetch-code.results.directory-name)
 
@@ -562,9 +531,9 @@ spec:
         - name: secret-name
           value: git-token
         - name: repo-url
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
+          value: $(params.base-repo)
         - name: commit-sha
-          value: $(params.commit-id)
+          value: $(params.head-sha)
         - name: state
           value: "$(tasks.code-cis-check.results.status)"
         - name: task-name
@@ -588,9 +557,9 @@ spec:
         - name: secret-name
           value: git-token
         - name: repo-url
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
+          value: $(params.base-repo)
         - name: commit-sha
-          value: $(params.commit-id)
+          value: $(params.head-sha)
         - name: state
           value: pending
         - name: task-name
@@ -612,7 +581,7 @@ spec:
           workspace: artifacts
       params:
         - name: target-branch
-          value: $(params.target-branch)
+          value: $(params.base-branch)
         - name: required-checks
           value: |
             [{
@@ -629,11 +598,11 @@ spec:
               }
             }]
         - name: gh-org
-          value: $(tasks.get-org.results.gh-org)
+          value: $(params.base-repo-owner)
         - name: repository
-          value: $(tasks.code-fetch-credentials.results.repo-name)
+          value: $(params.base-repo-name)
         - name: git-commit
-          value: $(params.commit-id)
+          value: $(params.head-sha)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
@@ -649,9 +618,9 @@ spec:
         - name: secret-name
           value: git-token
         - name: repo-url
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
+          value: $(params.base-repo)
         - name: commit-sha
-          value: $(params.commit-id)
+          value: $(params.head-sha)
         - name: state
           value: $(tasks.code-branch-protection.results.status)
         - name: task-name
