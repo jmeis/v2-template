@@ -8,11 +8,11 @@ Then you should add the following rules to the `master` branch of your repositor
 
 ![Branch Protection Rules](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/rules-screenshot.png)
 
-Pull Requests _must_ be approved by the code owners before merging it to `master`.
+Pull Requests _must_ be approved, before merging it to `master`.
 
 ![Branch Protection Rules 2](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/rules-2-screenshot.png)
 
-The status checks shown on the screenshot above must pass before merging a pull request on an up-to-date branch. In order to be able to set them as required status checks, first you need to trigger a PR/CI pipeline beforehand (only existing status checks are listed on the UI).
+The status checks shown on the screenshot above must pass before merging a pull request. In order to be able to set them as required status checks, first you need to trigger a PR/CI pipeline beforehand (only existing status checks are listed on the UI).
 
 Branch protection rules could also be set by the following `curl` command, after replacing the `$GH_TOKEN`, `$OWNER`, `$REPO` variables. In our sample `hello-compliance-app`, this command sets the branch protection settings by default through the `one-pipeline.yaml` setup stage.
 
