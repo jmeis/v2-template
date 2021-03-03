@@ -312,6 +312,8 @@ services:
         $env.hcRoleId ? '{{hcRoleId}}' : ''
       secret_id: >
         $env.hcSecretId ? '{{hcSecretId}}' : ''
+      path: >
+        $env.secretsPath ? '{{secretsPath}}' : ''
 
 form:
   pipeline:
