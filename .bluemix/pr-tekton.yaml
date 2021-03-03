@@ -1,61 +1,9 @@
 ---
 inputs:
   - type: git
-    branch: develop
+    branch: feat/redesign
     service: ${PIPELINE_REPO}
     path: .pr-pipeline
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: preview/slack
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/github-check-statuses/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/configmap/retry-command/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/toolchain-extract-value/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/git-get-credentials/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/github-set-status/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/compliance-detect-secrets/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/pipeline-evaluate/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/git-clone/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/cra-bom/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/cra-cis-check/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/cra-discovery/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/cra-vulnerability-remediation/1
 triggers:
   - type: git
     name: Git PR Trigger
@@ -87,12 +35,14 @@ triggers:
         type: text
         value: ""
 properties:
-  - name: api-key
+  - name: ibmcloud-api-key
     value: ${API_KEY}
     type: SECURE
   - name: pipeline-debug
-    value: "0"
-    type: text
+    type: single_select
+    value:
+      "0": true
+      "1": false
   - name: artifactory-dockerconfigjson
     value: ${ARTIFACTORY_DOCKER_CONFIG_JSON}
     type: SECURE

@@ -1,89 +1,9 @@
 ---
 inputs:
   - type: git
-    branch: develop
+    branch: feat/redesign
     service: ${PIPELINE_REPO}
     path: .ci-pipeline
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: preview/container-registry
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: preview/slack
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/github-check-statuses/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/inventory-update-version/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/compliance-detect-secrets/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/pipeline-evaluate/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/git-clone/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/git-get-credentials/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/configmap/retry-command/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/configmap/compliance-helper-scripts/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/compliance-collector/2
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/compliance-doi-reporter/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/ciso-image-sign/2
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/containerize-check-va-scan/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/devops-insights-publish-build/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/devops-insights-publish-deploy/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/cra-bom/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/cra-cis-check/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/cra-discovery/1
-  - type: git
-    branch: master
-    service: ${TEKTON_CATALOG_REPO}
-    path: stable/task/cra-vulnerability-remediation/1
 triggers:
   - type: git
     name: Git CI Trigger
@@ -101,7 +21,7 @@ triggers:
     name: Manual Trigger
     eventListener: listener
 properties:
-  - name: api-key
+  - name: ibmcloud-api-key
     value: ${API_KEY}
     type: SECURE
   - name: vault-secret

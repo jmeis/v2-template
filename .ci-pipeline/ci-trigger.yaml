@@ -49,6 +49,11 @@ spec:
       default: pipeline
     - name: repository
       description: app repo url
+
+    - name: compliance-baseimage
+      description: one-pipeline baseimage to run most of the built-in pipeline code
+      default: "wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/compliance-baseimage:2.5.1@sha256:1c1b13d16f9b16a886932dcdfb392fd8fd5eb09ce86bcb2673f92ec1938fc2b0"
+
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -126,4 +131,6 @@ spec:
             value: $(params.one-pipeline-config-branch)
           - name: repository
             value: $(params.repository)
+          - name: compliance-baseimage
+            value: $(params.compliance-baseimage)
         serviceAccountName: sa-pullsecret

@@ -1,0 +1,338 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: pr-finish
+spec:
+  params:
+    - name: compliance-baseimage
+      description: base image to run most of the built-in pipeline code
+    - name: pipeline-debug
+      description: Pipeline debug mode
+      default: "0"
+
+    - name: detect-secrets-image
+      default: "wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/detect-secrets:0.13.1.ibm.29.dss@sha256:6fbe301ed4198f753e99f8eb6aa4339aa2453438034cc1bfa8918fdb9042a9b0"
+    - name: cra-discovery-image
+      default: "icr.io/continuous-delivery/cra-discovery:release.1472@sha256:a0eac0dbb046cb2fbb18a59ffddbada2be88bbc973ea3fcb5e4057136ebf183d"
+    - name: cra-vulnerability-image
+      default: "icr.io/continuous-delivery/cra-vulnerability:main.1266@sha256:1fe23cb8b5bd694433ebdaa7eb890008567041caa67ff2182b32dfda9661203c"
+    - name: cra-cis-check-image
+      default: "icr.io/continuous-delivery/cra-cis:release.1471@sha256:fcf9f7cc063f5820881c4c01150749a1d68d3c38685cc89258497374b1bca442"
+    - name: cra-comm-editor-image
+      default: "icr.io/continuous-delivery/cra-comm-editor:main.1260@sha256:e6c76eef0e5d1900f341250b79a7da411a46a99d845f01a4c1ceef5a9598f766"
+
+  workspaces:
+    - name: artifacts
+      mountPath: /artifacts
+
+  volumes:
+    - name: one-pipeline
+      emptyDir: {}
+    - name: pipelinectl
+      emptyDir: {}
+    - name: config
+      emptyDir: {}
+    - name: dind-certs
+      emptyDir: {}
+    - name: environment-properties
+      configMap:
+        name: environment-properties
+    - name: secure-properties
+      secret:
+        secretName: secure-properties
+    - name: toolchain
+      configMap:
+        name: toolchain
+
+  stepTemplate:
+    env:
+      - name: ONE_PIPELINE_PATH
+        value: "/opt/one-pipeline"
+      - name: WORKSPACE
+        value: "$(workspaces.artifacts.path)"
+      - name: PIPELINE_RUN_NAME
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.labels['tekton.dev/pipelineRun']
+      - name: PIPELINE_RUN_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
+      - name: PIPELINE_RUN_URL
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-run-url']
+      - name: BUILD_NUMBER
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.annotations['devops.cloud.ibm.com/build-number']
+      - name: PIPELINE_ID
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-id']
+      - name: TRIGGER_TYPE
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.annotations['devops.cloud.ibm.com/trigger-type']
+      - name: TRIGGER_NAME
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.annotations['devops.cloud.ibm.com/trigger-name']
+      - name: TRIGGERED_BY
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.annotations['devops.cloud.ibm.com/triggered-by']
+      - name: PIPELINE_DEBUG
+        value: $(params.pipeline-debug)
+      - name: DOCKER_HOST
+        value: tcp://localhost:2376
+      - name: DOCKER_TLS_VERIFY
+        value: '1'
+      - name: DOCKER_CERT_PATH
+        value: /certs/client
+
+  sidecars:
+    - name: dind
+      image: docker.io/library/docker:19-dind
+      securityContext:
+        privileged: true
+      env:
+        - name: DOCKER_TLS_CERTDIR
+          value: /certs
+        - name: ENABLE_DIND
+          value: "true"
+      volumeMounts:
+        - name: dind-certs
+          mountPath: /certs/client
+      script: |
+        if [[ "$ENABLE_DIND" == "true" ]]; then
+          if [[ $(df -PT /var/lib/docker | awk 'NR==2 {print $2}') == virtiofs ]]; then
+            apk add e2fsprogs
+            truncate -s 20G /tmp/disk.img
+            mkfs.ext4 /tmp/disk.img
+            mount /tmp/disk.img /var/lib/docker
+          fi
+          # Set the MTU to a value that is containable in the ibmcloud calico mtu value
+          # References:
+          # - https://liejuntao001.medium.com/fix-docker-in-docker-network-issue-in-kubernetes-cc18c229d9e5
+          # - https://cloud.ibm.com/docs/containers?topic=containers-kernel#calico-mtu
+          #
+          /usr/local/bin/dockerd-entrypoint.sh --mtu=1400
+        else
+          mkdir -p /certs/client
+          touch /certs/client/ca.pem
+        fi
+      readinessProbe:
+        periodSeconds: 1
+        exec:
+          command: ['ls', '/certs/client/ca.pem']
+
+  steps:
+
+    - name: prepare
+      image: $(params.compliance-baseimage)
+      workingDir: $(workspaces.artifacts.path)
+      volumeMounts:
+        - name: one-pipeline
+          mountPath: /usr/share/one-pipeline
+        - name: pipelinectl
+          mountPath: /usr/share/cocoa
+        - name: config
+          mountPath: /config
+        - name: environment-properties
+          mountPath: /config/environment-properties
+        - name: secure-properties
+          mountPath: /config/secure-properties
+        - name: toolchain
+          mountPath: /toolchain
+
+      script: |
+        #!/bin/bash
+
+        set -e
+
+        if [[ "$PIPELINE_DEBUG" == 1 ]]; then
+          set -x
+          trap env EXIT
+        fi
+
+        while read file; do
+          ln -snf "$file" "/config/$(basename "$file")"
+        done < <(find '/config/environment-properties' -type f)
+
+        while read file; do
+          ln -snf "$file" "/config/$(basename "$file")"
+        done < <(find '/config/secure-properties' -type f)
+
+        cp -r /opt/one-pipeline /usr/share
+        cp -r /opt/cocoa/bin /usr/share/cocoa
+
+    - name: detect-secrets
+      image: $(params.detect-secrets-image)
+      workingDir: $(workspaces.artifacts.path)
+      volumeMounts:
+        - name: one-pipeline
+          mountPath: /opt/one-pipeline
+        - name: pipelinectl
+          mountPath: /opt/cocoa
+        - name: config
+          mountPath: /config
+        - name: environment-properties
+          mountPath: /config/environment-properties
+        - name: secure-properties
+          mountPath: /config/secure-properties
+        - name: toolchain
+          mountPath: /toolchain
+
+      script: |
+        #!/bin/sh
+
+        export PATH="$PATH:/opt/cocoa/bin"
+
+        ${ONE_PIPELINE_PATH}/internal/detect-secrets/run
+
+    - name: cra-discovery
+      image: $(params.cra-discovery-image)
+      workingDir: $(workspaces.artifacts.path)
+      volumeMounts:
+        - name: one-pipeline
+          mountPath: /opt/one-pipeline
+        - name: pipelinectl
+          mountPath: /opt/cocoa
+        - name: config
+          mountPath: /config
+        - name: environment-properties
+          mountPath: /config/environment-properties
+        - name: secure-properties
+          mountPath: /config/secure-properties
+        - name: toolchain
+          mountPath: /toolchain
+        - name: dind-certs
+          mountPath: /certs/client
+      script: |
+        #!/bin/bash
+
+        export PATH="$PATH:/opt/cocoa/bin"
+
+        . ${ONE_PIPELINE_PATH}/internal/cra/discovery
+
+    - name: cra-remediation
+      image: $(params.cra-vulnerability-image)
+      workingDir: $(workspaces.artifacts.path)
+      volumeMounts:
+        - name: one-pipeline
+          mountPath: /opt/one-pipeline
+        - name: pipelinectl
+          mountPath: /opt/cocoa
+        - name: config
+          mountPath: /config
+        - name: environment-properties
+          mountPath: /config/environment-properties
+        - name: secure-properties
+          mountPath: /config/secure-properties
+        - name: toolchain
+          mountPath: /toolchain
+        - name: dind-certs
+          mountPath: /certs/client
+      script: |
+        #!/bin/bash
+
+        export PATH="$PATH:/opt/cocoa/bin"
+
+        . "${ONE_PIPELINE_PATH}"/internal/cra/remediation
+
+    - name: cra-remediation-comment
+      image: $(params.cra-comm-editor-image)
+      workingDir: $(workspaces.artifacts.path)
+      volumeMounts:
+        - name: one-pipeline
+          mountPath: /opt/one-pipeline
+        - name: pipelinectl
+          mountPath: /opt/cocoa
+        - name: config
+          mountPath: /config
+        - name: environment-properties
+          mountPath: /config/environment-properties
+        - name: secure-properties
+          mountPath: /config/secure-properties
+        - name: toolchain
+          mountPath: /toolchain
+        - name: dind-certs
+          mountPath: /certs/client
+      script: |
+        #!/bin/bash
+
+        export PATH="$PATH:/opt/cocoa/bin"
+
+        . "${ONE_PIPELINE_PATH}"/internal/cra/comment_editor
+
+    - name: cra-cis-check
+      image: $(params.cra-cis-check-image)
+      workingDir: $(workspaces.artifacts.path)
+      volumeMounts:
+        - name: one-pipeline
+          mountPath: /opt/one-pipeline
+        - name: pipelinectl
+          mountPath: /opt/cocoa
+        - name: config
+          mountPath: /config
+        - name: environment-properties
+          mountPath: /config/environment-properties
+        - name: secure-properties
+          mountPath: /config/secure-properties
+        - name: toolchain
+          mountPath: /toolchain
+        - name: dind-certs
+          mountPath: /certs/client
+      script: |
+        #!/bin/bash
+
+        export PATH="$PATH:/opt/cocoa/bin"
+
+        . "${ONE_PIPELINE_PATH}"/internal/cra/cis-check
+
+    - name: cra-cis-check-comment
+      image: $(params.cra-comm-editor-image)
+      workingDir: $(workspaces.artifacts.path)
+      volumeMounts:
+        - name: one-pipeline
+          mountPath: /opt/one-pipeline
+        - name: pipelinectl
+          mountPath: /opt/cocoa
+        - name: config
+          mountPath: /config
+        - name: environment-properties
+          mountPath: /config/environment-properties
+        - name: secure-properties
+          mountPath: /config/secure-properties
+        - name: toolchain
+          mountPath: /toolchain
+        - name: dind-certs
+          mountPath: /certs/client
+      script: |
+        #!/bin/bash
+
+        export PATH="$PATH:/opt/cocoa/bin"
+
+        . "${ONE_PIPELINE_PATH}"/internal/cra/comment_editor
+
+    - name: finish
+      image: $(params.compliance-baseimage)
+      workingDir: $(workspaces.artifacts.path)
+      volumeMounts:
+        - name: config
+          mountPath: /config
+        - name: environment-properties
+          mountPath: /config/environment-properties
+        - name: secure-properties
+          mountPath: /config/secure-properties
+        - name: toolchain
+          mountPath: /toolchain
+
+      script: |
+        #!/bin/bash
+
+        export PATH="$PATH:/opt/cocoa/bin"
+
+        . "${ONE_PIPELINE_PATH}"/internal/pr_compliance_checks

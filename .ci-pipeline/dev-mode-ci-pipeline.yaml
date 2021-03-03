@@ -23,7 +23,9 @@ spec:
       description: repository url of the one-pipeline config
     - name: one-pipeline-config-branch
       description: the branch of the one-pipeline config
-
+    - name: compliance-baseimage
+      description: base image to run most of the built-in pipeline code
+      default: ""
   workspaces:
     - name: artifacts
 

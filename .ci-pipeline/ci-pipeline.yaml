@@ -5,19 +5,9 @@ metadata:
   name: pipeline
 spec:
   params:
-    - name: app-name
-      description: The name of your app
-    - name: registry-region
-      description: The IBM Cloud region for image registry
     - name: branch
       description: the branch for the git repo
       default: "master"
-    - name: repository-integration
-      description: the repo integration name
-    - name: slack-notifications
-      description: toggles slack notifications
-    - name: pipeline-debug
-      description: toggles debug mode for the pipeline
     - name: commit-id
       description: commit id
     - name: commit-timestamp
@@ -25,988 +15,326 @@ spec:
     - name: pr-url
       description: pr url
       default: ""
-    - name: cos-bucket-name
-      description: Bucket name in your Cloud Object Storage instance, used as an Evidence Locker
-      default: ""
-    - name: cos-endpoint
-      description: Endpoint of your Cloud Object Storage instance, used as an Evidence Locker
-      default: ""
-    - name: one-pipeline-config
-      description: Configuration file to be used to customize pipeline behavior
-      default: .one-pipeline.yaml
-    - name: one-pipeline-config-repo
-      description: repository url of the one-pipeline config
-    - name: one-pipeline-config-branch
-      description: the branch of the one-pipeline config
-    - name: doi-toolchain-id
-      description: DevOps Toolchain ID
-      default: ""
-    - name: doi-environment
-      description: doi target environment
-      default: ""
+    - name: repository-integration
+      description: the repo integration name
     - name: repository
       description: app repository owner and name
+
+    - name: compliance-baseimage
+      description: one-pipeline baseimage to run most of the built-in pipeline code
+    - name: pipeline-debug
+      description: toggles debug mode for the pipeline
+      default: "0"
 
   workspaces:
     - name: artifacts
 
   tasks:
-    - name: code-notify-pipeline-start
-      when:
-        - input: $(params.slack-notifications)
-          operator: in
-          values: ["1"]
-      taskRef:
-        name: slack-post-message
-      workspaces:
-        - name: workspace
-          workspace: artifacts
-      params:
-        - name: message-script
-          value: |
-              #!/usr/bin/env python3
-              import os
 
-              print("CI Pipeline was Triggered By: " + os.getenv("TRIGGERED_BY"))
-              print("<https://cloud.ibm.com/devops/pipelines/tekton/" + os.getenv("PIPELINE_ID") + "/runs/" + os.getenv("PIPELINE_RUN_ID") + "?env_id=ibm:yp:" + os.getenv("TOOLCHAIN_REGION") + " | See the Pipeline Logs>")
-
-    - name: code-setup-pipeline-env
+    - name: code-ci-start
       taskRef:
-        name: code-setup-pipeline-env
-      params:
-        - name: one-pipeline-config-branch
-          value: $(params.one-pipeline-config-branch)
-        - name: one-pipeline-config-repo
-          value: $(params.one-pipeline-config-repo)
-        - name: repository
-          value: $(params.repository)
-        - name: repository-branch
-          value: $(params.branch)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: code-fetch-credentials
-      taskRef:
-        name: git-get-credentials
+        name: ci-start
       workspaces:
         - name: artifacts
           workspace: artifacts
-        - name: secrets
-          workspace: artifacts
       params:
-        - name: ibmcloud-api-key-secret-key
-          value: api-key
-        - name: repository
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
+        - name: branch
+          value: $(params.branch)
         - name: repository-integration
           value: $(params.repository-integration)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: code-fetch-code
-      runAfter:
-        - code-fetch-credentials
-      taskRef:
-        name: git-clone
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: repository
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
-        - name: git-user
-          value: $(tasks.code-fetch-credentials.results.git-auth-user)
-        - name: branch
-          value: $(params.branch)
-        - name: revision
+        - name: commit-id
           value: $(params.commit-id)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: code-clone-one-pipeline-config-repo
-      taskRef:
-        name: git-clone
-      runAfter:
-        - code-fetch-credentials
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-        - name: secrets
-          workspace: artifacts
-      params:
+        - name: commit-timestamp
+          value: $(params.commit-timestamp)
+        - name: pr-url
+          value: $(params.pr-url)
         - name: repository
-          value: $(tasks.code-setup-pipeline-env.results.one-pipeline-repo-url)
-        - name: branch
-          value: $(tasks.code-setup-pipeline-env.results.one-pipeline-repo-branch)
-        - name: directory-name
-          value: "one-pipeline-config-repo"
-        - name: git-user
-          value: $(tasks.code-fetch-credentials.results.git-auth-user)
+          value: $(params.repository)
+        - name: compliance-baseimage
+          value: $(params.compliance-baseimage)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-
-    - name: code-normalize-config
-      runAfter:
-        - code-clone-one-pipeline-config-repo
-      taskRef:
-        name: normalize-config
-      workspaces:
-        - name: app
-          workspace: artifacts
-      params:
-        - name: working-dir
-          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)
-        - name: file
-          value: $(params.one-pipeline-config)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: code-detect-secrets
-      runAfter:
-        - code-fetch-code
-      taskRef:
-        name: compliance-detect-secrets
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: app-directory
-          value: $(tasks.code-fetch-code.results.directory-name)
-
-    - name: build-doi-publish-buildrecord
-      taskRef:
-        name: devops-insights-publish-build
-      params:
-        - name: app-name
-          value: $(tasks.code-fetch-credentials.results.repo-name)
-        - name: secret-key
-          value: "api-key"
-        - name: git-repository
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
-        - name: git-branch
-          value: $(params.branch)
-        - name: git-commit
-          value: $(tasks.code-fetch-code.results.git-commit)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-        - name: toolchain-id
-          value: $(params.doi-toolchain-id)
-
-    - name: code-setup-config
-      runAfter:
-        - code-normalize-config
-      taskRef:
-        name: parse-config
-      workspaces:
-        - name: app
-          workspace: artifacts
-      params:
-        - name: file
-          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)/$(params.one-pipeline-config)
-        - name: stage
+        - name: next-stage
           value: setup
 
     - name: code-setup
       taskRef:
         name: run-stage
+      runAfter:
+        - code-ci-start
       workspaces:
         - name: app
           workspace: artifacts
       params:
+        - name: stage
+          value: setup
         - name: image
-          value: $(tasks.code-setup-config.results.image)
+          value: $(tasks.code-ci-start.results.image)
         - name: script
-          value: $(tasks.code-setup-config.results.script)
-        - name: working-dir
-          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)
-        - name: configmap-0
-          value: $(tasks.code-setup-config.results.configmap-0)
-        - name: secret-0
-          value: $(tasks.code-setup-config.results.secret-0)
+          value: $(tasks.code-ci-start.results.script)
+        - name: configmap
+          value: $(tasks.code-ci-start.results.configmap)
+        - name: secret
+          value: $(tasks.code-ci-start.results.secret)
         - name: abort-on-failure
-          value: $(tasks.code-setup-config.results.abort-on-failure)
+          value: $(tasks.code-ci-start.results.abort-on-failure)
         - name: dind
-          value: $(tasks.code-setup-config.results.dind)
-        - name: params
-          value: |
-            git-commit: $(tasks.code-fetch-code.results.git-commit)
-            repository-url: $(tasks.code-setup-pipeline-env.results.repository-url)
-            inventory-url: $(tasks.code-setup-pipeline-env.results.inventory-repo-url)
+          value: $(tasks.code-ci-start.results.dind)
+        - name: image-pull-policy
+          value: $(tasks.code-ci-start.results.image-pull-policy)
+        - name: compliance-baseimage
+          value: $(params.compliance-baseimage)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-
-    - name: code-unit-tests-config
-      runAfter:
-        - code-setup
-      taskRef:
-        name: parse-config
-      workspaces:
-        - name: app
-          workspace: artifacts
-      params:
-        - name: file
-          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)/$(params.one-pipeline-config)
-        - name: stage
+        - name: next-stage
           value: test
 
     - name: code-unit-tests
       taskRef:
         name: run-stage
+      runAfter:
+        - code-setup
       workspaces:
         - name: app
           workspace: artifacts
       params:
-        - name: image
-          value: $(tasks.code-unit-tests-config.results.image)
-        - name: script
-          value: $(tasks.code-unit-tests-config.results.script)
-        - name: working-dir
-          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)
-        - name: configmap-0
-          value: $(tasks.code-unit-tests-config.results.configmap-0)
-        - name: configmap-1
-          value: $(tasks.code-unit-tests-config.results.configmap-1)
-        - name: configmap-2
-          value: $(tasks.code-unit-tests-config.results.configmap-2)
-        - name: configmap-3
-          value: $(tasks.code-unit-tests-config.results.configmap-3)
-        - name: configmap-4
-          value: $(tasks.code-unit-tests-config.results.configmap-4)
-        - name: secret-0
-          value: $(tasks.code-unit-tests-config.results.secret-0)
-        - name: secret-1
-          value: $(tasks.code-unit-tests-config.results.secret-1)
-        - name: secret-2
-          value: $(tasks.code-unit-tests-config.results.secret-2)
-        - name: secret-3
-          value: $(tasks.code-unit-tests-config.results.secret-3)
-        - name: secret-4
-          value: $(tasks.code-unit-tests-config.results.secret-4)
-        - name: abort-on-failure
-          value: $(tasks.code-unit-tests-config.results.abort-on-failure)
-        - name: dind
-          value: $(tasks.code-unit-tests-config.results.dind)
-        - name: params
-          value: |
-            git-commit: $(tasks.code-fetch-code.results.git-commit)
-            repository-url: $(tasks.code-setup-pipeline-env.results.repository-url)
-            inventory-url: $(tasks.code-setup-pipeline-env.results.inventory-repo-url)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: code-vulnerability-scan-uploader
-      runAfter:
-        - code-unit-tests
-      taskRef:
-        name: cra-discovery
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: repository
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
-        - name: revision
-          value: $(params.branch)
-        - name: commit-id
-          value: $(tasks.code-fetch-code.results.git-commit)
-        - name: commit-timestamp
-          value: $(params.commit-timestamp)
-        - name: directory-name
-          value: $(tasks.code-fetch-code.results.directory-name)
-
-    - name: code-vulnerability-scan
-      runAfter:
-        - code-vulnerability-scan-uploader
-      taskRef:
-        name: cra-vulnerability-remediation
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: repository
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
-        - name: revision
-          value: $(params.branch)
-        - name: pr-url
-          value: $(params.pr-url)
-        - name: commit-id
-          value: $(tasks.code-fetch-code.results.git-commit)
-
-    - name: code-cis-check
-      taskRef:
-        name: cra-cis-check
-      runAfter:
-        - code-vulnerability-scan-uploader
-      workspaces:
-        - name: secrets
-          workspace: artifacts
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: repository
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
-        - name: revision
-          value: $(params.branch)
-        - name: pr-url
-          value: $(params.pr-url)
-        - name: commit-id
-          value: $(tasks.code-fetch-code.results.git-commit)
-        - name: directory-name
-          value: $(tasks.code-fetch-code.results.directory-name)
-
-    - name: code-bom-check
-      runAfter:
-        - code-vulnerability-scan-uploader
-      taskRef:
-        name: cra-bom
-      workspaces:
-        - name: secrets
-          workspace: artifacts
-        - name: artifacts
-          workspace: artifacts
-      params:
-        - name: repository
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
-        - name: revision
-          value: $(params.branch)
-        - name: commit-id
-          value: $(tasks.code-fetch-code.results.git-commit)
-
-    - name: code-branch-protection
-      taskRef:
-        name: github-check-statuses
-      runAfter:
-        - code-fetch-code
-      workspaces:
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: target-branch
-          value: $(params.branch)
-        - name: required-checks
-          value: |
-            [{
-              "type": "branch-protection",
-              "name": "code-review",
-              "params": {
-                "checks": [
-                  "tekton/code-branch-protection",
-                  "tekton/code-unit-tests",
-                  "tekton/code-cis-check",
-                  "tekton/code-vulnerability-scan",
-                  "tekton/code-detect-secrets"
-                ]
-              }
-            }]
-        - name: gh-org
-          value: $(tasks.code-setup-pipeline-env.results.gh-org)
-        - name: repository
-          value: $(tasks.code-fetch-credentials.results.repo-name)
-        - name: git-commit
-          value: $(tasks.code-fetch-code.results.git-commit)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-
-    - name: build-containerize-config
-      taskRef:
-        name: parse-config
-      runAfter:
-        - code-unit-tests
-      workspaces:
-        - name: app
-          workspace: artifacts
-      params:
-        - name: file
-          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)/$(params.one-pipeline-config)
         - name: stage
+          value: test
+        - name: image
+          value: $(tasks.code-setup.results.image)
+        - name: script
+          value: $(tasks.code-setup.results.script)
+        - name: configmap
+          value: $(tasks.code-setup.results.configmap)
+        - name: secret
+          value: $(tasks.code-setup.results.secret)
+        - name: abort-on-failure
+          value: $(tasks.code-setup.results.abort-on-failure)
+        - name: dind
+          value: $(tasks.code-setup.results.dind)
+        - name: image-pull-policy
+          value: $(tasks.code-setup.results.image-pull-policy)
+        - name: compliance-baseimage
+          value: $(params.compliance-baseimage)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+
+    - name: code-ci-compliance
+      taskRef:
+        name: ci-compliance
+      runAfter:
+        - code-unit-tests
+      workspaces:
+        - name: artifacts
+          workspace: artifacts
+      params:
+        - name: compliance-baseimage
+          value: $(params.compliance-baseimage)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: next-stage
           value: containerize
 
     - name: build-containerize
       taskRef:
         name: run-stage
+      runAfter:
+        - code-ci-compliance
       workspaces:
         - name: app
           workspace: artifacts
       params:
+        - name: stage
+          value: containerize
         - name: image
-          value: $(tasks.build-containerize-config.results.image)
+          value: $(tasks.code-ci-compliance.results.image)
         - name: script
-          value: $(tasks.build-containerize-config.results.script)
-        - name: working-dir
-          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)
-        - name: configmap-0
-          value: $(tasks.build-containerize-config.results.configmap-0)
-        - name: secret-0
-          value: $(tasks.build-containerize-config.results.secret-0)
+          value: $(tasks.code-ci-compliance.results.script)
+        - name: configmap
+          value: $(tasks.code-ci-compliance.results.configmap)
+        - name: secret
+          value: $(tasks.code-ci-compliance.results.secret)
         - name: abort-on-failure
-          value: $(tasks.build-containerize-config.results.abort-on-failure)
+          value: $(tasks.code-ci-compliance.results.abort-on-failure)
         - name: dind
-          value: $(tasks.build-containerize-config.results.dind)
+          value: $(tasks.code-ci-compliance.results.dind)
+        - name: image-pull-policy
+          value: $(tasks.code-ci-compliance.results.image-pull-policy)
+        - name: compliance-baseimage
+          value: $(params.compliance-baseimage)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-        - name: params
-          value: |
-            git-branch: $(tasks.code-fetch-code.results.git-branch)
-            git-commit: $(tasks.code-fetch-code.results.git-commit)
-            repository-url: $(tasks.code-setup-pipeline-env.results.repository-url)
-            inventory-url: $(tasks.code-setup-pipeline-env.results.inventory-repo-url)
+        - name: next-stage
+          value: scan-artifact
 
-    - name: build-containerize-results
-      taskSpec:
-        workspaces:
-          - name: artifacts
-        results:
-          - name: image
-          - name: image-digest
-          - name: image-tags
-        steps:
-          - name: emit-results
-            image: icr.io/continuous-delivery/pipeline/pipeline-base-image:2.9@sha256:2976e1374e87f5cddabcf80179d9708868d52dbf656fdde60f803553be633db2
-            script: |
-              cat "$(workspaces.artifacts.path)/image" > "$(results.image.path)"
-              cat "$(workspaces.artifacts.path)/image-digest" > "$(results.image-digest.path)"
-              cat "$(workspaces.artifacts.path)/image-tags" > "$(results.image-tags.path)"
+    - name: build-scan-artifact
+      taskRef:
+        name: run-stage
       runAfter:
         - build-containerize
       workspaces:
-        - name: artifacts
-          workspace: artifacts
-
-    - name: build-vulnerability-advisor
-      taskRef:
-        name: containerize-check-va-scan
-      workspaces:
-        - name: artifacts
+        - name: app
           workspace: artifacts
       params:
-        - name: image-url
-          value: $(tasks.build-containerize-results.results.image)
-        - name: image-digest
-          value: $(tasks.build-containerize-results.results.image-digest)
-        - name: scan-report-file
-          value: 'app-image-va-report.json'
-        - name: ibmcloud-api-key-secret-key
-          value: "api-key"
-        - name: fail-on-scanned-issues
-          value: "false"
+        - name: stage
+          value: scan-artifact
+        - name: image
+          value: $(tasks.build-containerize.results.image)
+        - name: script
+          value: $(tasks.build-containerize.results.script)
+        - name: configmap
+          value: $(tasks.build-containerize.results.configmap)
+        - name: secret
+          value: $(tasks.build-containerize.results.secret)
+        - name: abort-on-failure
+          value: $(tasks.build-containerize.results.abort-on-failure)
+        - name: dind
+          value: $(tasks.build-containerize.results.dind)
+        - name: image-pull-policy
+          value: $(tasks.build-containerize.results.image-pull-policy)
+        - name: compliance-baseimage
+          value: $(params.compliance-baseimage)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: next-stage
+          value: sign-artifact
 
-    - name: build-image-signing
-      runAfter:
-        - build-vulnerability-advisor
+    - name: build-sign-artifact
       taskRef:
-        name: ciso-image-sign
-      params:
-        - name: registry-region
-          value: $(params.registry-region)
-        - name: image
-          value: $(tasks.build-containerize-results.results.image)
-        - name: image-digest
-          value: $(tasks.build-containerize-results.results.image-digest)
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-
-    - name: deploy-dev-config
+        name: run-stage
       runAfter:
-        - build-image-signing
-      taskRef:
-        name: parse-config
+        - build-scan-artifact
       workspaces:
         - name: app
           workspace: artifacts
       params:
-        - name: file
-          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)/$(params.one-pipeline-config)
         - name: stage
+          value: sign-artifact
+        - name: image
+          value: $(tasks.build-scan-artifact.results.image)
+        - name: script
+          value: $(tasks.build-scan-artifact.results.script)
+        - name: configmap
+          value: $(tasks.build-scan-artifact.results.configmap)
+        - name: secret
+          value: $(tasks.build-scan-artifact.results.secret)
+        - name: abort-on-failure
+          value: $(tasks.build-scan-artifact.results.abort-on-failure)
+        - name: dind
+          value: $(tasks.build-scan-artifact.results.dind)
+        - name: image-pull-policy
+          value: $(tasks.build-scan-artifact.results.image-pull-policy)
+        - name: compliance-baseimage
+          value: $(params.compliance-baseimage)
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: next-stage
           value: deploy
 
     - name: deploy-dev
       taskRef:
         name: run-stage
+      runAfter:
+        - build-sign-artifact
       workspaces:
         - name: app
           workspace: artifacts
       params:
+        - name: stage
+          value: deploy
         - name: image
-          value: $(tasks.deploy-dev-config.results.image)
+          value: $(tasks.build-sign-artifact.results.image)
         - name: script
-          value: $(tasks.deploy-dev-config.results.script)
-        - name: working-dir
-          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)
-        - name: params
-          value: |
-            image: $(tasks.build-containerize-results.results.image)@$(tasks.build-containerize-results.results.image-digest)
-            git-commit: $(tasks.code-fetch-code.results.git-commit)
-            repository-url: $(tasks.code-setup-pipeline-env.results.repository-url)
-            inventory-url: $(tasks.code-setup-pipeline-env.results.inventory-repo-url)
-        - name: configmap-0
-          value: $(tasks.deploy-dev-config.results.configmap-0)
-        - name: secret-0
-          value: $(tasks.deploy-dev-config.results.secret-0)
+          value: $(tasks.build-sign-artifact.results.script)
+        - name: configmap
+          value: $(tasks.build-sign-artifact.results.configmap)
+        - name: secret
+          value: $(tasks.build-sign-artifact.results.secret)
         - name: abort-on-failure
-          value: $(tasks.deploy-dev-config.results.abort-on-failure)
+          value: $(tasks.build-sign-artifact.results.abort-on-failure)
         - name: dind
-          value: $(tasks.deploy-dev-config.results.dind)
+          value: $(tasks.build-sign-artifact.results.dind)
+        - name: image-pull-policy
+          value: $(tasks.build-sign-artifact.results.image-pull-policy)
+        - name: compliance-baseimage
+          value: $(params.compliance-baseimage)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-
-    - name: deploy-acceptance-tests-config
-      runAfter:
-        - deploy-dev
-      taskRef:
-        name: parse-config
-      workspaces:
-        - name: app
-          workspace: artifacts
-      params:
-        - name: file
-          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)/$(params.one-pipeline-config)
-        - name: stage
+        - name: next-stage
           value: acceptance-test
 
     - name: deploy-acceptance-tests
       taskRef:
         name: run-stage
+      runAfter:
+        - deploy-dev
       workspaces:
         - name: app
           workspace: artifacts
       params:
+        - name: stage
+          value: acceptance-test
         - name: image
-          value: $(tasks.deploy-acceptance-tests-config.results.image)
+          value: $(tasks.deploy-dev.results.image)
         - name: script
-          value: $(tasks.deploy-acceptance-tests-config.results.script)
-        - name: working-dir
-          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)
-        - name: configmap-0
-          value: $(tasks.deploy-acceptance-tests-config.results.configmap-0)
-        - name: secret-0
-          value: $(tasks.deploy-acceptance-tests-config.results.secret-0)
+          value: $(tasks.deploy-dev.results.script)
+        - name: configmap
+          value: $(tasks.deploy-dev.results.configmap)
+        - name: secret
+          value: $(tasks.deploy-dev.results.secret)
         - name: abort-on-failure
-          value: $(tasks.deploy-acceptance-tests-config.results.abort-on-failure)
+          value: $(tasks.deploy-dev.results.abort-on-failure)
         - name: dind
-          value: $(tasks.deploy-acceptance-tests-config.results.dind)
-        - name: params
-          value: |
-            git-commit: $(tasks.code-fetch-code.results.git-commit)
-            repository-url: $(tasks.code-setup-pipeline-env.results.repository-url)
-            inventory-url: $(tasks.code-setup-pipeline-env.results.inventory-repo-url)
+          value: $(tasks.deploy-dev.results.dind)
+        - name: image-pull-policy
+          value: $(tasks.deploy-dev.results.image-pull-policy)
+        - name: compliance-baseimage
+          value: $(params.compliance-baseimage)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-
-    - name: deploy-release-config
-      runAfter:
-        - deploy-acceptance-tests
-      taskRef:
-        name: parse-config
-      workspaces:
-        - name: app
-          workspace: artifacts
-      params:
-        - name: file
-          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)/$(params.one-pipeline-config)
-        - name: stage
+        - name: next-stage
           value: release
 
     - name: deploy-release
       runAfter:
-        - deploy-release-config
+        - deploy-acceptance-tests
       taskRef:
         name: run-stage
       workspaces:
         - name: app
           workspace: artifacts
       params:
+        - name: stage
+          value: release
         - name: image
-          value: $(tasks.deploy-release-config.results.image)
+          value: $(tasks.deploy-acceptance-tests.results.image)
         - name: script
-          value: $(tasks.deploy-release-config.results.script)
-        - name: working-dir
-          value: $(tasks.code-clone-one-pipeline-config-repo.results.directory-name)
-        - name: configmap-0
-          value: $(tasks.deploy-release-config.results.configmap-0)
-        - name: secret-0
-          value: $(tasks.deploy-release-config.results.secret-0)
+          value: $(tasks.deploy-acceptance-tests.results.script)
+        - name: configmap
+          value: $(tasks.deploy-acceptance-tests.results.configmap)
+        - name: secret
+          value: $(tasks.deploy-acceptance-tests.results.secret)
         - name: abort-on-failure
-          value: $(tasks.deploy-release-config.results.abort-on-failure)
+          value: $(tasks.deploy-acceptance-tests.results.abort-on-failure)
         - name: dind
-          value: $(tasks.deploy-release-config.results.dind)
-        - name: params
-          value: |
-            git-commit: $(tasks.code-fetch-code.results.git-commit)
-            repository-url: $(tasks.code-setup-pipeline-env.results.repository-url)
-            inventory-url: $(tasks.code-setup-pipeline-env.results.inventory-repo-url)
-            artifact: $(tasks.build-containerize-results.results.image)@$(tasks.build-containerize-results.results.image-digest)
-            signature: $(tasks.build-image-signing.results.signature-content)
+          value: $(tasks.deploy-acceptance-tests.results.dind)
+        - name: image-pull-policy
+          value: $(tasks.deploy-acceptance-tests.results.image-pull-policy)
+        - name: compliance-baseimage
+          value: $(params.compliance-baseimage)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: dev-publish-deployrecord
+    - name: code-ci-finish
       taskRef:
-        name: devops-insights-publish-deploy
+        name: ci-finish
       runAfter:
-        - deploy-dev
-      params:
-        - name: app-name
-          value: $(tasks.code-fetch-credentials.results.repo-name)
-        - name: toolchain-id
-          value: "$(params.doi-toolchain-id)"
-        - name: environment
-          value: "dev"
-        - name: doi-environment
-          value: $(params.doi-environment)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-        - name: toolchain-apikey-secret-key
-          value: "api-key"
-
-    - name: build-compliance-collector
-      taskRef:
-        name: compliance-collector
-      workspaces:
-        - name: artifacts
-          workspace: artifacts
-        - name: secrets
-          workspace: artifacts
-      params:
-        - name: namespace
-          value: ci
-        - name: incident-issue-repo
-          value: $(tasks.code-setup-pipeline-env.results.issues-repo-url)
-        - name: evidence-repo-url
-          value: $(tasks.code-setup-pipeline-env.results.evidence-repo-url)
-        - name: application-repo-url
-          value: $(tasks.code-setup-pipeline-env.results.repository-url)
-        - name: commit-hash
-          value: $(tasks.code-fetch-code.results.git-commit)
-        - name: toolchain-crn
-          value: $(tasks.code-setup-pipeline-env.results.toolchain-id)
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
-        - name: toolchain-apikey-secret-key
-          value: "api-key"
-        - name: cos-bucket-name
-          value: "$(params.cos-bucket-name)"
-        - name: cos-endpoint
-          value: "$(params.cos-endpoint)"
-        - name: data
-          value: |
-            [
-              {
-                "name": "code-detect-secrets",
-                "step": "detect-secrets",
-                "evidence_type": "com.ibm.detect_secrets",
-                "evidence_type_version": "1.0.0",
-                "expected": "success",
-                "actual": "$(tasks.code-detect-secrets.results.status)",
-                "artifacts": [
-                ]
-              },
-              {
-                "name": "code-unit-tests",
-                "step": "run-script",
-                "evidence_type": "com.ibm.unit_tests",
-                "evidence_type_version": "1.0.0",
-                "expected": "success",
-                "actual": "$(tasks.code-unit-tests.results.status)",
-                "artifacts": [
-                ]
-              },
-              {
-                "name": "code-vulnerability-scan",
-                "step": "remediation",
-                "evidence_type": "com.ibm.code_vulnerability_scan",
-                "evidence_type_version": "1.0.0",
-                "expected": "success",
-                "actual": "$(tasks.code-vulnerability-scan.results.status)",
-                "artifacts": [
-                  "$(tasks.code-vulnerability-scan.results.evidence-store)"
-                ]
-              },
-              {
-                "name": "code-cis-check",
-                "step": "cis",
-                "evidence_type": "com.ibm.code_cis_check",
-                "evidence_type_version": "1.0.0",
-                "expected": "success",
-                "actual": "$(tasks.code-cis-check.results.status)",
-                "artifacts": [
-                  "$(tasks.code-cis-check.results.evidence-store)"
-                ]
-              },
-              {
-                "name": "code-bom-check",
-                "step": "bom",
-                "evidence_type": "com.ibm.code_bom_check",
-                "evidence_type_version": "1.0.0",
-                "expected": "success",
-                "actual": "$(tasks.code-bom-check.results.status)",
-                "artifacts": [
-                  "$(tasks.code-bom-check.results.evidence-store)"
-                ]
-              },
-              {
-                "name": "code-branch-protection",
-                "step": "check-github-statuses",
-                "evidence_type": "com.ibm.branch_protection",
-                "evidence_type_version": "1.0.0",
-                "expected": "success",
-                "actual": "$(tasks.code-branch-protection.results.status)",
-                "artifacts": [
-                ]
-              },
-              {
-                "name": "build-vulnerability-advisor",
-                "step": "run-vulnerability-advisor-scan",
-                "evidence_type": "com.ibm.cloud.image_vulnerability_scan",
-                "evidence_type_version": "1.0.0",
-                "expected": "OK",
-                "actual": "$(tasks.build-vulnerability-advisor.results.scan-status)",
-                "artifacts": [
-                  "$(tasks.build-vulnerability-advisor.results.scan-report-file)"
-                ]
-              },
-              {
-                "name": "build-image-signing",
-                "step": "sign-image",
-                "evidence_type": "com.ibm.cloud.image_signing",
-                "evidence_type_version": "1.0.0",
-                "expected": "success",
-                "actual": "$(tasks.build-image-signing.results.status)",
-                "artifacts": [
-                  "$(tasks.build-image-signing.results.signature)"
-                ]
-              },
-              {
-                "name": "deploy-acceptance-tests",
-                "step": "run-script",
-                "evidence_type": "com.ibm.acceptance_tests",
-                "evidence_type_version": "1.0.0",
-                "expected": "success",
-                "actual": "$(tasks.deploy-acceptance-tests.results.status)",
-                "artifacts": [
-                ]
-              }
-            ]
-
-    - name: build-compliance-doi-reporter
-      taskRef:
-        name: compliance-doi-reporter
+        - deploy-release
       workspaces:
         - name: artifacts
           workspace: artifacts
       params:
-        - name: app-name
-          value: $(tasks.code-fetch-credentials.results.repo-name)
+        - name: compliance-baseimage
+          value: $(params.compliance-baseimage)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
-        - name: ibmcloud-api-key-secret-key
-          value: "api-key"
-        - name: toolchain-id
-          value: "$(params.doi-toolchain-id)"
-        - name: data
-          value: |
-            [
-              {
-                "name": "code-detect-secrets",
-                "step": "detect-secrets",
-                "evidence_type": "com.ibm.detect_secrets",
-                "expected": "success",
-                "actual": "$(tasks.code-detect-secrets.results.status)"
-              },
-              {
-                "name": "code-unit-tests",
-                "step": "run-script",
-                "evidence_type": "com.ibm.unit_tests",
-                "expected": "success",
-                "actual": "$(tasks.code-unit-tests.results.status)"
-              },
-              {
-                "name": "code-vulnerability-scan",
-                "step": "remediation",
-                "evidence_type": "com.ibm.code_vulnerability_scan",
-                "expected": "success",
-                "actual": "$(tasks.code-vulnerability-scan.results.status)"
-              },
-              {
-                "name": "code-cis-check",
-                "step": "cis",
-                "evidence_type": "com.ibm.code_cis_check",
-                "expected": "success",
-                "actual": "$(tasks.code-cis-check.results.status)"
-              },
-              {
-                "name": "code-bom-check",
-                "step": "bom",
-                "evidence_type": "com.ibm.code_bom_check",
-                "expected": "success",
-                "actual": "$(tasks.code-bom-check.results.status)"
-              },
-              {
-                "name": "code-branch-protection",
-                "step": "check-github-statuses",
-                "evidence_type": "com.ibm.branch_protection",
-                "expected": "success",
-                "actual": "$(tasks.code-branch-protection.results.status)"
-              },
-              {
-                "name": "build-vulnerability-advisor",
-                "step": "run-vulnerability-advisor-scan",
-                "evidence_type": "com.ibm.cloud.image_vulnerability_scan",
-                "expected": "OK",
-                "actual": "$(tasks.build-vulnerability-advisor.results.scan-status)"
-              },
-              {
-                "name": "build-image-signing",
-                "step": "sign-image",
-                "evidence_type": "com.ibm.cloud.image_signing",
-                "expected": "success",
-                "actual": "$(tasks.build-image-signing.results.status)"
-              },
-              {
-                "name": "deploy-acceptance-tests",
-                "step": "run-script",
-                "evidence_type": "com.ibm.acceptance_tests",
-                "expected": "success",
-                "actual": "$(tasks.deploy-acceptance-tests.results.status)"
-              }
-            ]
-
-    - name: build-notify-pipeline-end
-      when:
-        - input: $(params.slack-notifications)
-          operator: in
-          values: ["1"]
-      runAfter:
-        - build-compliance-collector
-        - build-compliance-doi-reporter
-      taskRef:
-        name: slack-post-message
-      workspaces:
-        - name: workspace
-          workspace: artifacts
-      params:
-        - name: message-script
-          value: |
-              #!/usr/bin/env python3
-              import json, os
-
-              results = json.loads("""
-                [
-                  {
-                    "name": "code-unit-tests",
-                    "expected": "success",
-                    "actual": "$(tasks.code-unit-tests.results.status)"
-                  },
-                  {
-                    "name": "deploy-acceptance-tests",
-                    "expected": "success",
-                    "actual": "$(tasks.deploy-acceptance-tests.results.status)"
-                  },
-                  {
-                    "name": "code-vulnerability-scan",
-                    "expected": "success",
-                    "actual": "$(tasks.code-vulnerability-scan.results.status)"
-                  },
-                  {
-                    "name": "code-cis-check",
-                    "expected": "success",
-                    "actual": "$(tasks.code-cis-check.results.status)"
-                  },
-                  {
-                    "name": "code-bom-check",
-                    "expected": "success",
-                    "actual": "$(tasks.code-bom-check.results.status)"
-                  },
-                  {
-                    "name": "code-branch-protection",
-                    "expected": "success",
-                    "actual": "$(tasks.code-branch-protection.results.status)"
-                  },
-                  {
-                    "name": "build-vulnerability-advisor",
-                    "expected": "OK",
-                    "actual": "$(tasks.build-vulnerability-advisor.results.scan-status)"
-                  },
-                  {
-                    "name": "code-detect-secrets",
-                    "expected": "success",
-                    "actual": "$(tasks.code-detect-secrets.results.status)"
-                  },
-                  {
-                    "name": "build-image-signing",
-                    "expected": "success",
-                    "actual": "$(tasks.build-image-signing.results.status)"
-                  }
-                ]
-              """)
-
-              for result in results:
-                if result["actual"] != result["expected"]:
-                  print(":x: Task `{taskName}` has failed.".format(taskName=result["name"]))
-                else:
-                  print(":white_check_mark: Task `{taskName}` was successful.".format(taskName=result["name"]))
-              print("CI Pipeline finished!")
-              print("<https://cloud.ibm.com/devops/pipelines/tekton/" + os.getenv("PIPELINE_ID") + "/runs/" + os.getenv("PIPELINE_RUN_ID") + "?env_id=ibm:yp:" + os.getenv("TOOLCHAIN_REGION") + " | See the Pipeline Logs>")
-
-    - name: build-pipeline-evaluator
-      runAfter:
-        - build-compliance-doi-reporter
-        - build-compliance-collector
-      taskRef:
-        name: pipeline-evaluate
-      params:
-        - name: results
-          value: |
-            [
-              {
-                "name": "code-unit-tests",
-                "expected": "success",
-                "actual": "$(tasks.code-unit-tests.results.status)"
-              },
-              {
-                "name": "deploy-acceptance-tests",
-                "expected": "success",
-                "actual": "$(tasks.deploy-acceptance-tests.results.status)"
-              },
-              {
-                "name": "code-vulnerability-scan",
-                "expected": "success",
-                "actual": "$(tasks.code-vulnerability-scan.results.status)"
-              },
-              {
-                "name": "code-cis-check",
-                "expected": "success",
-                "actual": "$(tasks.code-cis-check.results.status)"
-              },
-              {
-                "name": "code-bom-check",
-                "expected": "success",
-                "actual": "$(tasks.code-bom-check.results.status)"
-              },
-              {
-                "name": "code-branch-protection",
-                "expected": "success",
-                "actual": "$(tasks.code-branch-protection.results.status)"
-              },
-              {
-                "name": "build-vulnerability-advisor",
-                "expected": "OK",
-                "actual": "$(tasks.build-vulnerability-advisor.results.scan-status)"
-              },
-              {
-                "name": "code-detect-secrets",
-                "expected": "success",
-                "actual": "$(tasks.code-detect-secrets.results.status)"
-              },
-              {
-                "name": "build-image-signing",
-                "expected": "success",
-                "actual": "$(tasks.build-image-signing.results.status)"
-              }
-            ]
