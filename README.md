@@ -42,6 +42,7 @@ Currently these status checks have to be set required in the repository:
 Also the following branch protection settings need to be enabled in GitHub:
 
    * Require pull request reviews before merging
+   * Dismiss stale pull request approvals when new commits are pushed
 
 They are checked by both `PR` and `CI` pipelines. To configure your repository to pass the branch protection settings checks, read the [Repository Configuration Guide](./docs/github-repository-configuration.md).
 
