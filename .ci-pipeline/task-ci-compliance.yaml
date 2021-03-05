@@ -16,11 +16,11 @@ spec:
     - name: detect-secrets-image
       default: "wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/detect-secrets:0.13.1.ibm.29.dss@sha256:6fbe301ed4198f753e99f8eb6aa4339aa2453438034cc1bfa8918fdb9042a9b0"
     - name: cra-discovery-image
-      default: "icr.io/continuous-delivery/cra-discovery:release.1472@sha256:a0eac0dbb046cb2fbb18a59ffddbada2be88bbc973ea3fcb5e4057136ebf183d"
+      default: "icr.io/continuous-delivery/cra-discovery:release.1571@sha256:d8474a311102a80de43bef3022787e9e61d0310dd2488898ea22152aeace9531"
     - name: cra-vulnerability-image
       default: "icr.io/continuous-delivery/cra-vulnerability:main.1266@sha256:1fe23cb8b5bd694433ebdaa7eb890008567041caa67ff2182b32dfda9661203c"
     - name: cra-cis-check-image
-      default: "icr.io/continuous-delivery/cra-cis:release.1471@sha256:fcf9f7cc063f5820881c4c01150749a1d68d3c38685cc89258497374b1bca442"
+      default: "icr.io/continuous-delivery/cra-cis:release.1567@sha256:e97cedf14eab2dff46cc961c4aad2a5f49f724a384238becd537516217cc79b6"
     - name: cra-comm-editor-image
       default: "icr.io/continuous-delivery/cra-comm-editor:main.1260@sha256:e6c76eef0e5d1900f341250b79a7da411a46a99d845f01a4c1ceef5a9598f766"
     - name: cra-bom-check-image
