@@ -19,9 +19,9 @@ There are a couple of steps that need to be taken prior to creating this toolcha
 
 The CISO service is a signing service that can be leveraged for signing images. A worker with access to the internal IBM network is required to reach the CISO service. If you do not already has a private worker with IBM internal network access, you can avail of the services provided by TaaS. With TaaS, you can generate a `service_api_key`, that will allow you access to a pool of workers that have been preconfigured with IBM network access. Visit the following links for more details.
 
-* **[CISO Code Signing Service and Key Setup](<ciso-setup.md>)**
+* **[CISO Code Signing Service and Key Setup](https://github.ibm.com/one-pipeline/docs/blob/master/ciso-setup.md)**
 
-* **[Service API Key for TaaS Private Worker](<taas-setup.md>)**
+* **[Service API Key for TaaS Private Worker](https://github.ibm.com/one-pipeline/docs/blob/master/taas-setup.md)**
 
 Optionally, you can also follow the next two guides. These will help you set up cluster image enforcement with `Portieris`.
 
