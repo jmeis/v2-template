@@ -168,6 +168,8 @@ spec:
         cp -r /opt/one-pipeline /usr/share
         cp -r /opt/cocoa/bin /usr/share/cocoa
 
+        chmod 777 /usr/share/cocoa/bin
+
     - name: detect-secrets
       image: $(params.detect-secrets-image)
       workingDir: $(workspaces.artifacts.path)

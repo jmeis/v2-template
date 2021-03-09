@@ -228,8 +228,6 @@ spec:
       script: |
         #!/bin/sh
 
-        export PATH="$PATH:/opt/cocoa/bin"
-
         . "${ONE_PIPELINE_PATH}"/internal/stage/run
 
     - name: prepare-next-stage

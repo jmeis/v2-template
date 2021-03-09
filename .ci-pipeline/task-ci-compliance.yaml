@@ -193,6 +193,8 @@ spec:
         mkdir -p "${WORKSPACE}/__cra__"
         chmod 777 "${WORKSPACE}/__cra__"
 
+        chmod 777 /usr/share/cocoa/bin
+
     - name: detect-secrets
       image: $(params.detect-secrets-image)
       workingDir: $(workspaces.artifacts.path)
