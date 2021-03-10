@@ -12,7 +12,7 @@ spec:
       default: "0"
 
     - name: detect-secrets-image
-      default: "wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/detect-secrets:0.13.1.ibm.29.dss@sha256:6fbe301ed4198f753e99f8eb6aa4339aa2453438034cc1bfa8918fdb9042a9b0"
+      default: "wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/detect-secrets:0.13.1.ibm.31.dss@sha256:972a827e988f6443f478b7443dc0c8d8761ec15127588103817bb168667ebd0c"
     - name: cra-discovery-image
       default: "icr.io/continuous-delivery/cra-discovery:release.1571@sha256:d8474a311102a80de43bef3022787e9e61d0310dd2488898ea22152aeace9531"
     - name: cra-vulnerability-image
