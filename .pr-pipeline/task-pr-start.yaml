@@ -145,7 +145,7 @@ spec:
         echo -n "$(params.head-branch)" >> /config/branch
         echo -n "$(params.base-branch)" >> /config/target-branch
         echo -n "$(params.head-sha)" >> /config/commit-sha
-        echo -n "$(params.head-repo)" >> /config/repository
+        echo -n "$(params.base-repo)" >> /config/repository
         echo -n "$(params.commit-timestamp)" >> /config/commit-timestamp
         echo -n "$(params.pr-url)" >> /config/pr-url
 
