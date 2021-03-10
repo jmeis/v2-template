@@ -135,7 +135,7 @@ services:
   evidence-repo:
     service_id: github_integrated
     parameters:
-      repo_name: 'evidence-{{timestamp}}'
+      repo_name: 'compliance-evidence-{{timestamp}}'
       type: $env.type || 'clone'
       repo_url: >
         $env.evidence_repo ? $env.evidence_repo : $env.evidenceRepo ? '{{evidenceRepo}}' : 'https://github.ibm.com/one-pipeline/compliance-evidence-locker'
