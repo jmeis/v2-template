@@ -5,6 +5,8 @@ metadata:
   name: binding
 spec:
   params:
+    - name: event-payload
+      value: $(event)
     - name: branch
       value: "master"
     - name: commit-id

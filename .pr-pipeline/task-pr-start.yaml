@@ -23,7 +23,9 @@ spec:
       description: PR url
     - name: commit-timestamp
       description: the timestamp of when the commit pushed
-
+    - name: event-payload
+      description: event payload from the trigger webhook
+      default: ""
     - name: compliance-baseimage
       description: base image to run most of the built-in pipeline code
     - name: pipeline-debug
@@ -66,6 +68,9 @@ spec:
     - name: toolchain
       configMap:
         name: toolchain
+    - name: trigger
+      configMap:
+        name: trigger
 
   stepTemplate:
     env:
@@ -122,7 +127,8 @@ spec:
           mountPath: /config/secure-properties
         - name: toolchain
           mountPath: /toolchain
-
+        - name: trigger
+          mountPath: /trigger
       script: |
         #!/bin/bash
 

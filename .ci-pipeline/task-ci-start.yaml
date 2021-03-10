@@ -60,6 +60,9 @@ spec:
     - name: toolchain
       configMap:
         name: toolchain
+    - name: trigger
+      configMap:
+        name: trigger
 
   stepTemplate:
     env:
@@ -116,7 +119,8 @@ spec:
           mountPath: /config/secure-properties
         - name: toolchain
           mountPath: /toolchain
-
+        - name: trigger
+          mountPath: /trigger
       script: |
         #!/bin/bash
 

@@ -49,6 +49,9 @@ spec:
       default: pipeline
     - name: repository
       description: app repo url
+    - name: event-payload
+      description: event payload from the trigger webhook
+      default: ""
 
     - name: compliance-baseimage
       description: one-pipeline baseimage to run most of the built-in pipeline code
@@ -87,6 +90,14 @@ spec:
         - name: onepipeline-pull-secret
       metadata:
         name: sa-pullsecret
+    - apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: trigger
+        labels:
+          app.kubernetes.io/version: "1.0.0"
+      data:
+        payload.json: $(params.event-payload)
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:

@@ -5,6 +5,8 @@ metadata:
   name: pr-binding
 spec:
   params:
+    - name: event-payload
+      value: $(event)
     - name: head-branch
       value: $(event.pull_request.head.ref)
     - name: head-sha

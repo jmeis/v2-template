@@ -23,7 +23,9 @@ spec:
       description: PR url
     - name: commit-timestamp
       description: the timestamp of when the commit pushed
-
+    - name: event-payload
+      description: event payload from the trigger webhook
+      default: ""
     - name: repository-integration
       description: the repo integration name
     - name: artifactory-dockerconfigjson
@@ -70,6 +72,14 @@ spec:
         - name: onepipeline-pull-secret
       metadata:
         name: sa-pullsecret
+    - apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: trigger
+        labels:
+          app.kubernetes.io/version: "1.0.0"
+      data:
+        payload.json: $(params.event-payload)
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
@@ -100,7 +110,6 @@ spec:
             value: $(params.commit-timestamp)
           - name: pr-url
             value: $(params.pr-url)
-
           - name: repository-integration
             value: $(params.repository-integration)
           - name: pipeline-debug

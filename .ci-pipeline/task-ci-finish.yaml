@@ -27,7 +27,9 @@ spec:
     - name: toolchain
       configMap:
         name: toolchain
-
+    - name: trigger
+      configMap:
+        name: trigger
   stepTemplate:
     env:
       - name: ONE_PIPELINE_PATH
@@ -83,7 +85,8 @@ spec:
           mountPath: /config/secure-properties
         - name: toolchain
           mountPath: /toolchain
-
+        - name: trigger
+          mountPath: /trigger
       script: |
         #!/bin/bash
 
