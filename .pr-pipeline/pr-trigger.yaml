@@ -37,7 +37,7 @@ spec:
       description: toggles debug mode for the pipeline
     - name: compliance-baseimage
       description: one-pipeline baseimage to run most of the built-in pipeline code
-      default: "wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/compliance-baseimage:2.6.5@sha256:ed9a79812060eee480af16b26b0096b252b92d7a35c3904adcb60ad0204116e2"
+      default: "wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/compliance-baseimage:2.6.5@sha256:6e350997b48b8ef87da3bcd7fe6159762a55fe3d983561d57d1e9b31f252a10e"
 
   resourcetemplates:
     - apiVersion: v1
