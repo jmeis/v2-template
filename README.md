@@ -15,7 +15,11 @@ This toolchain is pre-configured with a simple sample app to enable out of the b
 
 ### Step by Step Guide
 
-If this is your first time running the CI template then you should read this [Setup Guide](./docs/compliance-ci-toolchain-setup.md) before running the toolchain. If you experience a problem during setup or running your pipelines, check out our [troubleshooting guide](https://github.ibm.com/one-pipeline/docs/blob/master/faq.md) before raising an issue.
+- **[Setup Guide](./docs/compliance-ci-toolchain-setup.md)**: 
+If this is your first time running the CI template then you should read the [Setup Guide](./docs/compliance-ci-toolchain-setup.md) before running the toolchain. 
+
+- **[Troubleshooting guide](https://github.ibm.com/one-pipeline/docs/blob/master/troubleshooting.md)**:
+If you experience a problem during setup or running your pipelines, check out our [Troubleshooting Guide](https://github.ibm.com/one-pipeline/docs/blob/master/troubleshooting.md) before raising an issue.
 
 It implements the following best practices:
 
