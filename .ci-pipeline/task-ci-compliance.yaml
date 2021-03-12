@@ -66,9 +66,6 @@ spec:
     - name: toolchain
       configMap:
         name: toolchain
-    - name: trigger
-      configMap:
-        name: trigger
 
   stepTemplate:
     env:
@@ -76,6 +73,11 @@ spec:
         value: "/opt/one-pipeline"
       - name: WORKSPACE
         value: "$(workspaces.artifacts.path)"
+      - name: TRIGGER_PAYLOAD
+        valueFrom:
+          configMapKeyRef:
+            name: trigger
+            key: payload.json
       - name: PIPELINE_RUN_NAME
         valueFrom:
           fieldRef:
@@ -171,8 +173,6 @@ spec:
           mountPath: /config/secure-properties
         - name: toolchain
           mountPath: /toolchain
-        - name: trigger
-          mountPath: /trigger
 
       script: |
         #!/bin/bash
@@ -216,8 +216,7 @@ spec:
           mountPath: /config/secure-properties
         - name: toolchain
           mountPath: /toolchain
-        - name: trigger
-          mountPath: /trigger
+
       script: |
         #!/bin/sh
 
@@ -243,8 +242,6 @@ spec:
           mountPath: /toolchain
         - name: dind-certs
           mountPath: /certs/client
-        - name: trigger
-          mountPath: /trigger
       script: |
         #!/bin/bash
 
@@ -270,8 +267,6 @@ spec:
           mountPath: /toolchain
         - name: dind-certs
           mountPath: /certs/client
-        - name: trigger
-          mountPath: /trigger
       script: |
         #!/bin/bash
 
@@ -297,8 +292,6 @@ spec:
           mountPath: /toolchain
         - name: dind-certs
           mountPath: /certs/client
-        - name: trigger
-          mountPath: /trigger
       script: |
         #!/bin/bash
 
@@ -327,8 +320,6 @@ spec:
           mountPath: /toolchain
         - name: dind-certs
           mountPath: /certs/client
-        - name: trigger
-          mountPath: /trigger
       script: |
         #!/bin/bash
 
@@ -348,8 +339,6 @@ spec:
           mountPath: /config/secure-properties
         - name: toolchain
           mountPath: /toolchain
-        - name: trigger
-          mountPath: /trigger
       script: |
         #!/bin/bash
 
