@@ -35,9 +35,10 @@ spec:
       default: "eyJhdXRocyI6e319" # ie. {"auths":{}} base64 encoded
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
+
     - name: compliance-baseimage
       description: one-pipeline baseimage to run most of the built-in pipeline code
-      default: "wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/compliance-baseimage:2.6.5@sha256:6e350997b48b8ef87da3bcd7fe6159762a55fe3d983561d57d1e9b31f252a10e"
+      default: "wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/compliance-baseimage:2.7.1@sha256:c42e776428862c4efb59406463ace5ffe6c3425ad39aa2c6bb5458d353ec8f91"
 
   resourcetemplates:
     - apiVersion: v1
