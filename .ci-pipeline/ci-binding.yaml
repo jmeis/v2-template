@@ -13,3 +13,5 @@ spec:
       value: $(event.head_commit.id)
     - name: commit-timestamp
       value: $(event.repository.updated_at)
+    - name: repository
+      value: $(event.repository.html_url)

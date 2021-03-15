@@ -20,6 +20,11 @@ triggers:
   - type: manual
     name: Manual Trigger
     eventListener: listener
+    properties:
+      - name: repository
+        type: INTEGRATION
+        value: app-repo
+        path: parameters.repo_url
 properties:
   - name: ibmcloud-api-key
     value: ${API_KEY}
