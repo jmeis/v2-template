@@ -224,7 +224,7 @@ services:
             $env.onePipelineDockerConfigJson ? '{{onePipelineDockerConfigJson}}' : 'eyJhdXRocyI6e319'
           PR_REPOSITORY: '{{services.app-repo.parameters.repo_name}}'
           SLACK_ENABLED: >
-            $env.slackEnabled ? '{{slackEnabled}}' : '0'
+            $env.slackEnabled ? '{{slackEnabled}}' : '1'
         execute: false
   ci:
     service_id: pipeline
@@ -275,7 +275,7 @@ services:
           ONE_PIPELINE_DOCKER_CONFIG_JSON: >
             $env.onePipelineDockerConfigJson ? '{{onePipelineDockerConfigJson}}' : 'eyJhdXRocyI6e319'
           SLACK_ENABLED: >
-            $env.slackEnabled ? '{{slackEnabled}}' : '0'
+            $env.slackEnabled ? '{{slackEnabled}}' : '1'
           GIT_CI_TIMED_TRIGGER_DISABLE: >
             $env.disableGitCiTimedTrigger === 'false' ? false : true
         execute: false
