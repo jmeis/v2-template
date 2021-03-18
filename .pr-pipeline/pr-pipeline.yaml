@@ -98,6 +98,20 @@ spec:
           value: $(params.pipeline-debug)
         - name: next-stage
           value: test
+        - name: head-branch
+          value: $(params.head-branch)
+        - name: head-sha
+          value: $(params.head-sha)
+        - name: head-repo
+          value: $(params.head-repo)
+        - name: base-branch
+          value: $(params.base-branch)
+        - name: base-repo
+          value: $(params.base-repo)
+        - name: base-repo-name
+          value: $(params.base-repo-name)
+        - name: base-repo-owner
+          value: $(params.base-repo-owner)
 
     - name: code-unit-tests
       taskRef:
@@ -128,6 +142,20 @@ spec:
           value: $(params.compliance-baseimage)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: head-branch
+          value: $(params.head-branch)
+        - name: head-sha
+          value: $(params.head-sha)
+        - name: head-repo
+          value: $(params.head-repo)
+        - name: base-branch
+          value: $(params.base-branch)
+        - name: base-repo
+          value: $(params.base-repo)
+        - name: base-repo-name
+          value: $(params.base-repo-name)
+        - name: base-repo-owner
+          value: $(params.base-repo-owner)
 
     - name: code-pr-finish
       runAfter:

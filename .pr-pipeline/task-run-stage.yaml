@@ -32,6 +32,20 @@ spec:
       default: "0"
     - name: next-stage
       default: ""
+    - name: head-branch
+      description: source branch of the PR
+    - name: head-sha
+      description: commit id
+    - name: head-repo
+      description: the name of the PR's repo source
+    - name: base-branch
+      description: target branch of the PR
+    - name: base-repo
+      description: target branch of the PR
+    - name: base-repo-name
+      description: name of the base repo
+    - name: base-repo-owner
+      description: owner of the base repo
 
   results:
     - name: image
@@ -167,6 +181,14 @@ spec:
           value: $(params.secret)
       script: |
         #!/usr/bin/env bash
+
+        set_env head-repo "$(params.head-repo)"
+        set_env head-branch "$(params.head-branch)"
+        set_env head-sha "$(params.head-sha)"
+        set_env base-repo "$(params.base-repo)"
+        set_env base-branch "$(params.base-branch)"
+        set_env base-repo-owner "$(params.base-repo-owner)"
+        set_env base-repo-name "$(params.base-repo-name)"
 
         . "${ONE_PIPELINE_PATH}"/internal/stage/prepare
 
