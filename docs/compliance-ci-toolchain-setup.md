@@ -252,7 +252,7 @@ The template comes with an artifactory integration to enable using cocoa complia
 
 Further material and guides about the artifactory are available [here](https://www.ibm.com/garage/method/practices/deliver/tool_artifactory).
 
-**Note**: _You can access the Artifactory [here](https://eu.artifactory.swg-devops.com/artifactory/webapp/#/home)._
+**Note**: _You can access the Artifactory [here](https://na.artifactory.swg-devops.com/artifactory/webapp/#/home)._
 
 | ![Artifactory](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/artifactory.png) |
 | :--: |
@@ -273,7 +273,7 @@ Further material and guides about the artifactory are available [here](https://w
     **Note**: _This should not be changed, otherwise the pipeline will break._
 - **User ID:** The artifactory user id - usually your w3 id
 - **Authentication token:** The artifactory API key
-    An artifactory token can be created [here](https://eu.artifactory.swg-devops.com/artifactory/webapp/#/profile) and stored in Key Protect
+    An artifactory token can be created [here](https://na.artifactory.swg-devops.com/artifactory/webapp/#/profile) and stored in Key Protect
     When an artifactory API key already exists in Key Protect, it can be imported here.
 
     **Note**: _The User ID and the Authentication token is required for pipeline working._
