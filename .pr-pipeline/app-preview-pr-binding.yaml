@@ -1,0 +1,9 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: app-preview-pr-binding
+spec:
+  params:
+    - name: pipeline-name
+      value: "app-preview-pr-pipeline"

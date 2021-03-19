@@ -94,6 +94,28 @@ The development mode enables you to quickly test the implementation of your [shi
 Either disable or delete the development mode trigger.
 
 ---
+### Using the App Preview Pull Request pipeline
+The App Preview Pull Request Pipeline enables you to benefit from additional customization stages in the Pull Request Pipeline process that will also contribute as status checks to Pull Request. Theses stages are:
+- build-containerize, 
+- build-scan-artifact,
+- deploy-app-preview,
+- deploy-acceptance-tests
+
+* Audience: developers in charge of adopting the shift-left compliance PR pipeline for a given component, implementing [corresponding one-pipeline.yaml](https://pages.github.ibm.com/one-pipeline/docs/#/custom-scripts) file and requires stages like: build-containerize, build-scan-artifact, deploy-app-preview and deploy-acceptance-tests.
+
+* Purpose
+
+  - Benefit of additional stages in the PR Pipeline to perfom containerization, scan artifact(s), deployment as app preview and perform acceptance tests.
+  
+* Prereq: you already created a compliance CI toolchain.
+
+* Set-up
+  - Go to the Triggers page of your CI pipeline
+  - Update the Git PR Trigger:
+    - EventListener: `app-preview-pr-listener`
+    - Save your changes
+
+---
 ### Learn more
 
 * Blog [Continuously deliver your app to Kubernetes with Bluemix](https://www.ibm.com/blogs/bluemix/2017/07/continuously-deliver-your-app-to-kubernetes-with-bluemix/)
