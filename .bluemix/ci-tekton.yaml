@@ -9,6 +9,10 @@ triggers:
     name: Git CI Trigger
     service: ${APP_REPO}
     branch: master
+    properties:
+      - name: app-name
+        type: text
+        value: ${APP_NAME}
     events:
       push: true
     eventListener: listener
@@ -21,6 +25,10 @@ triggers:
     name: Manual Trigger
     eventListener: listener
     properties:
+      - name: app-name
+        type: single_select
+        value:
+          "${APP_NAME}": true
       - name: repository
         type: INTEGRATION
         value: app-repo
