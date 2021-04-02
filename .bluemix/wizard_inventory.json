@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "messages": {
+    "$i18n": "locales.yml"
+  },
+  "title": {
+    "$ref": "#/messages/wizard.inventory.title"
+  },
+  "description": "",
+  "longDescription": {
+    "$ref": "#/messages/wizard.inventory.longDescription"
+  },
+  "type": "object",
+  "form": [{
+      "type": "info",
+      "text": {
+        "$ref": "#/messages/wizard.inventory.info"
+      }
+    },
+    {
+      "type": "selectfieldset",
+      "display": {
+        "component": "tilegroup",
+        "orientation": "horizontal",
+        "showLabel": false,
+        "invalidOptionMsg": {
+          "$ref": "#/messages/wizard.repo.invalidOptionMsg"
+        }
+      },
+      "key": "type",
+      "enum": ["clone", "link"],
+      "titleMap": {
+        "clone": {
+          "$ref": "#/messages/wizard.inventory.clone"
+        },
+        "link": {
+          "$ref": "#/messages/wizard.inventory.link"
+        }
+      },
+      "items": [{
+          "type": "section",
+          "items": [
+            "repo_name"
+          ]
+        },
+        {
+          "type": "section",
+          "items": [
+            "repo_url"
+          ]
+        }
+      ]
+    }
+  ]
+}

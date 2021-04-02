@@ -1,5 +1,5 @@
 ---
-version: '2'
+version: '3'
 messages:
   $i18n: locales.yml
 template:
@@ -28,6 +28,8 @@ template:
       "[" + $env.branch + "]" +
         "(" + $env.repository +
           "/tree/" + $env.branch + ")"
+  wizard:
+    $ref: wizard.yml
 
 toolchain:
   name: >
@@ -76,11 +78,9 @@ services:
   privateWorker:
     service_id: private_worker
     parameters:
-      name: >
-        $env.privateWorkerName ? '{{privateWorkerName}}' : 'private-worker'
-      workerQueueCredentials: '{{privateWorkerCreds}}'
-      # TODO: this wont be needed once a fix is in place for https://github.ibm.com/org-ids/roadmap/issues/15360
-      workerQueueIdentifier: '{{privateWorkerIdentifier}}'
+      name: '{{form.private_worker.parameters.name}}'
+      workerQueueCredentials: '{{form.private_worker.parameters.workerQueueCredentials}}'
+      workerQueueIdentifier: '{{form.private_worker.parameters.workerQueueIdentifier}}'
 
   artifactoryComp:
     service_id: artifactory
@@ -144,6 +144,7 @@ services:
       has_issues: false
       enable_traceability: false
       legal: true
+      cos: true
 
   pipeline-repo:
     service_id: github_integrated
@@ -263,7 +264,7 @@ services:
           COS_ENDPOINT: '{{form.customtool_cos-bucket.parameters.cos-endpoint}}'
           COS_API_KEY: '{{form.customtool_cos-bucket.parameters.cos-api-key}}'
           ONE_PIPELINE_REPO: '{{services.app-repo.parameters.repo_url}}'
-          VAULT_SECRET: '{{form.pipeline.parameters.vault_secret}}'
+          VAULT_SECRET: '{{services.privateWorker.parameters.vault_secret}}'
           ONE_PIPELINE_CONFIG: >
             $env.onePipelineConfig ? '{{onePipelineConfig}}' : '.one-pipeline.yaml'
           ONE_PIPELINE_CONFIG_REPO: >
@@ -340,6 +341,16 @@ form:
     schema:
       $ref: deploy.json
 
+  private_worker:
+    parameters:
+      name: >
+        $env.privateWorkerName ? '{{privateWorkerName}}' : 'private-worker'
+      workerQueueCredentials: '{{privateWorkerCreds}}'
+      # TODO: this wont be needed once a fix is in place for https://github.ibm.com/org-ids/roadmap/issues/15360
+      workerQueueIdentifier: '{{privateWorkerIdentifier}}'
+    schema:
+      $ref: privateWorker.json
+
   customtool_cos-bucket:
     parameters:
       cos-bucket-name: >
@@ -357,3 +368,58 @@ form:
         $env.doiEnvironment ? '{{doiEnvironment}}' : ''
     schema:
       $ref: doi-toolchain.json
+
+  wizard_vault:
+    wizard: true
+    parameters:
+      key-protect: true
+      hashicorp-vault: true
+    schema:
+      $ref: wizard_vault.json
+
+  wizard_app:
+    wizard: true
+    schema:
+      $ref: wizard_app.json
+
+  wizard_inventory:
+    wizard: true
+    schema:
+      $ref: wizard_inventory.json
+
+  wizard_issues:
+    wizard: true
+    schema:
+      $ref: wizard_issues.json
+
+  wizard_pipeline:
+    wizard: true
+    schema:
+      $ref: wizard_pipeline.json
+
+  wizard_evidence:
+    wizard: true
+    schema:
+      $ref: wizard_evidence.json
+
+  wizard_artifactory:
+    wizard: true
+    schema:
+      $ref: wizard_artifactory.json
+
+  wizard_optional_tools:
+    wizard: true
+    parameters:
+      doi-tc: true
+      doi: true
+      webide: true
+      slack-tool: true
+    schema:
+      $ref: wizard_optional_tools.json
+
+  wizard_summary:
+    wizard: true
+    parameters:
+      test: true
+    schema:
+      $ref: wizard_summary.json

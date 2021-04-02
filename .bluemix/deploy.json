@@ -103,9 +103,6 @@
             },
             "type": "string",
             "pattern": "\\S"
-        },
-        "vault_secret": {
-            "type": "password"
         }
     },
     "required": [
@@ -114,10 +111,9 @@
         "registry-region",
         "registry-namespace",
         "dev-region",
-	"dev-resource-group",
-	"dev-cluster-name",
-	"dev-cluster-namespace",
-    "vault_secret"
+        "dev-resource-group",
+        "dev-cluster-name",
+        "dev-cluster-namespace"
     ],
     "form": [
         {
@@ -276,35 +272,18 @@
             ],
             "items": [
                 {
-                    "type": "label",
-                    "title": {
+                    "type": "info",
+                    "text": {
                         "$ref": "#/messages/deploy.clusterDescription"
                     }
-                }
-            ]
-        },
-        {
-            "type": "table",
-            "columnCount": 1,
-            "widths": [
-                "100%"
-            ],
-            "items": [
+                },
                 {
-                    "type": "label",
-                    "title": {
+                    "type": "info",
+                    "text": {
                         "$ref": "#/messages/deploy.clusternsDescription"
                     }
                 }
             ]
-        },
-        {
-            "type": "password",
-            "readonly": false,
-            "title": {
-                "$ref": "#/messages/deploy.vaultName"
-            },
-            "key": "vault_secret"
         }
     ]
 }
