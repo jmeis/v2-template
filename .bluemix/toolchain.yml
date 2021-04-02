@@ -218,7 +218,6 @@ services:
             $env.onePipelineConfigRepo ? '{{onePipelineConfigRepo}}' : ''
           ONE_PIPELINE_CONFIG_BRANCH: >
             $env.onePipelineConfigBranch ? '{{onePipelineConfigBranch}}' : 'master'
-          VAULT_SECRET: '{{form.pipeline.parameters.vault_secret}}'
           GIT_TOKEN: >
             $env.gitToken ? '{{gitToken}}' : ''
           ONE_PIPELINE_DOCKER_CONFIG_JSON: >
@@ -264,7 +263,7 @@ services:
           COS_ENDPOINT: '{{form.customtool_cos-bucket.parameters.cos-endpoint}}'
           COS_API_KEY: '{{form.customtool_cos-bucket.parameters.cos-api-key}}'
           ONE_PIPELINE_REPO: '{{services.app-repo.parameters.repo_url}}'
-          VAULT_SECRET: '{{services.privateWorker.parameters.vault_secret}}'
+          VAULT_SECRET: '{{services.private_worker.parameters.vault_secret}}'
           ONE_PIPELINE_CONFIG: >
             $env.onePipelineConfig ? '{{onePipelineConfig}}' : '.one-pipeline.yaml'
           ONE_PIPELINE_CONFIG_REPO: >
@@ -337,7 +336,6 @@ form:
       build-cluster-namespace: build
       artifactory-userid: '{{artifactoryUserId}}'
       artifactory-token: '{{artifactoryToken}}'
-      vault_secret: '{{vaultSecret}}'
     schema:
       $ref: deploy.json
 
@@ -348,6 +346,7 @@ form:
       workerQueueCredentials: '{{privateWorkerCreds}}'
       # TODO: this wont be needed once a fix is in place for https://github.ibm.com/org-ids/roadmap/issues/15360
       workerQueueIdentifier: '{{privateWorkerIdentifier}}'
+      vault_secret: '{{vaultSecret}}'
     schema:
       $ref: privateWorker.json
 

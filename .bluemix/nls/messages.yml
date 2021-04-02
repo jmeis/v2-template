@@ -103,7 +103,7 @@ wizard.step.doi-toolchain.label: Insights Toolchain
 wizard.step.doi-toolchain.form.title: Link DevOps Insights Toolchain
 wizard.step.summary.label: Summary
 wizard.step.summary.form.title: Summary
-wizard.repo.invalidOptionMsg: "Unsupported configuration option. Try **Expert mode**."
+wizard.repo.invalidOptionMsg: "You have chosen an unsupported configuration option. Please enable **Advanced Options**."
 wizard.app.title: "Application"
 wizard.app.longDescription: "By default, it provides you with a sample NodeJS app. You can bring your own app by replacing the sample URL with a URL to your own source code repository."
 wizard.app.clone: "Use default sample"
