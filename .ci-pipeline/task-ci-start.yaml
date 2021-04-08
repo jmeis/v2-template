@@ -7,6 +7,7 @@ spec:
   params:
     - name: branch
       description: branch
+      default: "master"
     - name: commit-id
       description: commit id
     - name: commit-timestamp
@@ -126,7 +127,12 @@ spec:
 
         export PATH="$PATH:/opt/cocoa/bin"
 
-        echo -n "$(params.branch)" >> /config/branch
+        BRANCH="$(params.branch)"
+        BRANCH=${BRANCH#"refs/heads/"}
+        if [ -z "$BRANCH" ]; then
+          BRANCH="master"
+        fi
+        echo -n "$BRANCH" >> /config/branch
         echo -n "$(params.repository-integration)" >> /config/repository-integration
         echo -n "$(params.commit-id)" >> /config/commit-sha
         echo -n "$(params.commit-timestamp)" >> /config/commit-timestamp

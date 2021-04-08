@@ -8,7 +8,7 @@ spec:
     - name: event-payload
       value: $(event)
     - name: branch
-      value: "master"
+      value: $(event.ref)
     - name: commit-id
       value: $(event.head_commit.id)
     - name: commit-timestamp

@@ -40,9 +40,6 @@ properties:
   - name: vault-secret
     value: ${VAULT_SECRET}
     type: SECURE
-  - name: branch
-    value: master
-    type: text
   - name: registry-region
     value: ${REGISTRY_REGION_ID}
     type: text

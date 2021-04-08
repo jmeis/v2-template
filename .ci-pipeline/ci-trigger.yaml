@@ -11,6 +11,7 @@ spec:
       description: The IBM Cloud region for image registry
     - name: branch
       description: the branch for the git repo
+      default: "master"
     - name: repository-integration
       description: the repo integration name
     - name: commit-id
