@@ -1,5 +1,5 @@
 <!-- 🎉🎉🎉 Thank you for the PR!!! 🎉🎉🎉 -->
-<!-- Please make sure you've read the contribuition guide to this project: -->
+<!-- Please make sure you've read the contribution guide to this project: -->
 <!-- https://pages.github.ibm.com/one-pipeline/docs/#/contributing -->
 
 ## proposed change
