@@ -71,38 +71,24 @@ privateWorker.workerQueueCredentials.title: "Service ID API Key"
 privateWorker.workerQueueCredentials.description: "The Service API Key used by the private worker to authenticate access to the work queue"
 wizard.welcome.description: "Continuously Integrate with DevSecOps, including evidence collection, quality gates, artifact signing, automated tests, static code scans, vulnerability checks and more."
 wizard.welcome.git.accept.label: "I understand that all users with [access to this toolchain](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-toolchains-using#managing_access) will be able to access artifacts derived from the toolchain repositories, such as build artifacts in the Delivery Pipeline. You must accept this to continue."
-wizard.step.app.label: Application
-wizard.step.app.form.title: Application
-wizard.step.inv.label: Inventory
-wizard.step.inv.form.title: Inventory
-wizard.step.issues.label: Issues
-wizard.step.issues.form.title: Issues
-wizard.step.vault.label: Secrets
-wizard.step.vault.form.title: Secrets
-wizard.step.keyprotect.label: IBM Key Protect
-wizard.step.keyprotect.form.title: IBM Key Protect
-wizard.step.hashicorpvault.label: HashiCorp Vault
-wizard.step.hashicorpvault.form.title: HashiCorp Vault
-wizard.step.evidence.label: Evidence
-wizard.step.evidence.form.title: Evidence
-wizard.step.cos.label: COS bucket
-wizard.step.cos.form.title: COS bucket
-wizard.step.pipeline.label: Tekton Pipeline
-wizard.step.pipeline.form.title: Tekton Pipeline
+wizard.step.app.title: Application
+wizard.step.inv.title: Inventory
+wizard.step.issues.title: Issues
+wizard.step.vault.title: Secrets
+wizard.step.keyprotect.title: IBM Key Protect
+wizard.step.hashicorpvault.title: HashiCorp Vault
+wizard.step.evidence.title: Evidence
+wizard.step.cos.title: COS bucket
+wizard.step.pipeline.title: Tekton Pipeline
 wizard.step.deploy.label: Deploy
-wizard.step.deploy.form.title: Deployment Target
-wizard.step.private_worker.label: Image Signing
-wizard.step.private_worker.form.title: Image Signing
-wizard.step.artifactory.label: Artifactory
-wizard.step.artifactory.form.title: Artifactory
-wizard.step.optionaltools.label: Optional Tools
-wizard.step.optionaltools.form.title: Optional Tools
-wizard.step.slack.label: Slack
-wizard.step.slack.form.title: Slack
+wizard.step.deploy.title: Deployment Target
+wizard.step.private_worker.title: Image Signing
+wizard.step.artifactory.title: Artifactory
+wizard.step.optionaltools.title: Optional Tools
+wizard.step.slack.title: Slack
 wizard.step.doi-toolchain.label: Insights Toolchain
-wizard.step.doi-toolchain.form.title: Link DevOps Insights Toolchain
-wizard.step.summary.label: Summary
-wizard.step.summary.form.title: Summary
+wizard.step.doi-toolchain.title: Link DevOps Insights Toolchain
+wizard.step.summary.title: Summary
 wizard.repo.invalidOptionMsg: "You have chosen an unsupported configuration option. Please enable **Advanced Options**."
 wizard.app.title: "Application"
 wizard.app.longDescription: "By default, it provides you with a sample NodeJS app. You can bring your own app by replacing the sample URL with a URL to your own source code repository."
