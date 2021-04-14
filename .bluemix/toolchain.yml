@@ -257,10 +257,14 @@ services:
           ARTIFACTORY_DOCKER_CONFIG_JSON: >
             $env.artifactoryDockerConfigJson ? '{{artifactoryDockerConfigJson}}' : '{{form.artifactoryComp.parameters.docker_config_json}}'
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
-          DOI_TOOLCHAIN_ID: '{{form.customtool_doi-toolchain.parameters.doi-toolchain-id}}'
-          DOI_ENVIRONMENT: '{{form.customtool_doi-toolchain.parameters.doi-environment}}'
-          COS_BUCKET_NAME: '{{form.customtool_cos-bucket.parameters.cos-bucket-name}}'
-          COS_ENDPOINT: '{{form.customtool_cos-bucket.parameters.cos-endpoint}}'
+          DOI_TOOLCHAIN_ID: >
+            $env.doiToolchainId ? '{{form.customtool_doi-toolchain.parameters.doi-toolchain-id}}' : ''
+          DOI_ENVIRONMENT: >
+            $env.doiEnvironment ? '{{form.customtool_doi-toolchain.parameters.doi-environment}}' : ''
+          COS_BUCKET_NAME: >
+            $env.cosBucketName ? '{{form.customtool_cos-bucket.parameters.cos-bucket-name}}' : ''
+          COS_ENDPOINT: >
+            $env.cosEndpoint ? '{{form.customtool_cos-bucket.parameters.cos-endpoint}}': ''
           COS_API_KEY: '{{form.customtool_cos-bucket.parameters.cos-api-key}}'
           ONE_PIPELINE_REPO: '{{services.app-repo.parameters.repo_url}}'
           VAULT_SECRET: '{{services.private_worker.parameters.vault_secret}}'
