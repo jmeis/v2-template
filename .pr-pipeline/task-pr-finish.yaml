@@ -16,7 +16,7 @@ spec:
     - name: cra-discovery-image
       default: "icr.io/continuous-delivery/cra-discovery:release.1724@sha256:cf6468d215cbc0b46b534f9956598d599911d15a133eeafe37ba1ae401e9947c"
     - name: cra-vulnerability-image
-      default: "icr.io/continuous-delivery/cra-vulnerability:release.1604@sha256:e6b09a40b992eae93d83337684ea7d4d13fc576e3ac311dae4f216b79caa8b4e"
+      default: "icr.io/continuous-delivery/cra-vulnerability:release.1745@sha256:78463fa62ef04996b190233121d7932cd0214a95966aa1fe5aba33b955510828"
     - name: cra-cis-check-image
       default: "icr.io/continuous-delivery/cra-cis:release.1639@sha256:b271300acb43f3177db5ba9b08d003e15834c9b4132fcd88bffa6a42db38ac83"
     - name: cra-comm-editor-image
