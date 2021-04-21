@@ -34,6 +34,18 @@ triggers:
         value: app-repo
         path: parameters.repo_url
 properties:
+  - name: inventory-repo
+    value: inventory-repo
+    type: INTEGRATION
+    path: parameters.repo_url
+  - name: evidence-repo
+    value: evidence-repo
+    type: INTEGRATION
+    path: parameters.repo_url
+  - name: incident-repo
+    value: issues-repo
+    type: INTEGRATION
+    path: parameters.repo_url
   - name: ibmcloud-api-key
     value: ${API_KEY}
     type: SECURE
