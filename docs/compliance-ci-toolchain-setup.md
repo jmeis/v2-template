@@ -55,6 +55,10 @@ A toolchain can be created by
 * **Using the URL and the branch parameter**:
  <https://cloud.ibm.com/devops/setup/deploy?repository=https://github.ibm.com/one-pipeline/compliance-ci-toolchain&env_id=ibm:yp:us-south&branch=master>
 
+Alternatively a toolchain can also be created based on a set of prescribed secret names (otherwise known as `hints`) as described in the [Managing Secrets](https://pages.github.ibm.com/one-pipeline/docs/#/managing-secrets?id=shift-left-secrets) documentation by using the `master-with-hints` feature branch:
+
+<https://cloud.ibm.com/devops/setup/deploy?repository=https://github.ibm.com/one-pipeline/compliance-ci-toolchain&env_id=ibm:yp:us-south&branch=master-with-hints>
+
 Modifications on feature branches can be tried out before merging into master.
 
 ## 2. Guided setup
@@ -101,7 +105,7 @@ deployment is concluded.
 
 ### Secrets
 
-Several tools in this toolchain require secrets to access privileged resources. An IBM Cloud API key is an example of such a secret. All secrets should be stored securely in a secrets vault and then referenced as required by the toolchain. The **Secrets** step allows you to specify which secret vault integrations will be added to your toolchain. Use the provided toggles to add or remove the vault integrations that you require. These can be configured in subsequent steps. 
+Several tools in this toolchain require secrets to access privileged resources. An IBM Cloud API key is an example of such a secret. All secrets should be stored securely in a secrets vault and then referenced as required by the toolchain. The **Secrets** step allows you to specify which secret vault integrations will be added to your toolchain. Use the provided toggles to add or remove the vault integrations that you require. These can be configured in subsequent steps however you should familiarize yourself with the concepts in the [Managing Secrets](https://pages.github.ibm.com/one-pipeline/docs/#/managing-secrets?id=shift-left-secrets) documentation as this provides important information about preconfiguring your vault providers and integrations appropriately.  This documentation gives you information on prerequisites and how to leverage a list of prescribed secret names otherwise known as `hints`.  By using `hints` in a template, a toolchain can be automatically populated with preconfigured secrets without any need to manually select these from various vault integrations attached to the toolchain.
 
 | ![Choose secrets providers](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/secrets-providers.png) |
 | :--: |
