@@ -149,25 +149,11 @@ services:
   pipeline-repo:
     service_id: github_integrated
     parameters:
-      repo_name: 'compliance-ci-toolchain'
+      repo_name: 'compliance-pipelines'
       repo_url: >
-        $env.pipeline_repo ? $env.pipeline_repo : $env.pipelineRepo ? '{{pipelineRepo}}' : 'https://github.ibm.com/one-pipeline/compliance-ci-toolchain'
+        $env.pipeline_repo ? $env.pipeline_repo : $env.pipelineRepo ? '{{pipelineRepo}}' : 'https://github.ibm.com/one-pipeline/compliance-pipelines'
       source_repo_url: >
-        $env.pipeline_repo ? $env.pipeline_repo : $env.pipelineRepo ? '{{pipelineRepo}}' : 'https://github.ibm.com/one-pipeline/compliance-ci-toolchain'
-      type: $env.type || 'link'
-      has_issues: false
-      enable_traceability: false
-      legal: true
-      kind: ['pipeline']
-
-  tekton-catalog-repo:
-    service_id: github_integrated
-    parameters:
-      repo_name: 'common-tekton-tasks'
-      repo_url: >
-        $env.tekton_catalog_repo ? $env.tekton_catalog_repo : $env.tektonCatalogRepo ? '{{tektonCatalogRepo}}' : 'https://github.ibm.com/one-pipeline/common-tekton-tasks'
-      source_repo_url: >
-        $env.tekton_catalog_repo ? $env.tekton_catalog_repo : $env.tektonCatalogRepo ? '{{tektonCatalogRepo}}' : 'https://github.ibm.com/one-pipeline/common-tekton-tasks'
+        $env.pipeline_repo ? $env.pipeline_repo : $env.pipelineRepo ? '{{pipelineRepo}}' : 'https://github.ibm.com/one-pipeline/compliance-pipelines'
       type: $env.type || 'link'
       has_issues: false
       enable_traceability: false
@@ -193,7 +179,6 @@ services:
       services:
         - app-repo
         - pipeline-repo
-        - tekton-catalog-repo
         - config-repo
       name: 'ci-pr-pipeline'
       ui-pipeline: true
@@ -232,7 +217,6 @@ services:
       services:
         - app-repo
         - pipeline-repo
-        - tekton-catalog-repo
         - config-repo
         - customtool_doi-toolchain
       name: 'ci-pipeline'

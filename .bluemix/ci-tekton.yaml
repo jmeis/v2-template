@@ -1,9 +1,9 @@
 ---
 inputs:
   - type: git
-    branch: develop
+    branch: master
     service: ${PIPELINE_REPO}
-    path: .ci-pipeline
+    path: definitions
 triggers:
   - type: git
     name: Git CI Trigger
@@ -15,15 +15,15 @@ triggers:
         value: ${APP_NAME}
     events:
       push: true
-    eventListener: listener
+    eventListener: ci-listener
   - type: timer
     name: Git CI Timed Trigger
-    eventListener: listener
+    eventListener: ci-listener
     disabled: ${GIT_CI_TIMED_TRIGGER_DISABLE}
     cron: "0 4 * * *"
   - type: manual
     name: Manual Trigger
-    eventListener: listener
+    eventListener: ci-listener
     properties:
       - name: app-name
         type: single_select
