@@ -44,6 +44,9 @@ spec:
     - name: dind-image
       description: Base image to run sidecars
       default: "wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/docker:19-dind"
+    - name: detect-secrets-image
+      default: "wcp-cd-noncontainerised-team-cd-non-container-base-docker-local.artifactory.swg-devops.com/detect-secrets:0.13.1.ibm.34.dss@sha256:ba9ca6517c5abad09e3e1356c77b6b16d8d4f52ea2bab7e35a2296aee9f23131" 
+
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -123,4 +126,6 @@ spec:
             value: $(params.compliance-baseimage)
           - name: dind-image
             value: $(params.dind-image)
+          - name: detect-secrets-image
+            value: $(params.detect-secrets-image)
         serviceAccountName: sa-pullsecret
