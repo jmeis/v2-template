@@ -56,6 +56,9 @@ spec:
     - name: compliance-baseimage
       description: one-pipeline baseimage to run most of the built-in pipeline code
       default: "wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/compliance-baseimage:2.12.3@sha256:a8d79dc73c82b06ac419d3bc76ec8159cc8c2d438a96e37a358177dc01ef9905"
+    - name: dind-image
+      description: Base image to run sidecars
+      default: "wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/docker:19-dind"
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -143,4 +146,6 @@ spec:
             value: $(params.repository)
           - name: compliance-baseimage
             value: $(params.compliance-baseimage)
+          - name: dind-image
+            value: $(params.dind-image)
         serviceAccountName: sa-pullsecret

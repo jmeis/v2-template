@@ -98,4 +98,6 @@ spec:
             value: $(params.target-branch)
           - name: base-commit
             value: $(params.base-commit)
+          - name: dind-image
+            value: $(params.dind-image)
         serviceAccountName: sa-pullsecret

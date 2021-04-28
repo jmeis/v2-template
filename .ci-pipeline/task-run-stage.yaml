@@ -27,6 +27,8 @@ spec:
       default: "IfNotPresent"
     - name: compliance-baseimage
       description: base image to run most of the built-in pipeline code
+    - name: dind-image
+      default: "wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/docker:19-dind"
     - name: pipeline-debug
       description: Use debug mode
       default: "0"
@@ -106,7 +108,7 @@ spec:
 
   sidecars:
     - name: dind
-      image: wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/docker:19-dind
+      image: $(params.dind-image)
       securityContext:
         privileged: true
       env:

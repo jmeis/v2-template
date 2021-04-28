@@ -46,6 +46,9 @@ spec:
       description: name of the base repo
     - name: base-repo-owner
       description: owner of the base repo
+    - name: dind-image
+      description: Base image to run sidecars
+      default: "wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/docker:19-dind"
 
   results:
     - name: image
@@ -120,7 +123,7 @@ spec:
 
   sidecars:
     - name: dind
-      image: wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/docker:19-dind
+      image: $(params.dind-image)
       securityContext:
         privileged: true
       env:

@@ -21,6 +21,8 @@ spec:
       default: "icr.io/continuous-delivery/cra-cis:release.1639@sha256:b271300acb43f3177db5ba9b08d003e15834c9b4132fcd88bffa6a42db38ac83"
     - name: cra-comm-editor-image
       default: "icr.io/continuous-delivery/cra-comm-editor:release.1519@sha256:703b7a394298fdcaf9e3592b32250a52430b72b858444c96b2e4979759e7b9c6"
+    - name: dind-image
+      default: "wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/docker:19-dind"
 
   workspaces:
     - name: artifacts
@@ -99,7 +101,7 @@ spec:
 
   sidecars:
     - name: dind
-      image: wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/docker:19-dind
+      image: $(params.dind-image)
       securityContext:
         privileged: true
       env:

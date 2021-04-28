@@ -30,6 +30,8 @@ spec:
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
       default: "0"
+    - name: dind-image
+      default: "wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/docker:19-dind"
 
   workspaces:
     - name: artifacts
@@ -112,7 +114,8 @@ spec:
           value: $(params.base-repo-name)
         - name: base-repo-owner
           value: $(params.base-repo-owner)
-
+        - name: dind-image
+          value: $(params.dind-image)
     - name: code-unit-tests
       taskRef:
         name: run-stage
@@ -156,7 +159,8 @@ spec:
           value: $(params.base-repo-name)
         - name: base-repo-owner
           value: $(params.base-repo-owner)
-
+        - name: dind-image
+          value: $(params.dind-image)
     - name: code-pr-finish
       runAfter:
         - code-unit-tests

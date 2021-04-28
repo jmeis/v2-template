@@ -41,6 +41,9 @@ spec:
     - name: pipeline-name
       description: The name of the pipeline to run
       default: pr-pipeline
+    - name: dind-image
+      description: Base image to run sidecars
+      default: "wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/docker:19-dind"
   resourcetemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -118,4 +121,6 @@ spec:
             value: $(params.pipeline-debug)
           - name: compliance-baseimage
             value: $(params.compliance-baseimage)
+          - name: dind-image
+            value: $(params.dind-image)
         serviceAccountName: sa-pullsecret

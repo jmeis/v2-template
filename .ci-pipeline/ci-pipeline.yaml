@@ -25,6 +25,9 @@ spec:
     - name: pipeline-debug
       description: toggles debug mode for the pipeline
       default: "0"
+    - name: dind-image
+      description: Base image to run sidecars
+      default: "wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/docker:19-dind"
 
   workspaces:
     - name: artifacts
@@ -86,6 +89,8 @@ spec:
           value: $(params.compliance-baseimage)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: dind-image
+          value: $(params.dind-image)
         - name: next-stage
           value: test
 

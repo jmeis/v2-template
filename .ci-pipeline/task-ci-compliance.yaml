@@ -25,7 +25,8 @@ spec:
       default: "icr.io/continuous-delivery/cra-comm-editor:release.1519@sha256:703b7a394298fdcaf9e3592b32250a52430b72b858444c96b2e4979759e7b9c6"
     - name: cra-bom-check-image
       default: "icr.io/continuous-delivery/cra-bom:release.1497@sha256:77cd45001e76cbeb4aeb45969e601755d9cd9d8b52ca83a67fe89611482f0995"
-
+    - name: dind-image
+      default: "wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/docker:19-dind"
   results:
     - name: image
       description: Docker image to be used in the specified stage.
@@ -121,7 +122,7 @@ spec:
 
   sidecars:
     - name: dind
-      image: wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/docker:19-dind
+      image: $(params.dind-image)
       securityContext:
         privileged: true
       env:
