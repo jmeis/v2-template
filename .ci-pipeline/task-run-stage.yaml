@@ -119,6 +119,9 @@ spec:
       volumeMounts:
         - name: dind-certs
           mountPath: /certs/client
+        - name: $(workspaces.app.volume)
+          mountPath: $(workspaces.app.path)
+
       script: |
         if [[ "$ENABLE_DIND" == "true" ]]; then
           if [[ $(df -PT /var/lib/docker | awk 'NR==2 {print $2}') == virtiofs ]]; then

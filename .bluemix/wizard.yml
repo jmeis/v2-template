@@ -246,6 +246,31 @@ steps:
           - type: delete-service
             service_id: orion
             service_label: webide
+      - condition:
+          any:
+            - parameter: sonarqube-tool
+              value: true
+        actions:
+          - type: create-service
+            service: sonarqube
+            service_label: sonarqube
+            parameters:
+              name: >
+                $env.sonarInstanceName ? '{{sonarInstanceName}}' : ''
+              dashboard_url: >
+                $env.sonarServerUrl ? '{{sonarServerUrl}}' : ''
+              user_login: >
+                $env.sonarUserId ? '{{sonarUserId}}' : ''
+              user_password: >
+                $env.sonarUserToken ? '{{sonarUserToken}}' : ''
+      - condition:
+          any:
+            - parameter: sonarqube-tool
+              value: false
+        actions:
+          - type: delete-service
+            service: sonarqube
+            service_label: sonarqube
   - name: slack
     indent_level: 1
     title:
@@ -269,6 +294,17 @@ steps:
         any:
           - form: wizard_optional_tools
             parameter: doi-tc
+            value: true
+  - name: sonarqube
+    indent_level: 1
+    title:
+      $ref: "#/messages/wizard.step.sonarqube.title"
+    form: sonarqube
+    visible:
+      condition:
+        any:
+          - form: wizard_optional_tools
+            parameter: sonarqube-tool
             value: true
   - name: summary
     title:
@@ -313,6 +349,7 @@ form:
       doi: true
       webide: true
       slack-tool: true
+      sonarqube-tool: true
     schema:
       $ref: wizard_optional_tools.json
 

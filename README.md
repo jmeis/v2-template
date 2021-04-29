@@ -15,8 +15,8 @@ This toolchain is pre-configured with a simple sample app to enable out of the b
 
 ### Step by Step Guide
 
-- **[Setup Guide](./docs/compliance-ci-toolchain-setup.md)**: 
-If this is your first time running the CI template then you should read the [Setup Guide](./docs/compliance-ci-toolchain-setup.md) before running the toolchain. 
+- **[Setup Guide](./docs/compliance-ci-toolchain-setup.md)**:
+If this is your first time running the CI template then you should read the [Setup Guide](./docs/compliance-ci-toolchain-setup.md) before running the toolchain.
 
 - **[Troubleshooting guide](https://github.ibm.com/one-pipeline/docs/blob/master/troubleshooting.md)**:
 If you experience a problem during setup or running your pipelines, check out our [Troubleshooting Guide](https://github.ibm.com/one-pipeline/docs/blob/master/troubleshooting.md) before raising an issue.
@@ -27,6 +27,7 @@ It implements the following best practices:
 - apply Docker signature after Docker unit tests, sanity checks and successful build
 - build container image on every Git commit, setting a tag based on build number, timestamp and commit id for traceability
 - use a private image registry to store the built image, automatically configure access permissions for target cluster deployment using API tokens than can be revoked
+- run a static code scanner on the application repositories
 - check container image for security vulnerabilities and add an additional Docker signature upon successful completion
 - insert the built image tag into the deployment manifest automatically
 - use an explicit namespace in cluster to insulate each deployment (and make it easy to clear, by "kubectl delete namespace")
@@ -96,7 +97,7 @@ Either disable or delete the development mode trigger.
 ---
 ### Using the App Preview Pull Request pipeline
 The App Preview Pull Request Pipeline enables you to benefit from additional customization stages in the Pull Request Pipeline process that will also contribute as status checks to Pull Request. Theses stages are:
-- build-containerize, 
+- build-containerize,
 - build-scan-artifact,
 - deploy-app-preview,
 - deploy-acceptance-tests
@@ -106,7 +107,7 @@ The App Preview Pull Request Pipeline enables you to benefit from additional cus
 * Purpose
 
   - Benefit of additional stages in the PR Pipeline to perfom containerization, scan artifact(s), deployment as app preview and perform acceptance tests.
-  
+
 * Prereq: you already created a compliance CI toolchain.
 
 * Set-up

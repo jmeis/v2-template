@@ -64,12 +64,26 @@
       "description": {
         "$ref": "#/messages/wizard.optional.tools.slack.description"
       }
+    },
+    "sonarqube-tool": {
+      "type": "boolean",
+      "display": {
+        "component": "toggle",
+        "style": "card"
+      },
+      "title": {
+        "$ref": "#/messages/wizard.optional.tools.sonarqube.title"
+      },
+      "description": {
+        "$ref": "#/messages/wizard.optional.tools.sonarqube.description"
+      }
     }
   },
   "form": [
     "slack-tool",
     "doi-tc",
     "doi",
-    "webide"
+    "webide",
+    "sonarqube-tool"
   ]
 }

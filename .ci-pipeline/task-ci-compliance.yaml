@@ -21,8 +21,6 @@ spec:
       default: "icr.io/continuous-delivery/cra-vulnerability:release.1768@sha256:e465f1c6e83ca3b506a7551a3d51eac711f8fe295091577ce003213c66118689"
     - name: cra-cis-check-image
       default: "icr.io/continuous-delivery/cra-cis:release.1639@sha256:b271300acb43f3177db5ba9b08d003e15834c9b4132fcd88bffa6a42db38ac83"
-    - name: cra-comm-editor-image
-      default: "icr.io/continuous-delivery/cra-comm-editor:release.1519@sha256:703b7a394298fdcaf9e3592b32250a52430b72b858444c96b2e4979759e7b9c6"
     - name: cra-bom-check-image
       default: "icr.io/continuous-delivery/cra-bom:release.1497@sha256:77cd45001e76cbeb4aeb45969e601755d9cd9d8b52ca83a67fe89611482f0995"
     - name: dind-image

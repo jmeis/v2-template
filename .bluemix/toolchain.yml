@@ -75,6 +75,18 @@ services:
       team_url: >
         $env.slackTeamName ? '{{slackTeamName}}' : ''
 
+  sonarqube:
+    service_id: sonarqube
+    parameters:
+      name: >
+        $env.sonarInstanceName ? '{{sonarInstanceName}}' : ''
+      dashboard_url: >
+        $env.sonarServerUrl ? '{{sonarServerUrl}}' : ''
+      user_login: >
+        $env.sonarUserId ? '{{sonarUserId}}' : ''
+      user_password: >
+        $env.sonarUserToken ? '{{sonarUserToken}}' : ''
+
   privateWorker:
     service_id: private_worker
     parameters:

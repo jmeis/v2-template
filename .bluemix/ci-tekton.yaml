@@ -46,6 +46,10 @@ properties:
     value: issues-repo
     type: INTEGRATION
     path: parameters.repo_url
+  - name: sonarqube
+    value: sonarqube
+    type: INTEGRATION
+    path:
   - name: ibmcloud-api-key
     value: ${API_KEY}
     type: SECURE

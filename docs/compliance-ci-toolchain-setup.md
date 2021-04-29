@@ -277,6 +277,15 @@ DevOps Insights can optionally be included in the created toolchain and after ea
 
 Develop for the web and the cloud in this browser-based integrated development environment (IDE).
 
+### SonarQube (optional)
+
+If you add your own SonarQube instance, the static scan will run on this instance with your rules and quality gate. 
+
+If you don't add this tool, the CI pipeline will create a new SonarQube instance with default settings to run a static scan.
+
+| ![SonarQube tool](https://github.ibm.com/one-pipeline/docs/blob/master/assets/compliance-ci-toolchain/sonarqube.png) |
+| :--: |
+
 ## 5. Creating the toolchain
 
  **Create toolchain:**

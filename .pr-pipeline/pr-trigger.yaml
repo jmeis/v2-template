@@ -45,7 +45,7 @@ spec:
       description: Base image to run sidecars
       default: "wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/docker:19-dind"
     - name: detect-secrets-image
-      default: "wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/detect-secrets:0.13.1.ibm.31.dss@sha256:972a827e988f6443f478b7443dc0c8d8761ec15127588103817bb168667ebd0c" 
+      default: "wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com/detect-secrets:0.13.1.ibm.31.dss@sha256:972a827e988f6443f478b7443dc0c8d8761ec15127588103817bb168667ebd0c"
 
   resourcetemplates:
     - apiVersion: v1

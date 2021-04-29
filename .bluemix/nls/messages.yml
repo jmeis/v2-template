@@ -86,6 +86,7 @@ wizard.step.private_worker.title: Image Signing
 wizard.step.artifactory.title: Artifactory
 wizard.step.optionaltools.title: Optional Tools
 wizard.step.slack.title: Slack
+wizard.step.sonarqube.title: SonarQube
 wizard.step.doi-toolchain.label: Insights Toolchain
 wizard.step.doi-toolchain.title: Link DevOps Insights Toolchain
 wizard.step.summary.title: Summary
@@ -125,6 +126,8 @@ wizard.optional.tools.webide.title: "Orion WebIDE (no configuration required)"
 wizard.optional.tools.webide.description: "Develop for the web and the cloud in this browser-based integrated development environment (IDE)."
 wizard.optional.tools.slack.title: "Slack"
 wizard.optional.tools.slack.description: "With Slack, you can collaborate with your team and receive notifications from your tools."
+wizard.optional.tools.sonarqube.title: "SonarQube"
+wizard.optional.tools.sonarqube.description: "Run static code scan with the help of SonarQube."
 wizard.pipeline.title: "Tekton Pipeline"
 wizard.pipeline.longDescription: "Tekton resources are defined in YAML files managed in source repositories. The repository information below is used when triggering pipeline runs."
 wizard.pipeline.link: "Use existing repository"
