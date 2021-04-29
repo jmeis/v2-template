@@ -1,9 +1,9 @@
 ---
 inputs:
   - type: git
-    branch: develop
+    branch: master
     service: ${PIPELINE_REPO}
-    path: .pr-pipeline
+    path: definitions
 triggers:
   - type: git
     name: Git PR Trigger
