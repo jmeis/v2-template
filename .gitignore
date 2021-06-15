@@ -1,3 +1,4 @@
+# files ignored by git
 launchConfigurations/
 .DS_Store
 .history
