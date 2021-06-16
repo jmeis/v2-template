@@ -25,6 +25,9 @@ spec:
       description: the number of the pull request
     - name: target-branch
       description: target branch
+    - name: one-pipeline-ci-repo
+      description: the one-pipeline-ci repo
+      default: "https://github.ibm.com/open-toolchain/compliance-ci-toolchain"
 
   workspaces:
     - name: artifacts
@@ -42,7 +45,7 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
         - name: repository
-          value: "https://github.ibm.com/open-toolchain/compliance-ci-toolchain.git"
+          value: $(one-pipeline-ci-repo).git
 
     - name: clone-repo
       taskRef:
@@ -193,7 +196,7 @@ spec:
         - name: from-commit
           value: $(params.base-commit)
         - name: repo-url
-          value: "https://github.ibm.com/open-toolchain/compliance-ci-toolchain"
+          value: $(one-pipeline-ci-repo)
       workspaces:
         - name: artifacts
           workspace: artifacts

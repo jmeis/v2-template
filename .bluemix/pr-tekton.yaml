@@ -61,3 +61,6 @@ properties:
   - name: one-pipeline-dockerconfigjson
     value: ${ONE_PIPELINE_DOCKER_CONFIG_JSON}
     type: SECURE
+  - name: one-pipeline-ci-repo
+    value: ${PIPELINE_REPO_URL}
+    type: text
