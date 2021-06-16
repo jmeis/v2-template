@@ -32,9 +32,12 @@
     "items": [{
       "type": "section",
       "items": [
+        "name",
+        "dashboard_url",
         "user_id",
         "token",
-        "repository_name"
+        "repository_name",
+        "repository_url"
       ]
     }]
   }]

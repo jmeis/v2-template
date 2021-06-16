@@ -1,0 +1,43 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "messages": {
+        "$i18n": "locales.yml"
+    },
+    "title": {
+        "$ref": "#/messages/imageSigning.title"
+    },
+    "description": {
+        "$ref": "#/messages/imageSigning.description"
+    },
+    "longDescription": {
+        "$ref": "#/messages/imageSigning.longDescription"
+    },
+    "type": "object",
+    "properties": {
+        "vault_secret": {
+            "type": "password",
+            "pattern": "\\S"
+
+        }
+    },
+    "form": [{
+            "type": "validator",
+            "url": "/devops/validator/validator-v1.html"
+        },
+        {
+            "type": "password",
+            "readonly": false,
+            "title": {
+                "$ref": "#/messages/deploy.vaultName"
+            },
+            "key": "vault_secret"
+        },
+        {
+            "type": "info",
+            "text": {
+                "$ref": "#/messages/imageSigning.linkText"
+            }
+        }
+    ],
+    "required": ["vault_secret"]
+}

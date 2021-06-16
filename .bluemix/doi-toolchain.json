@@ -46,7 +46,9 @@
       "description": {
         "$ref": "#/messages/doiToolchain.idDescription"
       },
-      "placeholder": "Toolchain placeholder ID",
+      "placeholder": {
+        "$ref": "#/messages/doiToolchain.idPlaceHolder"
+      },
       "key": "doi-toolchain-id",
       "type": "text"
     },
@@ -57,7 +59,9 @@
       "description": {
         "$ref": "#/messages/doiToolchain.envDescription"
       },
-      "placeholder": "Target environment placeholder",
+      "placeholder": {
+        "$ref": "#/messages/doiToolchain.targetPlaceHolder"
+      },
       "key": "doi-environment",
       "type": "text"
     }

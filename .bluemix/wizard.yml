@@ -52,6 +52,24 @@ steps:
             service_label: kp-vault
       - condition:
           any:
+            - parameter: secrets-manager
+              value: true
+        actions:
+          - type: create-service
+            service_id: secretsmanager
+            service_label: sm-vault
+            parameters:
+              name: sm-compliance-secrets
+      - condition:
+          any:
+            - parameter: secrets-manager
+              value: false
+        actions:
+          - type: delete-service
+            service_id: secretsmanager
+            service_label: sm-vault
+      - condition:
+          any:
             - parameter: hashicorp-vault
               value: true
         actions:
@@ -81,6 +99,17 @@ steps:
         any:
           - form: wizard_vault
             parameter: key-protect
+            value: true
+  - name: secretsmanager
+    indent_level: 1
+    form: secretsmanager
+    title:
+      $ref: "#/messages/wizard.step.secretsmanager.title"
+    visible:
+      condition:
+        any:
+          - form: wizard_vault
+            parameter: secrets-manager
             value: true
   - name: hashicorpvault
     indent_level: 1
@@ -151,15 +180,14 @@ steps:
     title:
       $ref: "#/messages/wizard.step.deploy.title"
     form: pipeline
-  - name: private_worker
+  - name: image_signing
     title:
-      $ref: "#/messages/wizard.step.private_worker.title"
-    form: private_worker
-  - name: artifactory
+      $ref: "#/messages/wizard.step.image_signing.title"
+    form: image_signing
+  - name: doi-toolchain
     title:
-      $ref: "#/messages/wizard.step.artifactory.title"
-    form: wizard_artifactory
-    advanced_form: artifactoryComp
+      $ref: "#/messages/wizard.step.doi-toolchain.title"
+    form: draservicebroker
   - name: optionaltools
     title:
       $ref: "#/messages/wizard.step.optionaltools.title"
@@ -190,48 +218,6 @@ steps:
             service_label: slack
       - condition:
           any:
-            - parameter: doi-tc
-              value: true
-        actions:
-          - type: create-service
-            service_id: customtool
-            service_label: doi-toolchain
-            parameters:
-              type: doi-toolchain
-              lifecyclePhase: "LEARN"
-              imageUrl:
-                $ref: devops-insights.png
-                $refType: image-data-uri
-              documentationUrl: 'https://cloud.ibm.com/devops/insights/overviewNew?toolchainId={{form.customtool_doi-toolchain.parameters.doi-toolchain-id}}'
-              name: Link existing DOI Toolchain
-              dashboard_url: 'https://cloud.ibm.com/devops/insights/overviewNew?toolchainId={{form.customtool_doi-toolchain.parameters.doi-toolchain-id}}'
-              description: The toolchain that contains the Devops Insights instance CD interacts with.
-      - condition:
-          any:
-            - parameter: doi-tc
-              value: false
-        actions:
-          - type: delete-service
-            service_id: customtool
-            service_label: doi-toolchain
-      - condition:
-          any:
-            - parameter: doi
-              value: true
-        actions:
-          - type: create-service
-            service_id: draservicebroker
-            service_label: devops-insights
-      - condition:
-          any:
-            - parameter: doi
-              value: false
-        actions:
-          - type: delete-service
-            service_id: draservicebroker
-            service_label: devops-insights
-      - condition:
-          any:
             - parameter: webide
               value: true
         actions:
@@ -248,29 +234,20 @@ steps:
             service_label: webide
       - condition:
           any:
-            - parameter: sonarqube-tool
+            - parameter: pw-tool
               value: true
         actions:
           - type: create-service
-            service: sonarqube
-            service_label: sonarqube
-            parameters:
-              name: >
-                $env.sonarInstanceName ? '{{sonarInstanceName}}' : ''
-              dashboard_url: >
-                $env.sonarServerUrl ? '{{sonarServerUrl}}' : ''
-              user_login: >
-                $env.sonarUserId ? '{{sonarUserId}}' : ''
-              user_password: >
-                $env.sonarUserToken ? '{{sonarUserToken}}' : ''
+            service_id: private_worker
+            service_label: privateWorker
       - condition:
           any:
-            - parameter: sonarqube-tool
+            - parameter: pw-tool
               value: false
         actions:
           - type: delete-service
-            service: sonarqube
-            service_label: sonarqube
+            service_id: private_worker
+            service_label: privateWorker
   - name: slack
     indent_level: 1
     title:
@@ -282,29 +259,16 @@ steps:
           - form: wizard_optional_tools
             parameter: slack-tool
             value: true
-  - name: doi-toolchain
+  - name: privateWorker
     indent_level: 1
-    label:
-      $ref: "#/messages/wizard.step.doi-toolchain.label"
+    form: private_worker
     title:
-      $ref: "#/messages/wizard.step.doi-toolchain.title"
-    form: customtool_doi-toolchain
+      $ref: "#/messages/wizard.step.privateworker.title"
     visible:
       condition:
         any:
           - form: wizard_optional_tools
-            parameter: doi-tc
-            value: true
-  - name: sonarqube
-    indent_level: 1
-    title:
-      $ref: "#/messages/wizard.step.sonarqube.title"
-    form: sonarqube
-    visible:
-      condition:
-        any:
-          - form: wizard_optional_tools
-            parameter: sonarqube-tool
+            parameter: pw-tool
             value: true
   - name: summary
     title:
@@ -315,6 +279,7 @@ form:
   wizard_vault:
     parameters:
       key-protect: true
+      secrets-manager: true
       hashicorp-vault: true
     schema:
       $ref: wizard_vault.json
@@ -338,23 +303,13 @@ form:
   wizard_evidence:
     schema:
       $ref: wizard_evidence.json
-
-  wizard_artifactory:
-    schema:
-      $ref: wizard_artifactory.json
-
   wizard_optional_tools:
     parameters:
-      doi-tc: true
-      doi: true
       webide: true
       slack-tool: true
-      sonarqube-tool: true
     schema:
       $ref: wizard_optional_tools.json
 
   wizard_summary:
-    parameters:
-      test: true
     schema:
       $ref: wizard_summary.json

@@ -8,7 +8,7 @@ template:
   description:
     $ref: "#/messages/template.description"
   header: '![](toolchain.svg?localize)'
-  icon: secure-lock-kubernetes.svg
+  icon: develop.svg
   required:
     - build
     - ci
@@ -18,8 +18,7 @@ template:
     - evidence-repo
     - issues-repo
     - inventory-repo
-    - artifactoryComp
-    - privateWorker
+    - imageSigning
   info:
     git url: >
       "[" + $env.repository + "]" +
@@ -50,20 +49,8 @@ services:
       documentationUrl: 'https://cloud.ibm.com/catalog/services/cloud-object-storage'
       name: Cloud Object Storage
       dashboard_url: 'https://cloud.ibm.com/catalog/services/cloud-object-storage'
-      description: The information required to connect the toolchain with your Cloud Object Storage instance.
-
-  doi-toolchain:
-    service_id: customtool
-    parameters:
-      type: doi-toolchain
-      lifecyclePhase: "LEARN"
-      imageUrl:
-        $ref: devops-insights.png
-        $refType: image-data-uri
-      documentationUrl: 'https://cloud.ibm.com/devops/insights/overviewNew?toolchainId={{form.customtool_doi-toolchain.parameters.doi-toolchain-id}}'
-      name: Link existing DOI Toolchain
-      dashboard_url: 'https://cloud.ibm.com/devops/insights/overviewNew?toolchainId={{form.customtool_doi-toolchain.parameters.doi-toolchain-id}}'
-      description: The toolchain that contains the Devops Insights instance CD interacts with.
+      description:
+        $ref: "#/messages/cos.service.description"
 
   slack:
     service_id: slack
@@ -75,98 +62,68 @@ services:
       team_url: >
         $env.slackTeamName ? '{{slackTeamName}}' : ''
 
-  sonarqube:
-    service_id: sonarqube
-    parameters:
-      name: >
-        $env.sonarInstanceName ? '{{sonarInstanceName}}' : ''
-      dashboard_url: >
-        $env.sonarServerUrl ? '{{sonarServerUrl}}' : ''
-      user_login: >
-        $env.sonarUserId ? '{{sonarUserId}}' : ''
-      user_password: >
-        $env.sonarUserToken ? '{{sonarUserToken}}' : ''
-
-  privateWorker:
-    service_id: private_worker
-    parameters:
-      name: '{{form.private_worker.parameters.name}}'
-      workerQueueCredentials: '{{form.private_worker.parameters.workerQueueCredentials}}'
-      workerQueueIdentifier: '{{form.private_worker.parameters.workerQueueIdentifier}}'
-
-  artifactoryComp:
-    service_id: artifactory
-    parameters:
-      name: 'registry-for-images'
-      dashboard_url: 'https://na.artifactory.swg-devops.com'
-      repository_url: 'https://wcp-compliance-automation-team-docker-local.artifactory.swg-devops.com'
-      repository_name: 'wcp-compliance-automation-team-docker-local'
-      type: docker
-      user_id: '{{form.pipeline.parameters.artifactory-userid}}'
-      token: '{{form.pipeline.parameters.artifactory-token}}'
-
   app-repo:
-    service_id: github_integrated
+    service_id: 'hostedgit'
     parameters:
       repo_name: 'compliance-app-{{timestamp}}'
       repo_url: >
-        $env.app_repo ? $env.app_repo : $env.sourceRepoUrl ? '{{sourceRepoUrl}}' : 'https://github.ibm.com/one-pipeline/hello-compliance-app'
+        $env.app_repo ? $env.app_repo : $env.sourceRepoUrl ? '{{sourceRepoUrl}}' : 'https://github.ibm.com/open-toolchain/hello-compliance-app'
       source_repo_url: >
-        $env.app_repo ? $env.app_repo : $env.sourceRepoUrl ? '{{sourceRepoUrl}}' : 'https://github.ibm.com/one-pipeline/hello-compliance-app'
+        $env.app_repo ? $env.app_repo : $env.sourceRepoUrl ? '{{sourceRepoUrl}}' : 'https://github.ibm.com/open-toolchain/hello-compliance-app'
       type: $env.type || 'clone'
       has_issues: false
       enable_traceability: false
       legal: true
 
   inventory-repo:
-    service_id: github_integrated
+    service_id: 'hostedgit'
     parameters:
       repo_name: 'compliance-inventory-{{timestamp}}'
       type: $env.type || 'clone'
       repo_url: >
-        $env.inventory_repo ? $env.inventory_repo : $env.inventoryRepo ? '{{inventoryRepo}}' : 'https://github.ibm.com/one-pipeline/compliance-inventory'
+        $env.inventory_repo ? $env.inventory_repo : $env.inventoryRepo ? '{{inventoryRepo}}' : 'https://github.ibm.com/open-toolchain/compliance-inventory'
       source_repo_url: >
-        $env.inventory_repo ? $env.inventory_repo : $env.inventoryRepo ? '{{inventoryRepo}}' : 'https://github.ibm.com/one-pipeline/compliance-inventory'
+        $env.inventory_repo ? $env.inventory_repo : $env.inventoryRepo ? '{{inventoryRepo}}' : 'https://github.ibm.com/open-toolchain/compliance-inventory'
       has_issues: false
       enable_traceability: false
       legal: true
 
   issues-repo:
-    service_id: github_integrated
+    service_id: 'hostedgit'
     parameters:
       repo_name: 'compliance-issues-{{timestamp}}'
       type: $env.type || 'clone'
       repo_url: >
-        $env.issues_repo ? $env.issues_repo : $env.issuesRepo ? '{{issuesRepo}}' : 'https://github.ibm.com/one-pipeline/compliance-incident-issues'
+        $env.issues_repo ? $env.issues_repo : $env.issuesRepo ? '{{issuesRepo}}' : 'https://github.ibm.com/open-toolchain/compliance-incident-issues'
       source_repo_url: >
-        $env.issues_repo ? $env.issues_repo : $env.issuesRepo ? '{{issuesRepo}}' : 'https://github.ibm.com/one-pipeline/compliance-incident-issues'
+        $env.issues_repo ? $env.issues_repo : $env.issuesRepo ? '{{issuesRepo}}' : 'https://github.ibm.com/open-toolchain/compliance-incident-issues'
       has_issues: true
       enable_traceability: false
       legal: true
 
   evidence-repo:
-    service_id: github_integrated
+    service_id: 'hostedgit'
     parameters:
       repo_name: 'compliance-evidence-{{timestamp}}'
       type: $env.type || 'clone'
       repo_url: >
-        $env.evidence_repo ? $env.evidence_repo : $env.evidenceRepo ? '{{evidenceRepo}}' : 'https://github.ibm.com/one-pipeline/compliance-evidence-locker'
+        $env.evidence_repo ? $env.evidence_repo : $env.evidenceRepo ? '{{evidenceRepo}}' : 'https://github.ibm.com/open-toolchain/compliance-evidence-locker'
       source_repo_url: >
-        $env.evidence_repo ? $env.evidence_repo : $env.evidenceRepo ? '{{evidenceRepo}}' : 'https://github.ibm.com/one-pipeline/compliance-evidence-locker'
+        $env.evidence_repo ? $env.evidence_repo : $env.evidenceRepo ? '{{evidenceRepo}}' : 'https://github.ibm.com/open-toolchain/compliance-evidence-locker'
       has_issues: false
       enable_traceability: false
       legal: true
       cos: true
 
   pipeline-repo:
-    service_id: github_integrated
+    service_id: 'hostedgit'
     parameters:
-      repo_name: 'compliance-pipelines'
+      repo_name: 'compliance-ci-toolchain-{{timestamp}}'
       repo_url: >
-        $env.pipeline_repo ? $env.pipeline_repo : $env.pipelineRepo ? '{{pipelineRepo}}' : 'https://github.ibm.com/one-pipeline/compliance-pipelines'
+        $env.pipeline_repo ? $env.pipeline_repo : $env.pipelineRepo ? '{{pipelineRepo}}' : 'https://github.ibm.com/open-toolchain/compliance-pipelines'
       source_repo_url: >
-        $env.pipeline_repo ? $env.pipeline_repo : $env.pipelineRepo ? '{{pipelineRepo}}' : 'https://github.ibm.com/one-pipeline/compliance-pipelines'
-      type: $env.type || 'link'
+        $env.pipeline_repo ? $env.pipeline_repo : $env.pipelineRepo ? '{{pipelineRepo}}' : 'https://github.ibm.com/open-toolchain/compliance-pipelines'
+      type: $env.type || 'clone'
       has_issues: false
       enable_traceability: false
       legal: true
@@ -174,13 +131,13 @@ services:
 
   config-repo:
     service_id: >
-      $env.configRepoEnabled ? 'github_integrated' : ''
+      $env.configRepoEnabled ? 'hostedgit' : ''
     parameters:
       repo_url: >
-        $env.configRepoEnabled ? '{{onePipelineConfigRepo}}' : 'https://github.ibm.com/one-pipeline/sample-config-repo'
+        $env.configRepoEnabled ? '{{onePipelineConfigRepo}}' : 'https://github.ibm.com/open-toolchain/sample-config-repo'
       source_repo_url: >
-        $env.configRepoEnabled ? '{{onePipelineConfigRepo}}' : 'https://github.ibm.com/one-pipeline/sample-config-repo'
-      type: "link"
+        $env.configRepoEnabled ? '{{onePipelineConfigRepo}}' : 'https://github.ibm.com/open-toolchain/sample-config-repo'
+      type: "clone"
       has_issues: false
       enable_traceability: false
       legal: true
@@ -205,9 +162,6 @@ services:
           APP_REPO: app-repo
           API_KEY: '{{form.pipeline.parameters.api-key}}'
           TEKTON_CATALOG_REPO: tekton-catalog-repo
-          ARTIFACTORY_DOCKER_CONFIG_JSON: >
-            $env.artifactoryDockerConfigJson ? '{{artifactoryDockerConfigJson}}' : '{{form.artifactoryComp.parameters.docker_config_json}}'
-          PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
           ONE_PIPELINE_REPO: '{{services.app-repo.parameters.repo_url}}'
           ONE_PIPELINE_CONFIG: >
             $env.onePipelineConfig ? '{{onePipelineConfig}}' : '.one-pipeline.yaml'
@@ -222,6 +176,7 @@ services:
           PR_REPOSITORY: '{{services.app-repo.parameters.repo_name}}'
           SLACK_ENABLED: >
             $env.slackEnabled ? '{{slackEnabled}}' : '1'
+          REPO_COMMIT_EVENT_LISTENER_NAME: 'pr-listener-gitlab'
         execute: false
   ci:
     service_id: pipeline
@@ -230,7 +185,6 @@ services:
         - app-repo
         - pipeline-repo
         - config-repo
-        - customtool_doi-toolchain
       name: 'ci-pipeline'
       ui-pipeline: true
       type: tekton
@@ -250,16 +204,13 @@ services:
           DEV_CLUSTER_NAME: '{{form.pipeline.parameters.dev-cluster-name}}'
           DEV_CLUSTER_NAMESPACE: '{{form.pipeline.parameters.dev-cluster-namespace}}'
           TEKTON_CATALOG_REPO: tekton-catalog-repo
-          ARTIFACTORY_DOCKER_CONFIG_JSON: >
-            $env.artifactoryDockerConfigJson ? '{{artifactoryDockerConfigJson}}' : '{{form.artifactoryComp.parameters.docker_config_json}}'
-          PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
           DOI_TOOLCHAIN_ID: '{{form.customtool_doi-toolchain.parameters.doi-toolchain-id}}'
           DOI_ENVIRONMENT: '{{form.customtool_doi-toolchain.parameters.doi-environment}}'
           COS_BUCKET_NAME: '{{form.customtool_cos-bucket.parameters.cos-bucket-name}}'
           COS_ENDPOINT: '{{form.customtool_cos-bucket.parameters.cos-endpoint}}'
           COS_API_KEY: '{{form.customtool_cos-bucket.parameters.cos-api-key}}'
           ONE_PIPELINE_REPO: '{{services.app-repo.parameters.repo_url}}'
-          VAULT_SECRET: '{{services.private_worker.parameters.vault_secret}}'
+          VAULT_SECRET: '{{form.image_signing.parameters.vault_secret}}'
           ONE_PIPELINE_CONFIG: >
             $env.onePipelineConfig ? '{{onePipelineConfig}}' : '.one-pipeline.yaml'
           ONE_PIPELINE_CONFIG_REPO: >
@@ -274,6 +225,7 @@ services:
             $env.slackEnabled ? '{{slackEnabled}}' : '1'
           GIT_CI_TIMED_TRIGGER_DISABLE: >
             $env.disableGitCiTimedTrigger === 'false' ? false : true
+          REPO_COMMIT_EVENT_LISTENER_NAME: 'ci-listener-gitlab'
         execute: false
 
   webide:
@@ -293,6 +245,18 @@ services:
         $env.kpResourceGroup ? '{{kpResourceGroup}}' : ''
       instance-name: >
         $env.kpInstanceName ? '{{kpInstanceName}}' : ''
+
+  sm-vault:
+    service_id: secretsmanager
+    parameters:
+      name: >
+        $env.smName ? '{{smName}}' : 'sm-compliance-secrets'
+      region: >
+        $env.smRegion ? '{{smRegion}}' : ''
+      resource-group: >
+        $env.smResourceGroup ? '{{smResourceGroup}}' : ''
+      instance-name: >
+        $env.smInstanceName ? '{{smInstanceName}}' : ''
 
   hc-vault:
     service_id: hashicorpvault
@@ -330,21 +294,14 @@ form:
       dev-cluster-namespace: >
         $env.devClusterNamespace ? '{{devClusterNamespace}}' : 'default'
       build-cluster-namespace: build
-      artifactory-userid: '{{artifactoryUserId}}'
-      artifactory-token: '{{artifactoryToken}}'
     schema:
       $ref: deploy.json
 
-  private_worker:
+  image_signing:
     parameters:
-      name: >
-        $env.privateWorkerName ? '{{privateWorkerName}}' : 'private-worker'
-      workerQueueCredentials: '{{privateWorkerCreds}}'
-      # TODO: this wont be needed once a fix is in place for https://github.ibm.com/org-ids/roadmap/issues/15360
-      workerQueueIdentifier: '{{privateWorkerIdentifier}}'
       vault_secret: '{{vaultSecret}}'
     schema:
-      $ref: privateWorker.json
+      $ref: imageSigning.json
 
   customtool_cos-bucket:
     parameters:
@@ -354,12 +311,3 @@ form:
         $env.cosEndpoint ? '{{cosEndpoint}}' : ''
     schema:
       $ref: cos.json
-
-  customtool_doi-toolchain:
-    parameters:
-      doi-toolchain-id: >
-        $env.doiToolchainId ? '{{doiToolchainId}}' : ''
-      doi-environment: >
-        $env.doiEnvironment ? '{{doiEnvironment}}' : ''
-    schema:
-      $ref: doi-toolchain.json

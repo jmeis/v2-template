@@ -33,11 +33,21 @@
     },
     "items": [{
         "type": "section",
-        "items": ["repo_name"]
+        "items": [{
+        "key":"repo_name",
+        "placeholder": {
+            "$ref": "#/messages/wizard.app.repoNamePlaceholder"
+          }
+        }]
       },
       {
         "type": "section",
-        "items": ["repo_url"]
+        "items": [{
+        "key":"repo_url",
+        "placeholder": {
+            "$ref": "#/messages/wizard.app.repoURLPlaceholder"
+          }
+        }]
       }
     ]
   }]

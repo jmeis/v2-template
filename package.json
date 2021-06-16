@@ -5,12 +5,12 @@
   "main": "toolchain.yml",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "yamllint -c yamllint-rules.yaml .bluemix .pr-pipeline .ci-pipeline",
+    "lint": "yamllint -c yamllint-rules.yaml .bluemix",
     "postinstall": "pip install --user yamllint || brew install yamllint"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.ibm.com/one-pipeline/compliance-cd-toolchain.git"
+    "url": "https://github.ibm.com/open-toolchain/compliance-cd-toolchain.git"
   },
   "devDependencies": {
     "@commitlint/cli": "^12.0.0",
@@ -25,5 +25,8 @@
       "pre-commit": "npm run lint",
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
+  },
+  "dependencies": {
+    "path-parse": "^1.0.7"
   }
 }

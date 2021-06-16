@@ -184,15 +184,11 @@
         },
         {
             "type": "table",
-            "columnCount": 7,
+            "columnCount": 3,
             "widths": [
-                "24%",
-                "2%",
-                "24%",
-                "3%",
-                "23%",
-                "1%",
-                "23%"
+                "48%",
+                "4%",
+                "48%",
             ],
             "items": [
                 {
@@ -212,8 +208,17 @@
                     }
                 },
                 {
+                    "type": "select",
+                    "key": "dev-region"
+                },
+                {
                     "type": "label",
                     "title": ""
+                },
+                {
+                    "type": "select",
+                    "key": "dev-resource-group",
+                    "readonly": false
                 },
                 {
                     "type": "label",
@@ -230,23 +235,6 @@
                     "title": {
                         "$ref": "#/messages/deploy.clusterNs"
                     }
-                },
-                {
-                    "type": "select",
-                    "key": "dev-region"
-                },
-                {
-                    "type": "label",
-                    "title": ""
-                },
-                {
-                    "type": "select",
-                    "key": "dev-resource-group",
-                    "readonly": false
-                },
-                {
-                    "type": "label",
-                    "title": ""
                 },
                 {
                     "type": "select",

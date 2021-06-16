@@ -39,15 +39,21 @@
       },
       "items": [{
           "type": "section",
-          "items": [
-            "repo_name"
-          ]
+          "items": [{
+          "key":"repo_name",
+          "placeholder": {
+              "$ref": "#/messages/wizard.evidence.repoNamePlaceholder"
+            }
+          }]
         },
         {
           "type": "section",
-          "items": [
-            "repo_url"
-          ]
+          "items": [{
+          "key":"repo_url",
+          "placeholder": {
+              "$ref": "#/messages/wizard.evidence.repoURLPlaceholder"
+            }
+          }]
         }
       ]
     },
@@ -60,14 +66,18 @@
         },
         "subtitle": {
           "$ref": "#/messages/wizard.evidence.cos.notification.sutitle"
-        }
+        },
+        "showInAdvancedMode": true,
+        "advancedModePosition": "bottom"
       }
     },
     {
       "type": "boolean",
       "display": {
         "component": "toggle",
-        "style": "standalone"
+        "style": "standalone",
+        "showInAdvancedMode": true,
+        "advancedModePosition": "bottom"
       },
       "title": {
         "$ref": "#/messages/wizard.evidence.cos.title"

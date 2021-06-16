@@ -22,15 +22,20 @@
       }
     },
     "key": "type",
-    "enum": ["link"],
+    "enum": ["link","clone"],
     "titleMap": {
       "link": {
         "$ref": "#/messages/wizard.pipeline.link"
+      },
+      "clone": {
+        "$ref": "#/messages/wizard.pipeline.clone"
       }
     },
     "items": [{
       "type": "section",
       "items": ["repo_url"]
-    }]
+    },{"type": "section",
+        "items": ["repo_name"]
+      }]
   }]
 }
