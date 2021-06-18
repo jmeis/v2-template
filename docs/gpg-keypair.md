@@ -10,6 +10,7 @@
 :warning::red_circle::warning:
 **IMPORTANT**: Please leave the `passphrase` and `repeat` field empty if generate-key commands opens up dialog for the passphrase. This is a limitation with current [(skopeo)](https://github.com/containers/skopeo/issues/1261) utility of the image signing where the toolchain cannot accept a private key protected with passphrase. If you provide the passphrase, Toolchain may fail to decode the certificate, resulting in image sigining failure. 
 
+
    #### **`windows`**
    To the version of gpg installed - within command prompt, run
    ```
@@ -22,6 +23,7 @@
    For GPG Version > 1.4, run 
    ```
    gpg --pinentry-mode loopback --passphrase=''   --generate-key 
+
    ```
 
    For GPG Versions < = 1.4 or any failure with above command, run
@@ -34,6 +36,7 @@
 
    ```
    gpg --pinentry-mode loopback --passphrase=''   --generate-key 
+
    ```
 
 3. Export the Private Key
@@ -41,6 +44,7 @@
     ```
     gpg --export-secret-key <Email Address>
     ```
+
 :warning::red_circle::warning:
 **Important**: The raw key exported here must not be copied directly. It is strongly recommended to securely store the key generated in this step in KeyProtect Instance or Secret Manager Instance. Please refer next sections for more details.
 
@@ -76,7 +80,9 @@ gpg --export-secret-key <Email Address> | base64 | base64 | pbcopy
 | :--: |
 
 ---
-## Storing the Private Key in Secrets Manager Instance 
+
+## Storing the Private Key in IBM Secrets Manager Instance 
+
 
 You need to perfrom double `base64` encode of the Private Key before storing them in your Key Protect Instance. For example, on a linux based system you can perfrom the same as below:
 

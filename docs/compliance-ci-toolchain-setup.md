@@ -8,6 +8,10 @@
 * [Create Toolchain Secrets](./toolchain-secrets.md) to access different integrations and secure them.
 * [Validate recommended IAM Permissions](./iam-permissions.md) are assigned to corressponding integrations.
 
+## Optional:
+* [COS Bucket](./cloud-object-storage.md) as the compliance evidence locker to durably store pipeline run evidence.
+
+
 ## Table of Contents
 
 1. [Start Toolchain Setup](#1-start-toolchain-setup)
@@ -43,7 +47,8 @@
 A toolchain can be created by
 * **Create button** in the README
 
-   [![Deploy To Bluemix](https://console.bluemix.net/devops/graphics/create_toolchain_button.png)](https://cloud.ibm.com/devops/setup/deploy?repository=https://github.ibm.com/open-toolchain/compliance-ci-toolchain.git&env_id=ibm:yp:us-south&branch=develop)
+   [![Deploy To Bluemix](https://console.bluemix.net/devops/graphics/create_toolchain_button.png)](https://cloud.ibm.com/devops/setup/deploy?repository=https://github.ibm.com/open-toolchain/compliance-ci-toolchain.git&env_id=ibm:yp:us-south)
+
 
 *   Navigate to [IBM Cloud Continuous Delivery Toolchain Catalog](https://cloud.ibm.com/devops/create?env_id=ibm:yp:us-south&ENABLE_COMPLIANCE_TEMPLATES=true) and select  
     **CI - Develop a secure app with DevSecOps practices**

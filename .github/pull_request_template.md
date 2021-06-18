@@ -22,4 +22,4 @@
 <!-- link related issues (you can reference multiple issues) -->
 <!-- you can also link related pull requests -->
 
-- cocoa/board#[issue-number]
+- #[issue-number]

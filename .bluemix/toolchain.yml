@@ -63,6 +63,15 @@ services:
       team_url: >
         $env.slackTeamName ? '{{slackTeamName}}' : ''
 
+  privateWorker:
+    service_id: private_worker
+    parameters:
+      name: >
+        $env.privateWorkerName ? '{{privateWorkerName}}' : 'private-worker'
+      workerQueueCredentials: '{{privateWorkerCreds}}'
+      # TODO: this wont be needed once a fix is in place for https://github.ibm.com/org-ids/roadmap/issues/15360
+      workerQueueIdentifier: '{{privateWorkerIdentifier}}'
+      
   app-repo:
     service_id: 'hostedgit'
     parameters:
@@ -199,6 +208,8 @@ services:
           ONE_PIPELINE_DOCKER_CONFIG_JSON: >
             $env.onePipelineDockerConfigJson ? '{{onePipelineDockerConfigJson}}' : 'eyJhdXRocyI6e319'
           PR_REPOSITORY: '{{services.app-repo.parameters.repo_name}}'
+          # Private Worker for the pipeline
+          PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
           SLACK_ENABLED: >
             $env.slackEnabled ? '{{slackEnabled}}' : '1'
           REPO_COMMIT_EVENT_LISTENER_NAME: 'pr-listener-gitlab'
@@ -239,6 +250,8 @@ services:
           COS_API_KEY: '{{form.customtool_cos-bucket.parameters.cos-api-key}}'
           ONE_PIPELINE_REPO: '{{services.app-repo.parameters.repo_url}}'
           VAULT_SECRET: '{{form.image_signing.parameters.vault_secret}}'
+          # Private Worker for the pipeline
+          PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
           ONE_PIPELINE_CONFIG: >
             $env.onePipelineConfig ? '{{onePipelineConfig}}' : '.one-pipeline.yaml'
           ONE_PIPELINE_CONFIG_REPO: >
@@ -254,7 +267,6 @@ services:
           GIT_CI_TIMED_TRIGGER_DISABLE: >
             $env.disableGitCiTimedTrigger === 'false' ? false : true
           REPO_COMMIT_EVENT_LISTENER_NAME: 'ci-listener-gitlab'
-
         execute: false
 
   webide:

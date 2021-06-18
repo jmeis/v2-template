@@ -57,7 +57,7 @@ The CI compliance toolchain automates security and compliance best practices inc
 
 To get started, click this button:
 
-[![Create toolchain](https://cloud.ibm.com/devops/graphics/create_toolchain_button.png)](https://cloud.ibm.com/devops/setup/deploy?repository=https://github.ibm.com/open-toolchain/compliance-ci-toolchain.git&env_id=ibm:yp:us-south&branch=develop)
+[![Create toolchain](https://cloud.ibm.com/devops/graphics/create_toolchain_button.png)](https://cloud.ibm.com/devops/setup/deploy?repository=https://github.ibm.com/open-toolchain/compliance-ci-toolchain.git&env_id=ibm:yp:us-south)
 
 > **Note**: This link attempts to create the toolchain in the `us-south` (Dallas) region by default; however, you can select another region on the resultant page.
 
@@ -66,7 +66,9 @@ To get started, click this button:
 - **[Setup Guide](./docs/compliance-ci-toolchain-setup.md)**:
 If this is your first time running the CI template then you should read the [Setup Guide](./docs/compliance-ci-toolchain-setup.md) before running the toolchain.
 
+
 - **[Troubleshooting guide](https://github.ibm.com/open-toolchain/docs/blob/master/troubleshooting.md)**:
+
 If you experience a problem during setup or running your pipelines, refer [Troubleshooting Guide](https://github.ibm.com/open-toolchain/docs/blob/master/troubleshooting.md)-WIP before raising an issue.
 
 ---
