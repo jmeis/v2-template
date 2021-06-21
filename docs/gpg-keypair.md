@@ -8,7 +8,7 @@
 2. Generate a GPG key pair. Provide appropriate values for `Real name` and `Email address`. Once finished select Option `O`
 
 :warning::red_circle::warning:
-**IMPORTANT**: Please leave the `passphrase` and `repeat` field empty if generate-key commands opens up dialog for the passphrase. This is a limitation with current [(skopeo)](https://github.com/containers/skopeo/issues/1261) utility of the image signing where the toolchain cannot accept a private key protected with passphrase. If you provide the passphrase, Toolchain may fail to decode the certificate, resulting in image sigining failure. 
+**IMPORTANT**: Please leave the passphrase and repeat field empty if the generate-key commands open up a dialog asking for a passphrase. This is a limitation with the [(skopeo)](https://github.com/containers/skopeo/issues/1261) utility of the image signing where the pipeline cannot accept a private key protected with passphrase. If you provide the passphrase during creation then your pipeline will fail to decode the certificate and your pipeline will fail at the image signing step.
 
 
    #### **`windows`**
@@ -38,8 +38,8 @@
    gpg --pinentry-mode loopback --passphrase=''   --generate-key 
 
    ```
-
-3. Export the Private Key
+   
+3. Store the key 
 
     ```
     gpg --export-secret-key <Email Address>
@@ -49,7 +49,8 @@
 **Important**: The raw key exported here must not be copied directly. It is strongly recommended to securely store the key generated in this step in KeyProtect Instance or Secret Manager Instance. Please refer next sections for more details.
 
 ---
-## Storing the Private Key in Key Protect Instance
+
+## Method 1: Storing a Private Key in Key Protect
 
 You need to perform double `base64` encode of the Private Key before storing them in your Key Protect Instance. 
 #### **`windows`**
@@ -79,12 +80,11 @@ gpg --export-secret-key <Email Address> | base64 | base64 | pbcopy
 | ![Save Key To Key Protect](./images/devsecops_set-up_store_key_protect.png) |
 | :--: |
 
+
 ---
+## Method 2: Storing a Private Key in Secrets Manager
 
-## Storing the Private Key in IBM Secrets Manager Instance 
-
-
-You need to perfrom double `base64` encode of the Private Key before storing them in your Key Protect Instance. For example, on a linux based system you can perfrom the same as below:
+You need to perform single `base64` encode of the Private Key before storing them in your Key Protect Instance. For example
 
 #### **`windows`**
 ```
@@ -115,3 +115,11 @@ gpg --export-secret-key <Email Address> | base64 | pbcopy
 | ![Save Key To Secret Manager - Step 2](./images/devsecops_set-up_store_secret_manager_2.png) |
 | :--: |
 
+---
+## Method 3: Export the Private Key and store it directly 
+
+```
+    gpg --export-secret-key <Email Address> | base64 
+```
+:warning::red_circle::warning:
+**Important**: The raw key exported here must not be copied directly. It is strongly recommended to securely store the key generated in this step in KeyProtect Instance or Secret Manager Instance. Please refer method 1 or method 2 for more details. 

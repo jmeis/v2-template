@@ -71,13 +71,13 @@ services:
       workerQueueCredentials: '{{privateWorkerCreds}}'
       # TODO: this wont be needed once a fix is in place for https://github.ibm.com/org-ids/roadmap/issues/15360
       workerQueueIdentifier: '{{privateWorkerIdentifier}}'
-      
+
   app-repo:
     service_id: 'hostedgit'
     parameters:
       repo_name: 'compliance-app-{{timestamp}}'
       repo_url: >
-        $env.app_repo ? $env.app_repo : $env.sourceRepoUrl ? '{{sourceRepoUrl}}' : 
+        $env.app_repo ? $env.app_repo : $env.sourceRepoUrl ? '{{sourceRepoUrl}}' :
         $env.template.info.hosted_region !== "" ? 'https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/hello-compliance-app':
             'https://github.ibm.com/open-toolchain/hello-compliance-app'
       source_repo_url: >
@@ -112,11 +112,11 @@ services:
       repo_name: 'compliance-issues-{{timestamp}}'
       type: $env.type || 'clone'
       repo_url: >
-        $env.issues_repo ? $env.issues_repo : $env.issuesRepo ? '{{issuesRepo}}' : 
+        $env.issues_repo ? $env.issues_repo : $env.issuesRepo ? '{{issuesRepo}}' :
         $env.template.info.hosted_region !== "" ? 'https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/compliance-incident-issues':
             'https://github.ibm.com/open-toolchain/compliance-incident-issues'
       source_repo_url: >
-        $env.issues_repo ? $env.issues_repo : $env.issuesRepo ? '{{issuesRepo}}' : 
+        $env.issues_repo ? $env.issues_repo : $env.issuesRepo ? '{{issuesRepo}}' :
         $env.template.info.hosted_region !== "" ? 'https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/compliance-incident-issues':
             'https://github.ibm.com/open-toolchain/compliance-incident-issues'
       has_issues: true
@@ -129,11 +129,11 @@ services:
       repo_name: 'compliance-evidence-{{timestamp}}'
       type: $env.type || 'clone'
       repo_url: >
-        $env.evidence_repo ? $env.evidence_repo : $env.evidenceRepo ? '{{evidenceRepo}}' : 
+        $env.evidence_repo ? $env.evidence_repo : $env.evidenceRepo ? '{{evidenceRepo}}' :
         $env.template.info.hosted_region !== "" ? 'https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/compliance-evidence-locker':
             'https://github.ibm.com/open-toolchain/compliance-evidence-locker'
       source_repo_url: >
-        $env.evidence_repo ? $env.evidence_repo : $env.evidenceRepo ? '{{evidenceRepo}}' : 
+        $env.evidence_repo ? $env.evidence_repo : $env.evidenceRepo ? '{{evidenceRepo}}' :
         $env.template.info.hosted_region !== "" ? 'https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/compliance-evidence-locker':
             'https://github.ibm.com/open-toolchain/compliance-evidence-locker'
       has_issues: false
@@ -146,11 +146,11 @@ services:
     parameters:
       repo_name: 'compliance-ci-toolchain-{{timestamp}}'
       repo_url: >
-        $env.pipeline_repo ? $env.pipeline_repo : $env.pipelineRepo ? '{{pipelineRepo}}' : 
+        $env.pipeline_repo ? $env.pipeline_repo : $env.pipelineRepo ? '{{pipelineRepo}}' :
         $env.template.info.hosted_region !== "" ? 'https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/compliance-pipelines':
             'https://github.ibm.com/open-toolchain/compliance-pipelines'
       source_repo_url: >
-        $env.pipeline_repo ? $env.pipeline_repo : $env.pipelineRepo ? '{{pipelineRepo}}' : 
+        $env.pipeline_repo ? $env.pipeline_repo : $env.pipelineRepo ? '{{pipelineRepo}}' :
         $env.template.info.hosted_region !== "" ? 'https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/compliance-pipelines':
             'https://github.ibm.com/open-toolchain/compliance-pipelines'
       type: $env.type || 'clone'
@@ -164,11 +164,11 @@ services:
       $env.configRepoEnabled ? 'hostedgit' : ''
     parameters:
       repo_url: >
-        $env.configRepoEnabled ? '{{onePipelineConfigRepo}}' : 
+        $env.configRepoEnabled ? '{{onePipelineConfigRepo}}' :
         $env.template.info.hosted_region !== "" ? 'https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/sample-config-repo':
             'https://github.ibm.com/open-toolchain/sample-config-repo'
       source_repo_url: >
-        $env.configRepoEnabled ? '{{onePipelineConfigRepo}}' : 
+        $env.configRepoEnabled ? '{{onePipelineConfigRepo}}' :
         $env.template.info.hosted_region !== "" ? 'https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/sample-config-repo':
             'https://github.ibm.com/open-toolchain/sample-config-repo'
       type: "clone"
