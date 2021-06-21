@@ -22,13 +22,10 @@
       }
     },
     "key": "type",
-    "enum": ["link","clone"],
+    "enum": ["link"],
     "titleMap": {
       "link": {
         "$ref": "#/messages/wizard.pipeline.link"
-      },
-      "clone": {
-        "$ref": "#/messages/wizard.pipeline.clone"
       }
     },
     "items": [{
