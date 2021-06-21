@@ -69,7 +69,6 @@ services:
       name: >
         $env.privateWorkerName ? '{{privateWorkerName}}' : 'private-worker'
       workerQueueCredentials: '{{privateWorkerCreds}}'
-      # TODO: this wont be needed once a fix is in place for https://github.ibm.com/org-ids/roadmap/issues/15360
       workerQueueIdentifier: '{{privateWorkerIdentifier}}'
 
   app-repo:
@@ -305,9 +304,9 @@ services:
       name: >
         $env.hcName ? '{{hcName}}' : 'hc-compliance-secrets'
       server_url: >
-        $env.hcServerUrl ? '{{hcServerUrl}}' : 'https://vserv.sos.ibm.com:8200'
+        $env.hcServerUrl ? '{{hcServerUrl}}' : ''
       dashboard_url: >
-        $env.hcDashboardUrl ? '{{hcDashboardUrl}}' : 'https://vserv.sos.ibm.com:8200/ui'
+        $env.hcDashboardUrl ? '{{hcDashboardUrl}}' : ''
       authentication_method: >
         $env.hcAuthenticationMethod ? '{{hcAuthenticationMethod}}' : 'approle'
       role_id: >
