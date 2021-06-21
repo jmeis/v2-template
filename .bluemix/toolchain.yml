@@ -144,7 +144,7 @@ services:
   pipeline-repo:
     service_id: 'hostedgit'
     parameters:
-      repo_name: 'compliance-ci-toolchain-{{timestamp}}'
+      repo_name: 'compliance-pipelines-{{timestamp}}'
       repo_url: >
         $env.pipeline_repo ? $env.pipeline_repo : $env.pipelineRepo ? '{{pipelineRepo}}' :
         $env.template.info.hosted_region !== "" ? 'https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/compliance-pipelines':
