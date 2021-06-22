@@ -43,14 +43,14 @@ properties:
     value:
       "0": true
       "1": false
-  - name: one-pipeline-config
-    value: ${ONE_PIPELINE_CONFIG}
+  - name: pipeline-config
+    value: ${PIPELINE_CONFIG}
     type: text
-  - name: one-pipeline-config-repo
-    value: ${ONE_PIPELINE_CONFIG_REPO}
+  - name: pipeline-config-repo
+    value: ${PIPELINE_CONFIG_REPO}
     type: text
-  - name: one-pipeline-config-branch
-    value: ${ONE_PIPELINE_CONFIG_BRANCH}
+  - name: pipeline-config-branch
+    value: ${PIPELINE_CONFIG_BRANCH}
     type: text
   - name: git-token
     value: ${GIT_TOKEN}
@@ -58,9 +58,9 @@ properties:
   - name: slack-notifications
     value: ${SLACK_ENABLED}
     type: text
-  - name: one-pipeline-dockerconfigjson
-    value: ${ONE_PIPELINE_DOCKER_CONFIG_JSON}
+  - name: pipeline-dockerconfigjson
+    value: ${PIPELINE_DOCKER_CONFIG_JSON}
     type: SECURE
-  - name: one-pipeline-ci-repo
+  - name: pipeline-ci-repo
     value: ${PIPELINE_REPO_URL}
     type: text

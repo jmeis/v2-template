@@ -195,17 +195,17 @@ services:
           APP_REPO: app-repo
           API_KEY: '{{form.pipeline.parameters.api-key}}'
           TEKTON_CATALOG_REPO: tekton-catalog-repo
-          ONE_PIPELINE_REPO: '{{services.app-repo.parameters.repo_url}}'
-          ONE_PIPELINE_CONFIG: >
-            $env.onePipelineConfig ? '{{onePipelineConfig}}' : '.one-pipeline.yaml'
-          ONE_PIPELINE_CONFIG_REPO: >
-            $env.onePipelineConfigRepo ? '{{onePipelineConfigRepo}}' : ''
-          ONE_PIPELINE_CONFIG_BRANCH: >
-            $env.onePipelineConfigBranch ? '{{onePipelineConfigBranch}}' : 'master'
+          PIPELINE_REPO: '{{services.app-repo.parameters.repo_url}}'
+          PIPELINE_CONFIG: >
+            $env.pipelineConfig ? '{{pipelineConfig}}' : '.pipeline-config.yaml'
+          PIPELINE_CONFIG_REPO: >
+            $env.pipelineConfigRepo ? '{{pipelineConfigRepo}}' : ''
+          PIPELINE_CONFIG_BRANCH: >
+            $env.pipelineConfigBranch ? '{{pipelineConfigBranch}}' : 'master'
           GIT_TOKEN: >
             $env.gitToken ? '{{gitToken}}' : ''
-          ONE_PIPELINE_DOCKER_CONFIG_JSON: >
-            $env.onePipelineDockerConfigJson ? '{{onePipelineDockerConfigJson}}' : 'eyJhdXRocyI6e319'
+          PIPELINE_DOCKER_CONFIG_JSON: >
+            $env.pipelineDockerConfigJson ? '{{pipelineDockerConfigJson}}' : 'eyJhdXRocyI6e319'
           PR_REPOSITORY: '{{services.app-repo.parameters.repo_name}}'
           # Private Worker for the pipeline
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
@@ -247,20 +247,20 @@ services:
           COS_BUCKET_NAME: '{{form.customtool_cos-bucket.parameters.cos-bucket-name}}'
           COS_ENDPOINT: '{{form.customtool_cos-bucket.parameters.cos-endpoint}}'
           COS_API_KEY: '{{form.customtool_cos-bucket.parameters.cos-api-key}}'
-          ONE_PIPELINE_REPO: '{{services.app-repo.parameters.repo_url}}'
+          PIPELINE_REPO: '{{services.app-repo.parameters.repo_url}}'
           VAULT_SECRET: '{{form.image_signing.parameters.vault_secret}}'
           # Private Worker for the pipeline
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
-          ONE_PIPELINE_CONFIG: >
-            $env.onePipelineConfig ? '{{onePipelineConfig}}' : '.one-pipeline.yaml'
-          ONE_PIPELINE_CONFIG_REPO: >
-            $env.onePipelineConfigRepo ? '{{onePipelineConfigRepo}}' : ''
-          ONE_PIPELINE_CONFIG_BRANCH: >
-            $env.onePipelineConfigBranch ? '{{onePipelineConfigBranch}}' : 'master'
+          PIPELINE_CONFIG: >
+            $env.pipelineConfig ? '{{pipelineConfig}}' : '.pipeline-config.yaml'
+          PIPELINE_CONFIG_REPO: >
+            $env.pipelineConfigRepo ? '{{pipelineConfigRepo}}' : ''
+          PIPELINE_CONFIG_BRANCH: >
+            $env.pipelineConfigBranch ? '{{pipelineConfigBranch}}' : 'master'
           GIT_TOKEN: >
             $env.gitToken ? '{{gitToken}}' : ''
-          ONE_PIPELINE_DOCKER_CONFIG_JSON: >
-            $env.onePipelineDockerConfigJson ? '{{onePipelineDockerConfigJson}}' : 'eyJhdXRocyI6e319'
+          PIPELINE_DOCKER_CONFIG_JSON: >
+            $env.pipelineDockerConfigJson ? '{{pipelineDockerConfigJson}}' : 'eyJhdXRocyI6e319'
           SLACK_ENABLED: >
             $env.slackEnabled ? '{{slackEnabled}}' : '1'
           GIT_CI_TIMED_TRIGGER_DISABLE: >

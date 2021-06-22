@@ -24,7 +24,7 @@ This project provides a toolchain (template) that enables "shift-left" Continuou
 
 ## Toolchain Overview
 
-This reference implementation is based on the [Tekton open source technology](https://tekton.dev/) and is a key part of the IBM `one-pipeline` initiative which seeks to enable standardized compliance across DevOps pipelines for [IBM Public Cloud](https://www.ibm.com/cloud/public) service teams. The specification recommends seperation of  the CI (Continuous Integration) tasks from the CD (Continous Deployment) tasks. Please refer to the [Deploy a Secure and Compliant Kubernetes Application](https://github.ibm.com/open-toolchain/compliance-cd-toolchain) guide to setup a Continous Deployment Pipeline to deploy your application to production environments.
+This reference implementation is based on the [Tekton open source technology](https://tekton.dev/) and is a key part of the IBM `DevSecOps` initiative which seeks to enable standardized compliance across DevOps pipelines for [IBM Public Cloud](https://www.ibm.com/cloud/public) service teams. The specification recommends seperation of  the CI (Continuous Integration) tasks from the CD (Continous Deployment) tasks. Please refer to the [Deploy a Secure and Compliant Kubernetes Application](https://github.ibm.com/open-toolchain/compliance-cd-toolchain) guide to setup a Continous Deployment Pipeline to deploy your application to production environments.
 
 The toolchain is pre-configured with a simple sample application to enable out-of-the box evaluation. It features various categories of tasks like *source control integration*, *issue tracking*, *status checking*, *static code scanning*, *unit tests*, *vulnerability advisories*, *image signing* and more. It also is configured with an *evidence locker* and *inventory repository*, and is designed to test, build and deploy the sample application to an *IBM Cloud Kubernetes Cluster* whenever the application code or configurations are modified. The image below provides a pictorial overview of the toolchain components and flow.
 
@@ -77,17 +77,17 @@ If you experience a problem during setup or running your pipelines, refer [Troub
 
 ### Run CI Pipeline in "development" mode
 
-Running in "development mode" enables you to quickly test the implementation of your [shift-left compliance one-pipeline.yaml](https://pages.github.ibm.com/one-pipeline/docs/#/custom-scripts)-WIP file, without executing any shift-left compliance related task, so as to optimize pipeline execution time.
+Running in "development mode" enables you to quickly test the implementation of your [shift-left compliance pipeline-config.yaml](https://pages.github.ibm.com/one-pipeline/docs/#/custom-scripts)-WIP file, without executing any shift-left compliance related task, so as to optimize pipeline execution time.
 
   > **Warning**: This mode should be used for **development** purpose **only**, and can not be considered as a replacement of the official shift-left compliance pipelines which remain the reference implementations.
 
 - **Audience**:
-  - Developers in charge of adopting the shift-left compliance CI pipeline for a given component, implementing [corresponding one-pipeline.yaml](https://pages.github.ibm.com/one-pipeline/docs/#/custom-scripts)-WIP file.
+  - Developers in charge of adopting the shift-left compliance CI pipeline for a given component, implementing [corresponding pipeline-config.yaml](https://pages.github.ibm.com/one-pipeline/docs/#/custom-scripts)-WIP file.
 
 - **Purpose**:
 
-  - Develop, implement and quickly test a new [shift-left compliance one-pipeline.yaml](https://pages.github.ibm.com/one-pipeline/docs/#/custom-scripts)-WIP file using a simplified pipeline.
-  - Only execute the various stages of the one-pipeline.yaml file.
+  - Develop, implement and quickly test a new [shift-left compliance pipeline-config.yaml](https://pages.github.ibm.com/one-pipeline/docs/#/custom-scripts)-WIP file using a simplified pipeline.
+  - Only execute the various stages of the pipeline-config.yaml file.
   - Skip most of the shift-left compliance related task, hence optimizing the time to execute your code.
 
 - **Prerequisites**:
@@ -115,7 +115,7 @@ Running in "development mode" enables you to quickly test the implementation of 
 
 - **Observe**:
   - The Development-mode pipeline execution pipeline is executed without unnecessary shift-left compliance tasks.
-  - Iterate until you're satisfied with your `one-pipeline.yaml` file implementation.
+  - Iterate until you're satisfied with your `pipeline-config.yaml` file implementation.
 
 - **Enable normal-mode**
   - To switch back to normal shift-left compliance CI pipeline, either disable or delete the `Manual-Dev-Mode` Trigger.
@@ -127,7 +127,7 @@ Running in "development mode" enables you to quickly test the implementation of 
 The "App Preview" Pull-Request (PR) Pipeline extends the normal Pull Request Pipeline by including additional stages in the pipeline's process that enable you to deploy, scan and preview the application as well as run additional acceptance tests.
 
 - **Audience**:
-  - Developers adopting the shift-left compliance PR-pipeline (by adopting the [corresponding one-pipeline.yaml](https://pages.github.ibm.com/one-pipeline/docs/#/custom-scripts)-WIP file) and requiring additional stages to support an application preview in a near-production deployment environment.  These additional stages include:
+  - Developers adopting the shift-left compliance PR-pipeline (by adopting the [corresponding pipeline-config.yaml](https://pages.github.ibm.com/one-pipeline/docs/#/custom-scripts)-WIP file) and requiring additional stages to support an application preview in a near-production deployment environment.  These additional stages include:
     - *build-containerize*,
     - *build-scan-artifact*,
     - *deploy-app-preview* and
