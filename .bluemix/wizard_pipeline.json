@@ -30,9 +30,14 @@
     },
     "items": [{
       "type": "section",
-      "items": ["repo_url"]
-    },{"type": "section",
-        "items": ["repo_name"]
+      "items": [{
+        "key": "repo_url",
+        "type": "select",
+        "mirrorAdvancedEnum": true
       }]
+    }, {
+      "type": "section",
+      "items": ["repo_name"]
+    }]
   }]
 }

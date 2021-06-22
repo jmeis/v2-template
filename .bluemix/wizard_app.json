@@ -34,8 +34,8 @@
     "items": [{
         "type": "section",
         "items": [{
-        "key":"repo_name",
-        "placeholder": {
+          "key": "repo_name",
+          "placeholder": {
             "$ref": "#/messages/wizard.app.repoNamePlaceholder"
           }
         }]
@@ -43,8 +43,10 @@
       {
         "type": "section",
         "items": [{
-        "key":"repo_url",
-        "placeholder": {
+          "key": "repo_url",
+          "type": "select",
+          "mirrorAdvancedEnum": true,
+          "placeholder": {
             "$ref": "#/messages/wizard.app.repoURLPlaceholder"
           }
         }]
