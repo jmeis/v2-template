@@ -195,7 +195,7 @@ services:
           APP_REPO: app-repo
           API_KEY: '{{form.pipeline.parameters.api-key}}'
           TEKTON_CATALOG_REPO: tekton-catalog-repo
-          PIPELINE_REPO: '{{services.app-repo.parameters.repo_url}}'
+          ONE_PIPELINE_REPO: '{{services.app-repo.parameters.repo_url}}'
           PIPELINE_CONFIG: >
             $env.pipelineConfig ? '{{pipelineConfig}}' : '.pipeline-config.yaml'
           PIPELINE_CONFIG_REPO: >
@@ -247,7 +247,7 @@ services:
           COS_BUCKET_NAME: '{{form.customtool_cos-bucket.parameters.cos-bucket-name}}'
           COS_ENDPOINT: '{{form.customtool_cos-bucket.parameters.cos-endpoint}}'
           COS_API_KEY: '{{form.customtool_cos-bucket.parameters.cos-api-key}}'
-          PIPELINE_REPO: '{{services.app-repo.parameters.repo_url}}'
+          ONE_PIPELINE_REPO: '{{services.app-repo.parameters.repo_url}}'
           VAULT_SECRET: '{{form.image_signing.parameters.vault_secret}}'
           # Private Worker for the pipeline
           PRIVATE_WORKER: '{{services.privateWorker.parameters.name}}'
