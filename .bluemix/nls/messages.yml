@@ -161,6 +161,7 @@ wizard.optional.tools.slack.description: "With Slack, you can collaborate with y
 wizard.optional.tools.sonarqube.title: "SonarQube"
 wizard.optional.tools.sonarqube.description: "Run static code scan with the help of SonarQube."
 wizard.optional.tools.privateworker.title: "Delivery Pipeline Private Worker"
+wizard.optional.tools.privateworker.description: "The Delivery Pipeline Private Worker tool integration connects a private worker that can run Delivery Pipeline workloads in isolation."
 wizard.pipeline.title: "Tekton Pipeline Definition Repository"
 wizard.pipeline.longDescription: "The Tekton Pipeline repository contains Tekton resources that are defined in YAML files. These Tekton resources serve as code for both the CI and CD pipelines.\n\nDo not alter the code in this repository unless it is absolutely necessary."
 wizard.pipeline.link: "Use existing pipeline repository"
