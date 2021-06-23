@@ -30,7 +30,8 @@
       "title": {
         "$ref": "#/messages/cos.apikey.title"
       },
-      "type": "password"
+      "type": "password",
+      "pattern": "\\S"
     }
   },
   "required": ["cos-endpoint", "cos-bucket-name", "cos-api-key"],
