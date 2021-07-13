@@ -51,7 +51,9 @@
           "items": [{
             "key": "repo_url",
             "type": "select",
-            "mirrorAdvancedEnum": true,
+            "display": {
+              "mirrorAdvancedEnum": true
+            },
             "placeholder": {
               "$ref": "#/messages/wizard.issues.repoURLPlaceholder"
             }

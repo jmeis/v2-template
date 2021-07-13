@@ -150,6 +150,10 @@ steps:
               name: Cloud Object Storage
               dashboard_url: 'https://cloud.ibm.com/catalog/services/cloud-object-storage'
               description: The information required to connect the toolchain with your Cloud Object Storage instance.
+          - type: hide-controls
+            controls: 
+              - form: wizard_evidence
+                ids: [cos-warning]
       - condition:
           any:
             - parameter: cos
@@ -158,6 +162,10 @@ steps:
           - type: delete-service
             service_id: customtool
             service_label: cos-bucket
+          - type: show-controls
+            controls:
+              - form: wizard_evidence
+                ids: [cos-warning]
   - name: cos
     indent_level: 1
     title:

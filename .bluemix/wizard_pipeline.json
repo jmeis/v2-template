@@ -33,7 +33,9 @@
       "items": [{
         "key": "repo_url",
         "type": "select",
-        "mirrorAdvancedEnum": true
+        "display": {
+          "mirrorAdvancedEnum": true
+        }
       }]
     }, {
       "type": "section",

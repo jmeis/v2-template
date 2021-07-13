@@ -51,27 +51,15 @@
           "items": [{
             "key": "repo_url",
             "type": "select",
-            "mirrorAdvancedEnum": true,
+            "display": {
+              "mirrorAdvancedEnum": true
+            },
             "placeholder": {
               "$ref": "#/messages/wizard.evidence.repoURLPlaceholder"
             }
           }]
         }
       ]
-    },
-    {
-      "type": "notification",
-      "display": {
-        "style": "warning",
-        "title": {
-          "$ref": "#/messages/wizard.evidence.cos.notification.title"
-        },
-        "subtitle": {
-          "$ref": "#/messages/wizard.evidence.cos.notification.sutitle"
-        },
-        "showInAdvancedMode": true,
-        "advancedModePosition": "bottom"
-      }
     },
     {
       "type": "boolean",
@@ -85,6 +73,22 @@
         "$ref": "#/messages/wizard.evidence.cos.title"
       },
       "key": "cos"
+    },
+    {
+      "type": "notification",
+      "display": {
+        "style": "warning",
+        "title": {
+          "$ref": "#/messages/wizard.evidence.cos.notification.title"
+        },
+        "subtitle": {
+          "$ref": "#/messages/wizard.evidence.cos.notification.sutitle"
+        },
+        "showInAdvancedMode": true,
+        "advancedModePosition": "bottom",
+        "controlId": "cos-warning"
+      },
+      "visible": false
     }
   ]
 }
