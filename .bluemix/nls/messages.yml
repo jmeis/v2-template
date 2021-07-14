@@ -101,7 +101,7 @@ wizard.step.keyprotect.title: Key Protect
 wizard.step.secretsmanager.title: Secrets Manager
 wizard.step.hashicorpvault.title: HashiCorp Vault
 wizard.step.evidence.title: Evidence Storage
-wizard.step.cos.title: COS bucket
+wizard.step.cos.title: Cloud Object Storage bucket
 wizard.step.pipeline.title: Tekton Pipeline
 wizard.step.deploy.label: Deploy
 wizard.step.deploy.title: Deployment Target
@@ -133,7 +133,7 @@ wizard.evidence.repoNamePlaceholder: "compliance-evidence-XXXXXXXXXX"
 wizard.evidence.repoURLPlaceholder: "https://us-south.git.cloud.ibm.com/user-id/compliance-evidence-XXXXXXXXXX"
 wizard.evidence.cos.notification.title: "Cloud Object Storage bucket"
 wizard.evidence.cos.notification.sutitle: "To meet compliance audit standards, evidence must be maintained in a secure and durable storage service like Cloud Object Storage. Use the default Git Repo and Issue Tracking-based option for evaluation purposes only."
-wizard.evidence.cos.title: "COS bucket"
+wizard.evidence.cos.title: "Cloud Object Storage bucket"
 wizard.inventory.title: "Inventory Repository"
 wizard.inventory.longDescription: "The inventory repository records details of artifacts that are built by the CI toolchains.\n\nYou can choose to either create a new inventory repository, which will be a clone of the [inventory repository template](https://us-south.git.cloud.ibm.com/open-toolchain/compliance-inventory), or use an existing inventory repository that you are sharing between toolchains.\n\nBy default, the inventory repository template will be cloned to your Git Repo and Issue Tracking organization. To change the organization, enable **Advanced options**, and edit the **Repository owner** field."
 wizard.inventory.info: "For more information about Inventory, see the [documentation](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-cd-devsecops-inventory)."
