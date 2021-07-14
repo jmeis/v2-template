@@ -190,6 +190,8 @@ services:
           $text: pr-tekton.yaml
         env:
           PIPELINE_REPO: pipeline-repo
+          PIPELINE_BRANCH: >
+            $env.pipelineDefinitionBranch ? '{{pipelineDefinitionBranch}}' : 'master'
           APP_NAME: >
             $env.appName ? '{{appName}}' : '{{form.pipeline.parameters.app-name}}'
           APP_REPO: app-repo
@@ -231,6 +233,8 @@ services:
           $text: ci-tekton.yaml
         env:
           PIPELINE_REPO: pipeline-repo
+          PIPELINE_BRANCH: >
+            $env.pipelineDefinitionBranch ? '{{pipelineDefinitionBranch}}' : 'master'
           APP_NAME: >
             $env.appName ? '{{appName}}' : '{{form.pipeline.parameters.app-name}}'
           APP_REPO: app-repo
