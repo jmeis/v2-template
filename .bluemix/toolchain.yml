@@ -8,7 +8,7 @@ template:
   description:
     $ref: "#/messages/template.description"
   header: '![](toolchain.svg?localize)'
-  icon: https://cloud.ibm.com/media/docs/developer-appservice/resources/Node72.svg
+  icon: https://raw.githubusercontent.com/jmeis/v2-template/master/Node72.svg
   required:
     - build
     - ci
